@@ -64,6 +64,35 @@ create table if not exists repositories (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists github_connections (
+  id uuid primary key default gen_random_uuid(),
+  client_id uuid references clients(id) on delete cascade,
+  name text not null,
+  owner text not null,
+  auth_type text not null default 'token',
+  token_ref text,
+  installation_id text,
+  is_active boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists github_repositories (
+  id uuid primary key default gen_random_uuid(),
+  connection_id uuid not null references github_connections(id) on delete cascade,
+  client_id uuid references clients(id) on delete set null,
+  project_id uuid references projects(id) on delete set null,
+  owner text not null,
+  repo text not null,
+  full_name text not null,
+  default_branch text,
+  is_private boolean not null default false,
+  metadata jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (connection_id, owner, repo)
+);
+
 create table if not exists databases (
   id uuid primary key default gen_random_uuid(),
   project_id uuid not null references projects(id) on delete cascade,
@@ -138,3 +167,6 @@ create table if not exists lab_projects (
 create index if not exists idx_usage_events_client_ts on usage_events(client_id, event_timestamp desc);
 create index if not exists idx_usage_metrics_client_period on usage_metrics(client_id, period_start, period_end);
 create index if not exists idx_subscriptions_client on subscriptions(client_id);
+create index if not exists idx_github_connections_client on github_connections(client_id);
+create index if not exists idx_github_repositories_connection on github_repositories(connection_id);
+create index if not exists idx_github_repositories_client on github_repositories(client_id);
