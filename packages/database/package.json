@@ -1,0 +1,17 @@
+{
+  "name": "@nextwave/database",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@nextwave/config": "workspace:*",
+    "@supabase/supabase-js": "^2.57.4"
+  },
+  "scripts": {
+    "build": "echo database build",
+    "lint": "echo database lint",
+    "typecheck": "tsc --noEmit",
+    "schema": "echo 'Use packages/database/supabase/schema.sql'"
+  }
+}
