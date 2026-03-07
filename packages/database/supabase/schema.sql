@@ -115,6 +115,35 @@ create table if not exists subscriptions (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists billing_profiles (
+  id uuid primary key default gen_random_uuid(),
+  client_id uuid not null references clients(id) on delete cascade,
+  provider text not null default 'stripe',
+  mode text not null default 'platform',
+  stripe_account_id text,
+  stripe_customer_id text,
+  key_ref text,
+  webhook_secret_ref text,
+  is_active boolean not null default true,
+  metadata jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (client_id, provider, mode)
+);
+
+create table if not exists subscription_entitlements (
+  id uuid primary key default gen_random_uuid(),
+  client_id uuid not null references clients(id) on delete cascade,
+  subscription_id uuid references subscriptions(id) on delete set null,
+  feature_key text not null,
+  is_enabled boolean not null default true,
+  limit_value numeric,
+  period text not null default 'month',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (client_id, feature_key)
+);
+
 create table if not exists receipts (
   id uuid primary key default gen_random_uuid(),
   subscription_id uuid not null references subscriptions(id) on delete cascade,
@@ -167,6 +196,8 @@ create table if not exists lab_projects (
 create index if not exists idx_usage_events_client_ts on usage_events(client_id, event_timestamp desc);
 create index if not exists idx_usage_metrics_client_period on usage_metrics(client_id, period_start, period_end);
 create index if not exists idx_subscriptions_client on subscriptions(client_id);
+create index if not exists idx_billing_profiles_client on billing_profiles(client_id);
+create index if not exists idx_subscription_entitlements_client on subscription_entitlements(client_id);
 create index if not exists idx_github_connections_client on github_connections(client_id);
 create index if not exists idx_github_repositories_connection on github_repositories(connection_id);
 create index if not exists idx_github_repositories_client on github_repositories(client_id);

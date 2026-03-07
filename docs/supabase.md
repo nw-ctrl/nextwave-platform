@@ -8,3 +8,7 @@ Run SQL from `packages/database/supabase/schema.sql` in the Supabase SQL editor 
 Includes multi-repo registry tables:
 - `github_connections`
 - `github_repositories`
+
+Includes multi-tenant billing tables:
+- `billing_profiles`
+- `subscription_entitlements`
