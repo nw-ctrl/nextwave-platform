@@ -4,5 +4,6 @@ export const env = {
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? "",
   supabaseProjectRef: process.env.SUPABASE_PROJECT_REF ?? "nextwave-core",
   githubToken: process.env.GITHUB_TOKEN ?? "",
-  stripeSecretKey: process.env.STRIPE_SECRET_KEY ?? ""
+  stripeSecretKey: process.env.STRIPE_SECRET_KEY ?? "",
+  stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? ""
 };

@@ -196,6 +196,8 @@ create table if not exists lab_projects (
 create index if not exists idx_usage_events_client_ts on usage_events(client_id, event_timestamp desc);
 create index if not exists idx_usage_metrics_client_period on usage_metrics(client_id, period_start, period_end);
 create index if not exists idx_subscriptions_client on subscriptions(client_id);
+create unique index if not exists idx_subscriptions_external_id_unique on subscriptions(external_id) where external_id is not null;
+create unique index if not exists idx_receipts_provider_receipt_id_unique on receipts(provider_receipt_id) where provider_receipt_id is not null;
 create index if not exists idx_billing_profiles_client on billing_profiles(client_id);
 create index if not exists idx_subscription_entitlements_client on subscription_entitlements(client_id);
 create index if not exists idx_github_connections_client on github_connections(client_id);
