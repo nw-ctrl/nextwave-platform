@@ -113,6 +113,64 @@ export async function getDatabaseConnectionById(id: string) {
   } satisfies DatabaseConnectionProfile;
 }
 
+export async function resolveConnectionForClient(clientId: string) {
+  const supabase = createSupabaseServiceClient();
+
+  const { data: clientScoped, error: clientScopedError } = await supabase
+    .from("databases")
+    .select("*")
+    .eq("client_id", clientId)
+    .eq("is_active", true)
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (clientScopedError) {
+    throw new Error(clientScopedError.message);
+  }
+
+  if (clientScoped) {
+    return {
+      id: clientScoped.id,
+      clientId: clientScoped.client_id,
+      projectId: clientScoped.project_id,
+      adapter: clientScoped.adapter as Adapter,
+      connectionRef: clientScoped.connection_ref,
+      config: toRecord(clientScoped.config),
+      isActive: Boolean(clientScoped.is_active),
+      scope: "client"
+    } as const;
+  }
+
+  const { data: globalFallback, error: globalFallbackError } = await supabase
+    .from("databases")
+    .select("*")
+    .is("client_id", null)
+    .eq("is_active", true)
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (globalFallbackError) {
+    throw new Error(globalFallbackError.message);
+  }
+
+  if (!globalFallback) {
+    return null;
+  }
+
+  return {
+    id: globalFallback.id,
+    clientId: globalFallback.client_id,
+    projectId: globalFallback.project_id,
+    adapter: globalFallback.adapter as Adapter,
+    connectionRef: globalFallback.connection_ref,
+    config: toRecord(globalFallback.config),
+    isActive: Boolean(globalFallback.is_active),
+    scope: "global"
+  } as const;
+}
+
 export async function healthcheckDatabaseConnection(input: DatabaseConnectionProfile): Promise<HealthcheckResult> {
   if (!isSupportedAdapter(input.adapter)) {
     throw new Error(`Unsupported adapter: ${input.adapter}`);
