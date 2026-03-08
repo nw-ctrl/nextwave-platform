@@ -105,6 +105,7 @@ create table if not exists databases (
 alter table databases add column if not exists client_id uuid references clients(id) on delete set null;
 alter table databases add column if not exists config jsonb not null default '{}'::jsonb;
 alter table databases add column if not exists is_active boolean not null default true;
+alter table databases alter column project_id drop not null;
 
 create table if not exists subscriptions (
   id uuid primary key default gen_random_uuid(),
