@@ -112,9 +112,34 @@ async function upsertSubscriptionRecord(params: {
     current_period_end: normalizeEpoch(sub.current_period_end)
   };
 
+  const { data: existing, error: existingError } = await supabase
+    .from("subscriptions")
+    .select("id")
+    .eq("external_id", sub.id)
+    .maybeSingle<{ id: string }>();
+
+  if (existingError) {
+    throw new Error(existingError.message);
+  }
+
+  if (existing?.id) {
+    const { data, error } = await supabase
+      .from("subscriptions")
+      .update(payload)
+      .eq("id", existing.id)
+      .select("id, external_id")
+      .single();
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return data;
+  }
+
   const { data, error } = await supabase
     .from("subscriptions")
-    .upsert(payload, { onConflict: "external_id" })
+    .insert(payload)
     .select("id, external_id")
     .single();
 
@@ -143,9 +168,25 @@ async function upsertReceipt(params: {
       : null
   };
 
-  const { error } = await supabase
+  const { data: existing, error: existingError } = await supabase
     .from("receipts")
-    .upsert(payload, { onConflict: "provider_receipt_id" });
+    .select("id")
+    .eq("provider_receipt_id", invoice.id)
+    .maybeSingle<{ id: string }>();
+
+  if (existingError) {
+    throw new Error(existingError.message);
+  }
+
+  if (existing?.id) {
+    const { error } = await supabase.from("receipts").update(payload).eq("id", existing.id);
+    if (error) {
+      throw new Error(error.message);
+    }
+    return;
+  }
+
+  const { error } = await supabase.from("receipts").insert(payload);
 
   if (error) {
     throw new Error(error.message);
