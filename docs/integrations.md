@@ -44,6 +44,9 @@ Use installation or PAT token in `GITHUB_TOKEN` for repository sync.
 - Authorization context for privileged writes:
   - `x-actor-user-id: <user_uuid>` header
   - or `?actorUserId=<user_uuid>` query param
+- Module-level enforcement:
+  - clinic config APIs enforce `scope.modules` (for example `settings`, `doctors`, `templates`, `billing`)
+  - platform `superuser/admin` bypass module restrictions
 
 ## Superuser Operations
 - Account actions (requires superuser):

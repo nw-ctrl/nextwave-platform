@@ -55,3 +55,37 @@ export async function requireClientRole(
 
   return actorUserId;
 }
+
+export async function requireClientModule(
+  request: Request,
+  clientId: string,
+  moduleKey: string,
+  allowedRoles: ClientRole[]
+) {
+  const { actorUserId, access } = await resolveActorAccess(request);
+
+  if (access.platform.isSuperuser) {
+    return actorUserId;
+  }
+
+  const membership = access.clients.find((item) => item.clientId === clientId);
+  if (!membership || !allowedRoles.includes(membership.role as ClientRole)) {
+    throw new Error(`Client role required for ${clientId}: ${allowedRoles.join(", ")}`);
+  }
+
+  if (access.platform.isAdmin) {
+    return actorUserId;
+  }
+
+  const modules = Array.isArray((membership.scope as { modules?: unknown })?.modules)
+    ? ((membership.scope as { modules?: unknown[] }).modules ?? []).filter(
+        (value): value is string => typeof value === "string"
+      )
+    : [];
+
+  if (modules.length > 0 && !modules.includes(moduleKey)) {
+    throw new Error(`Module access denied: ${moduleKey}`);
+  }
+
+  return actorUserId;
+}

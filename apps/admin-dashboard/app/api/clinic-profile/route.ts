@@ -1,9 +1,17 @@
 import { resolveConnectionForClient } from "@nextwave/database";
+import { requireClientModule } from "../../../lib/authz";
 
 export async function GET(request: Request) {
   const clientId = new URL(request.url).searchParams.get("clientId");
   if (!clientId) {
     return Response.json({ error: "Missing clientId" }, { status: 400 });
+  }
+
+  try {
+    await requireClientModule(request, clientId, "settings", ["admin", "manager", "staff", "viewer"]);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "forbidden";
+    return Response.json({ error: message }, { status: 403 });
   }
 
   const resolved = await resolveConnectionForClient(clientId);
@@ -22,6 +30,18 @@ export async function GET(request: Request) {
 }
 
 export async function PUT(request: Request) {
+  const clientId = new URL(request.url).searchParams.get("clientId");
+  if (!clientId) {
+    return Response.json({ error: "Missing clientId" }, { status: 400 });
+  }
+
+  try {
+    await requireClientModule(request, clientId, "settings", ["admin", "manager"]);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "forbidden";
+    return Response.json({ error: message }, { status: 403 });
+  }
+
   const data = await request.json();
   return Response.json({ updated: true, data });
 }

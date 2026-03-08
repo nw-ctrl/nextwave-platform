@@ -1,5 +1,5 @@
 import { listBillingProfiles, upsertBillingProfile } from "../../../../lib/subscription";
-import { requireClientRole } from "../../../../lib/authz";
+import { requireClientModule } from "../../../../lib/authz";
 
 export async function GET(request: Request) {
   const clientId = new URL(request.url).searchParams.get("clientId") ?? undefined;
@@ -14,7 +14,7 @@ export async function POST(request: Request) {
       return Response.json({ error: "Missing clientId" }, { status: 400 });
     }
 
-    const actorUserId = await requireClientRole(request, body.clientId, ["admin"]);
+    const actorUserId = await requireClientModule(request, body.clientId, "billing", ["admin"]);
 
     const profile = await upsertBillingProfile({
       clientId: body.clientId,
