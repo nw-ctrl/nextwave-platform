@@ -16,6 +16,8 @@ create table if not exists users (
   updated_at timestamptz not null default now()
 );
 
+alter table users add column if not exists account_status text not null default 'active';
+
 create table if not exists clients (
   id uuid primary key default gen_random_uuid(),
   name text not null,
@@ -127,6 +129,8 @@ create table if not exists subscriptions (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table subscriptions add column if not exists metadata jsonb not null default '{}'::jsonb;
 
 create table if not exists billing_profiles (
   id uuid primary key default gen_random_uuid(),

@@ -41,3 +41,10 @@ Use installation or PAT token in `GITHUB_TOKEN` for repository sync.
   - roles: `admin`, `manager`, `staff`, `viewer`
 - Effective access view:
   - `GET /api/access/effective?userId=...`
+
+## Superuser Operations
+- Account actions (requires superuser):
+  - `POST /api/admin/accounts`
+  - actions: `block`, `unblock`, `delete`, `reset_password`
+- Subscription override (requires superuser):
+  - `POST /api/admin/subscriptions/override`
