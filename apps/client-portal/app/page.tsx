@@ -1,14 +1,18 @@
 import { getClientPortalAccess } from "../lib/access";
+import { headers } from "next/headers";
 
 const allModules = ["dashboard", "doctors", "templates", "billing", "usage", "settings"];
 
 export default async function ClinicPortalHome({
   searchParams
 }: {
-  searchParams?: Record<string, string | string[] | undefined>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const userId = typeof searchParams?.userId === "string" ? searchParams.userId : null;
-  const clientId = typeof searchParams?.clientId === "string" ? searchParams.clientId : null;
+  const requestHeaders = await headers();
+  const resolvedSearchParams = (await searchParams) ?? {};
+  const tenantSlug = requestHeaders.get("x-tenant-slug");
+  const userId = typeof resolvedSearchParams.userId === "string" ? resolvedSearchParams.userId : null;
+  const clientId = typeof resolvedSearchParams.clientId === "string" ? resolvedSearchParams.clientId : null;
 
   const access = await getClientPortalAccess({ userId, clientId });
   const modules = access.isPlatformAdmin
@@ -23,6 +27,7 @@ export default async function ClinicPortalHome({
       <p>
         User: {userId ?? "missing"} | Client: {clientId ?? "missing"} | Role: {access.role ?? "none"}
       </p>
+      <p>Tenant slug: {tenantSlug ?? "none (non-wildcard host)"}</p>
       {modules.length === 0 ? (
         <p>No module access. Check membership scope.modules for this user/client.</p>
       ) : (

@@ -37,3 +37,7 @@ corepack pnpm dev
 ]
 ```
 - Add additional Supabase projects by appending objects in the same JSON array.
+
+## Deployment
+- Vercel/deployment runbook: `docs/deployment.md`
+- Vercel environment template: `.env.vercel.example`
