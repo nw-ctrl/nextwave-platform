@@ -102,6 +102,10 @@ create table if not exists databases (
   updated_at timestamptz not null default now()
 );
 
+alter table databases add column if not exists client_id uuid references clients(id) on delete set null;
+alter table databases add column if not exists config jsonb not null default '{}'::jsonb;
+alter table databases add column if not exists is_active boolean not null default true;
+
 create table if not exists subscriptions (
   id uuid primary key default gen_random_uuid(),
   client_id uuid not null references clients(id) on delete cascade,
@@ -196,6 +200,7 @@ create table if not exists lab_projects (
 create index if not exists idx_usage_events_client_ts on usage_events(client_id, event_timestamp desc);
 create index if not exists idx_usage_metrics_client_period on usage_metrics(client_id, period_start, period_end);
 create index if not exists idx_subscriptions_client on subscriptions(client_id);
+create index if not exists idx_databases_client on databases(client_id);
 create unique index if not exists idx_subscriptions_external_id_unique on subscriptions(external_id) where external_id is not null;
 create unique index if not exists idx_receipts_provider_receipt_id_unique on receipts(provider_receipt_id) where provider_receipt_id is not null;
 create index if not exists idx_billing_profiles_client on billing_profiles(client_id);

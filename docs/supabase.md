@@ -12,3 +12,8 @@ Includes multi-repo registry tables:
 Includes multi-tenant billing tables:
 - `billing_profiles`
 - `subscription_entitlements`
+
+`databases` table now also stores router profile data:
+- `client_id`
+- `config` (jsonb)
+- `is_active`
