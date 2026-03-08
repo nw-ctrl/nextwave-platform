@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "packageManager": "pnpm@9.12.3",
   "scripts": {
-    "build": "turbo run build",
+    "build": "turbo run build --output-logs=full",
     "dev": "turbo run dev --parallel",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
