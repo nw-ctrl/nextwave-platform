@@ -1,6 +1,8 @@
 import { getClientPortalAccess } from "../lib/access";
 import { headers } from "next/headers";
 
+export const dynamic = "force-dynamic";
+
 const allModules = ["dashboard", "doctors", "templates", "billing", "usage", "settings"];
 
 export default async function ClinicPortalHome({
