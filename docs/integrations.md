@@ -23,3 +23,11 @@ Use installation or PAT token in `GITHUB_TOKEN` for repository sync.
   - `POST /api/databases/test`
 - Supported adapters:
   - `supabase`, `postgres`, `firebase`, `mongodb`, `redis`
+
+## Tenant White-label Bootstrap
+- Branding endpoints:
+  - `GET/POST /api/clients/branding`
+- Feature flag endpoints:
+  - `GET/POST /api/clients/features`
+- App bootstrap endpoint:
+  - `GET /api/tenant/bootstrap?clientId=...&appId=...`

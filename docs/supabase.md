@@ -17,3 +17,7 @@ Includes multi-tenant billing tables:
 - `client_id`
 - `config` (jsonb)
 - `is_active`
+
+Tenant white-label tables:
+- `tenant_branding`
+- `tenant_features`

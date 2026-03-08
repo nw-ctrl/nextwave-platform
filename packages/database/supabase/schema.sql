@@ -188,6 +188,38 @@ create table if not exists documents (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists tenant_branding (
+  id uuid primary key default gen_random_uuid(),
+  client_id uuid not null references clients(id) on delete cascade,
+  app_id text not null default 'default',
+  brand_name text not null,
+  logo_url text,
+  favicon_url text,
+  primary_color text,
+  secondary_color text,
+  accent_color text,
+  locale text not null default 'en-AU',
+  timezone text,
+  domain text,
+  metadata jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (client_id, app_id)
+);
+
+create table if not exists tenant_features (
+  id uuid primary key default gen_random_uuid(),
+  client_id uuid not null references clients(id) on delete cascade,
+  app_id text not null default 'default',
+  feature_key text not null,
+  is_enabled boolean not null default true,
+  config jsonb not null default '{}'::jsonb,
+  rollout text not null default 'general',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (client_id, app_id, feature_key)
+);
+
 create table if not exists lab_projects (
   id uuid primary key default gen_random_uuid(),
   project_id uuid references projects(id) on delete set null,
@@ -209,3 +241,5 @@ create index if not exists idx_subscription_entitlements_client on subscription_
 create index if not exists idx_github_connections_client on github_connections(client_id);
 create index if not exists idx_github_repositories_connection on github_repositories(connection_id);
 create index if not exists idx_github_repositories_client on github_repositories(client_id);
+create index if not exists idx_tenant_branding_client on tenant_branding(client_id);
+create index if not exists idx_tenant_features_client_app on tenant_features(client_id, app_id);
