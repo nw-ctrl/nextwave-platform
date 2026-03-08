@@ -1,4 +1,5 @@
 import {
+  adminCreateUserAccount,
   adminForcePasswordReset,
   adminSetAccountStatus,
   logAdminAudit
@@ -11,7 +12,33 @@ export async function POST(request: Request) {
     const body = await request.json();
 
     if (!body.targetUserId || !body.action) {
-      return Response.json({ error: "Missing targetUserId or action" }, { status: 400 });
+      if (body.action !== "create_user") {
+        return Response.json({ error: "Missing targetUserId or action" }, { status: 400 });
+      }
+    }
+
+    if (body.action === "create_user") {
+      if (!body.email) {
+        return Response.json({ error: "Missing email for create_user" }, { status: 400 });
+      }
+
+      const created = await adminCreateUserAccount({
+        email: body.email,
+        password: body.password,
+        fullName: body.fullName,
+        emailConfirm: body.emailConfirm
+      });
+
+      const audit = await logAdminAudit({
+        actorUserId,
+        actorRole: "superuser",
+        action: "account.create_user",
+        targetType: "user",
+        targetId: created.authUserId,
+        payload: { email: created.email }
+      });
+
+      return Response.json({ ok: true, actorUserId, action: "create_user", user: created, auditId: audit.id });
     }
 
     if (body.action === "block") {
@@ -61,7 +88,11 @@ export async function POST(request: Request) {
         action: "account.reset_password",
         targetType: "user",
         targetId: body.targetUserId,
-        payload: { mechanism: result.mechanism, resetQueued: result.resetQueued }
+        payload: {
+          mechanism: result.mechanism,
+          resetQueued: result.resetQueued,
+          hasResetLink: Boolean(result.resetLink)
+        }
       });
       return Response.json({ ok: true, actorUserId, action: "reset_password", result, auditId: audit.id });
     }

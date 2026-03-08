@@ -38,6 +38,21 @@ export async function adminSetAccountStatus(input: {
 }) {
   const supabase = createSupabaseServiceClient();
 
+  if (input.deleted) {
+    const { error: deleteAuthError } = await supabase.auth.admin.deleteUser(input.targetUserId);
+    if (deleteAuthError) {
+      throw new Error(deleteAuthError.message);
+    }
+  } else {
+    const { error: authUpdateError } = await supabase.auth.admin.updateUserById(input.targetUserId, {
+      ban_duration: input.blocked ? "876000h" : "none"
+    });
+
+    if (authUpdateError) {
+      throw new Error(authUpdateError.message);
+    }
+  }
+
   const { data, error } = await supabase
     .from("users")
     .update({
@@ -67,12 +82,67 @@ export async function adminForcePasswordReset(input: { targetUserId: string }) {
     throw new Error(userError.message);
   }
 
-  // Placeholder operation for now. A production implementation should call Supabase auth admin API.
+  const { data: resetData, error: resetError } = await supabase.auth.admin.generateLink({
+    type: "recovery",
+    email: user.email
+  });
+
+  if (resetError) {
+    throw new Error(resetError.message);
+  }
+
   return {
     userId: user.id,
     email: user.email,
     resetQueued: true,
-    mechanism: "supabase-auth-admin-todo"
+    mechanism: "supabase-auth-admin-generate-link",
+    resetLink: resetData.properties?.action_link ?? null
+  };
+}
+
+export async function adminCreateUserAccount(input: {
+  email: string;
+  password?: string;
+  fullName?: string;
+  emailConfirm?: boolean;
+}) {
+  const supabase = createSupabaseServiceClient();
+
+  const { data: created, error: createError } = await supabase.auth.admin.createUser({
+    email: input.email,
+    password: input.password,
+    email_confirm: input.emailConfirm ?? true,
+    user_metadata: {
+      full_name: input.fullName ?? null
+    }
+  });
+
+  if (createError || !created.user) {
+    throw new Error(createError?.message ?? "Failed to create auth user");
+  }
+
+  const { data: profile, error: profileError } = await supabase
+    .from("users")
+    .upsert(
+      {
+        id: created.user.id,
+        email: created.user.email ?? input.email,
+        full_name: input.fullName ?? null,
+        account_status: "active"
+      },
+      { onConflict: "id" }
+    )
+    .select("id, email, full_name, account_status")
+    .single();
+
+  if (profileError) {
+    throw new Error(profileError.message);
+  }
+
+  return {
+    authUserId: created.user.id,
+    email: created.user.email ?? input.email,
+    profile
   };
 }
 
