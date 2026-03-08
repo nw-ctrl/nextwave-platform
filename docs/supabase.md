@@ -25,3 +25,4 @@ Tenant white-label tables:
 Access control tables:
 - `user_platform_roles`
 - `user_client_memberships`
+- `audit_logs` (privileged action trail)

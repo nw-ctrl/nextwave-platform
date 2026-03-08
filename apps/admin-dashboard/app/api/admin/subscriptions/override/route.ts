@@ -1,4 +1,4 @@
-import { adminOverrideSubscription } from "../../../../../lib/admin";
+import { adminOverrideSubscription, logAdminAudit } from "../../../../../lib/admin";
 import { requirePlatformRole } from "../../../../../lib/authz";
 
 export async function POST(request: Request) {
@@ -17,7 +17,20 @@ export async function POST(request: Request) {
       reason: body.reason
     });
 
-    return Response.json({ ok: true, actorUserId, subscription });
+    const audit = await logAdminAudit({
+      actorUserId,
+      actorRole: "superuser",
+      action: "subscription.override",
+      targetType: "client",
+      targetId: body.clientId,
+      payload: {
+        status: body.status,
+        plan: body.plan ?? "manual-override",
+        reason: body.reason ?? "admin_override"
+      }
+    });
+
+    return Response.json({ ok: true, actorUserId, subscription, auditId: audit.id });
   } catch (error) {
     const message = error instanceof Error ? error.message : "subscription_override_failed";
     return Response.json({ ok: false, error: message }, { status: 403 });

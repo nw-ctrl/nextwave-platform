@@ -1,5 +1,36 @@
 import { createSupabaseServiceClient } from "@nextwave/database";
 
+export async function logAdminAudit(input: {
+  actorUserId: string;
+  actorRole: "superuser" | "admin";
+  action: string;
+  targetType: string;
+  targetId?: string;
+  status?: "success" | "failed";
+  payload?: Record<string, unknown>;
+}) {
+  const supabase = createSupabaseServiceClient();
+  const { data, error } = await supabase
+    .from("audit_logs")
+    .insert({
+      actor_user_id: input.actorUserId,
+      actor_role: input.actorRole,
+      action: input.action,
+      target_type: input.targetType,
+      target_id: input.targetId ?? null,
+      status: input.status ?? "success",
+      payload: input.payload ?? {}
+    })
+    .select("*")
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
+}
+
 export async function adminSetAccountStatus(input: {
   targetUserId: string;
   blocked?: boolean;

@@ -254,6 +254,18 @@ create table if not exists user_client_memberships (
   unique (user_id, client_id)
 );
 
+create table if not exists audit_logs (
+  id uuid primary key default gen_random_uuid(),
+  actor_user_id uuid references users(id) on delete set null,
+  actor_role text,
+  action text not null,
+  target_type text not null,
+  target_id text,
+  status text not null default 'success',
+  payload jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
+);
+
 create table if not exists lab_projects (
   id uuid primary key default gen_random_uuid(),
   project_id uuid references projects(id) on delete set null,
@@ -304,3 +316,5 @@ create index if not exists idx_tenant_features_client_app on tenant_features(cli
 create index if not exists idx_user_platform_roles_user on user_platform_roles(user_id);
 create index if not exists idx_user_client_memberships_user on user_client_memberships(user_id);
 create index if not exists idx_user_client_memberships_client on user_client_memberships(client_id);
+create index if not exists idx_audit_logs_actor on audit_logs(actor_user_id, created_at desc);
+create index if not exists idx_audit_logs_action on audit_logs(action, created_at desc);

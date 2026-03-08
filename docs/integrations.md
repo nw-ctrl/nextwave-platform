@@ -51,3 +51,6 @@ Use installation or PAT token in `GITHUB_TOKEN` for repository sync.
   - actions: `block`, `unblock`, `delete`, `reset_password`
 - Subscription override (requires superuser):
   - `POST /api/admin/subscriptions/override`
+- Audit trail read (requires superuser):
+  - `GET /api/admin/audit`
+  - filters: `action`, `targetType`, `limit`
