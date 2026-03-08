@@ -21,3 +21,7 @@ Includes multi-tenant billing tables:
 Tenant white-label tables:
 - `tenant_branding`
 - `tenant_features`
+
+Access control tables:
+- `user_platform_roles`
+- `user_client_memberships`

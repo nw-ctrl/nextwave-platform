@@ -31,3 +31,13 @@ Use installation or PAT token in `GITHUB_TOKEN` for repository sync.
   - `GET/POST /api/clients/features`
 - App bootstrap endpoint:
   - `GET /api/tenant/bootstrap?clientId=...&appId=...`
+
+## Access Control
+- Platform roles:
+  - `GET/POST /api/access/platform-roles`
+  - roles: `superuser`, `admin`, `auditor`
+- Tenant memberships:
+  - `GET/POST /api/access/memberships`
+  - roles: `admin`, `manager`, `staff`, `viewer`
+- Effective access view:
+  - `GET /api/access/effective?userId=...`

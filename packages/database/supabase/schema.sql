@@ -228,6 +228,28 @@ create table if not exists tenant_features (
   unique (client_id, app_id, feature_key)
 );
 
+create table if not exists user_platform_roles (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references users(id) on delete cascade,
+  role_key text not null,
+  is_active boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (user_id, role_key)
+);
+
+create table if not exists user_client_memberships (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references users(id) on delete cascade,
+  client_id uuid not null references clients(id) on delete cascade,
+  role_key text not null,
+  scope jsonb not null default '{}'::jsonb,
+  is_active boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (user_id, client_id)
+);
+
 create table if not exists lab_projects (
   id uuid primary key default gen_random_uuid(),
   project_id uuid references projects(id) on delete set null,
@@ -250,6 +272,18 @@ before update on tenant_features
 for each row
 execute function set_updated_at();
 
+drop trigger if exists trg_user_platform_roles_updated_at on user_platform_roles;
+create trigger trg_user_platform_roles_updated_at
+before update on user_platform_roles
+for each row
+execute function set_updated_at();
+
+drop trigger if exists trg_user_client_memberships_updated_at on user_client_memberships;
+create trigger trg_user_client_memberships_updated_at
+before update on user_client_memberships
+for each row
+execute function set_updated_at();
+
 create index if not exists idx_usage_events_client_ts on usage_events(client_id, event_timestamp desc);
 create index if not exists idx_usage_metrics_client_period on usage_metrics(client_id, period_start, period_end);
 create index if not exists idx_subscriptions_client on subscriptions(client_id);
@@ -263,3 +297,6 @@ create index if not exists idx_github_repositories_connection on github_reposito
 create index if not exists idx_github_repositories_client on github_repositories(client_id);
 create index if not exists idx_tenant_branding_client on tenant_branding(client_id);
 create index if not exists idx_tenant_features_client_app on tenant_features(client_id, app_id);
+create index if not exists idx_user_platform_roles_user on user_platform_roles(user_id);
+create index if not exists idx_user_client_memberships_user on user_client_memberships(user_id);
+create index if not exists idx_user_client_memberships_client on user_client_memberships(client_id);
