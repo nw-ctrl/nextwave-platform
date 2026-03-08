@@ -1,12 +1,12 @@
 import {
   adminForcePasswordReset,
-  adminSetAccountStatus,
-  requireSuperuser
+  adminSetAccountStatus
 } from "../../../../lib/admin";
+import { requirePlatformRole } from "../../../../lib/authz";
 
 export async function POST(request: Request) {
   try {
-    const actorUserId = await requireSuperuser(request);
+    const actorUserId = await requirePlatformRole(request, ["superuser"]);
     const body = await request.json();
 
     if (!body.targetUserId || !body.action) {

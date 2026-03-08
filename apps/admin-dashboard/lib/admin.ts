@@ -1,19 +1,4 @@
 import { createSupabaseServiceClient } from "@nextwave/database";
-import { getEffectiveAccess } from "./access";
-
-export async function requireSuperuser(request: Request) {
-  const actorUserId = request.headers.get("x-actor-user-id") ?? new URL(request.url).searchParams.get("actorUserId");
-  if (!actorUserId) {
-    throw new Error("Missing actor user id. Provide x-actor-user-id header or actorUserId query param.");
-  }
-
-  const access = await getEffectiveAccess(actorUserId);
-  if (!access.platform.isSuperuser) {
-    throw new Error("Superuser role required");
-  }
-
-  return actorUserId;
-}
 
 export async function adminSetAccountStatus(input: {
   targetUserId: string;

@@ -41,6 +41,9 @@ Use installation or PAT token in `GITHUB_TOKEN` for repository sync.
   - roles: `admin`, `manager`, `staff`, `viewer`
 - Effective access view:
   - `GET /api/access/effective?userId=...`
+- Authorization context for privileged writes:
+  - `x-actor-user-id: <user_uuid>` header
+  - or `?actorUserId=<user_uuid>` query param
 
 ## Superuser Operations
 - Account actions (requires superuser):

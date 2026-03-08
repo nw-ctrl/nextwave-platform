@@ -1,4 +1,5 @@
 import { listTenantBranding, upsertTenantBranding } from "../../../../lib/tenants";
+import { requireClientRole } from "../../../../lib/authz";
 
 function normalizeHexColor(input?: string) {
   if (!input) {
@@ -34,6 +35,8 @@ export async function POST(request: Request) {
       return Response.json({ error: "Missing clientId or brandName" }, { status: 400 });
     }
 
+    const actorUserId = await requireClientRole(request, body.clientId, ["admin"]);
+
     const branding = await upsertTenantBranding({
       clientId: body.clientId,
       appId: body.appId,
@@ -49,9 +52,9 @@ export async function POST(request: Request) {
       metadata: body.metadata
     });
 
-    return Response.json({ saved: true, branding });
+    return Response.json({ saved: true, actorUserId, branding });
   } catch (error) {
     const message = error instanceof Error ? error.message : "failed_to_save_branding";
-    return Response.json({ saved: false, error: message }, { status: 400 });
+    return Response.json({ saved: false, error: message }, { status: 403 });
   }
 }

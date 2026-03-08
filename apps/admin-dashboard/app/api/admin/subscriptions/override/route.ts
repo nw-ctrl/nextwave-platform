@@ -1,8 +1,9 @@
-import { adminOverrideSubscription, requireSuperuser } from "../../../../../lib/admin";
+import { adminOverrideSubscription } from "../../../../../lib/admin";
+import { requirePlatformRole } from "../../../../../lib/authz";
 
 export async function POST(request: Request) {
   try {
-    const actorUserId = await requireSuperuser(request);
+    const actorUserId = await requirePlatformRole(request, ["superuser"]);
     const body = await request.json();
 
     if (!body.clientId || !body.status) {
