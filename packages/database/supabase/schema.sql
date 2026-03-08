@@ -1,5 +1,13 @@
 create extension if not exists "pgcrypto";
 
+create or replace function set_updated_at()
+returns trigger as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$ language plpgsql;
+
 create table if not exists users (
   id uuid primary key default gen_random_uuid(),
   email text unique not null,
@@ -229,6 +237,18 @@ create table if not exists lab_projects (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+drop trigger if exists trg_tenant_branding_updated_at on tenant_branding;
+create trigger trg_tenant_branding_updated_at
+before update on tenant_branding
+for each row
+execute function set_updated_at();
+
+drop trigger if exists trg_tenant_features_updated_at on tenant_features;
+create trigger trg_tenant_features_updated_at
+before update on tenant_features
+for each row
+execute function set_updated_at();
 
 create index if not exists idx_usage_events_client_ts on usage_events(client_id, event_timestamp desc);
 create index if not exists idx_usage_metrics_client_period on usage_metrics(client_id, period_start, period_end);
