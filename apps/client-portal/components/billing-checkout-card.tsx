@@ -5,14 +5,13 @@ import { useSearchParams } from "next/navigation";
 
 type Props = {
   clientId: string;
-  userId: string;
   role: string | null;
   clinicName: string;
 };
 
 type Status = { state: "idle" | "pending" | "success" | "error"; message: string };
 
-export function BillingCheckoutCard({ clientId, userId, role, clinicName }: Props) {
+export function BillingCheckoutCard({ clientId, role, clinicName }: Props) {
   const searchParams = useSearchParams();
   const [customerEmail, setCustomerEmail] = useState("");
   const [status, setStatus] = useState<Status>({ state: "idle", message: "" });
@@ -40,7 +39,6 @@ export function BillingCheckoutCard({ clientId, userId, role, clinicName }: Prop
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           clientId,
-          userId,
           customerEmail: customerEmail.trim() || undefined
         })
       });
@@ -57,7 +55,7 @@ export function BillingCheckoutCard({ clientId, userId, role, clinicName }: Prop
   }
 
   return (
-    <section style={{ padding: 24, border: "1px solid #d0d7de", borderRadius: 16, maxWidth: 720 }}>
+    <section style={{ padding: 24, border: "1px solid #d0d7de", borderRadius: 16, maxWidth: 720, background: "#ffffff" }}>
       <p style={{ margin: 0, fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "#6b7280" }}>Medivault Billing</p>
       <h1 style={{ marginBottom: 8 }}>{clinicName}</h1>
       <p style={{ marginTop: 0, color: "#4b5563", lineHeight: 1.6 }}>

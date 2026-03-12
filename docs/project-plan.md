@@ -132,6 +132,11 @@ Tasks:
 
 ### 2026-03-12
 
+- Implemented a real client portal sign-in flow using Supabase email/password with secure portal cookies.
+- Added clinic selection from `user_client_memberships` so portal context no longer depends on `userId` and `clientId` URL params.
+- Updated the client portal billing flow to derive clinic and user from the authenticated session.
+- Verified `@nextwave/client-portal` typecheck passes.
+- Verified `@nextwave/client-portal` production build passes.
 - Completed successful local Medivault admin checkout testing.
 - Verified Stripe Checkout completed for the admin-triggered clinic billing flow.
 - Verified local webhook delivery returned HTTP 200 for `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, and `invoice.paid` after hardening.
@@ -154,3 +159,4 @@ Tasks:
 - Marked Stripe setup and verification as the active next workstream.
 - Implemented website Stripe checkout proof-of-wiring.
 - Implemented Medivault admin billing flow foundations.
+
