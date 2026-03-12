@@ -112,17 +112,21 @@ async function upsertSubscriptionRecord(params: {
     current_period_end: normalizeEpoch(sub.current_period_end)
   };
 
-  const { data: existing, error: existingError } = await supabase
-    .from("subscriptions")
-    .select("id")
-    .eq("external_id", sub.id)
-    .maybeSingle<{ id: string }>();
+  async function updateExistingRecord() {
+    const { data: existing, error: existingError } = await supabase
+      .from("subscriptions")
+      .select("id")
+      .eq("external_id", sub.id)
+      .maybeSingle<{ id: string }>();
 
-  if (existingError) {
-    throw new Error(existingError.message);
-  }
+    if (existingError) {
+      throw new Error(existingError.message);
+    }
 
-  if (existing?.id) {
+    if (!existing?.id) {
+      return null;
+    }
+
     const { data, error } = await supabase
       .from("subscriptions")
       .update(payload)
@@ -137,6 +141,11 @@ async function upsertSubscriptionRecord(params: {
     return data;
   }
 
+  const updated = await updateExistingRecord();
+  if (updated) {
+    return updated;
+  }
+
   const { data, error } = await supabase
     .from("subscriptions")
     .insert(payload)
@@ -144,6 +153,14 @@ async function upsertSubscriptionRecord(params: {
     .single();
 
   if (error) {
+    const duplicateInsert = error.message.includes("duplicate") || (error.code ?? "") === "23505";
+    if (duplicateInsert) {
+      const racedUpdate = await updateExistingRecord();
+      if (racedUpdate) {
+        return racedUpdate;
+      }
+    }
+
     throw new Error(error.message);
   }
 
@@ -436,4 +453,151 @@ export async function processStripeWebhookEvent(event: Stripe.Event, context: St
   }
 
   return { handled: true, type: event.type, skipped: true };
+}
+
+type ClinicCheckoutInput = {
+  clientId: string;
+  origin: string;
+  appId?: string;
+  customerEmail?: string;
+};
+
+async function getClientRecord(clientId: string) {
+  const supabase = createSupabaseServiceClient();
+  const { data, error } = await supabase.from("clients").select("id, name").eq("id", clientId).maybeSingle<{ id: string; name: string }>();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
+}
+
+async function ensureStripeCustomerForClient(input: {
+  clientId: string;
+  customerEmail?: string;
+  profile?: BillingProfileRow | null;
+  appId?: string;
+}) {
+  const stripeKey = (resolveSecretValue(input.profile?.key_ref) ?? env.stripeSecretKey) || undefined;
+  const client = getStripeClient(stripeKey);
+  if (!client) {
+    throw new Error("Missing STRIPE_SECRET_KEY");
+  }
+
+  const existingCustomerId = input.profile?.stripe_customer_id?.trim();
+  if (existingCustomerId) {
+    try {
+      await client.customers.retrieve(existingCustomerId);
+      return existingCustomerId;
+    } catch {
+      await upsertBillingProfile({
+        clientId: input.clientId,
+        mode: "client",
+        stripeCustomerId: "",
+        keyRef: input.profile?.key_ref ?? (env.stripeSecretKey ? "env:STRIPE_SECRET_KEY" : undefined),
+        webhookSecretRef: input.profile?.webhook_secret_ref ?? (env.stripeWebhookSecret ? "env:STRIPE_WEBHOOK_SECRET" : undefined),
+        metadata: {
+          appId: input.appId ?? "medivault",
+          source: "admin-billing-checkout",
+          customerResetAt: new Date().toISOString()
+        }
+      });
+    }
+  }
+
+  const clientRecord = await getClientRecord(input.clientId);
+  const customer = await client.customers.create({
+    email: input.customerEmail,
+    name: clientRecord?.name ?? `Clinic ${input.clientId}`,
+    metadata: {
+      clientId: input.clientId,
+      appId: input.appId ?? "medivault",
+      source: "admin-billing"
+    }
+  });
+
+  await upsertBillingProfile({
+    clientId: input.clientId,
+    mode: "client",
+    stripeCustomerId: customer.id,
+    keyRef: input.profile?.key_ref ?? (env.stripeSecretKey ? "env:STRIPE_SECRET_KEY" : undefined),
+    webhookSecretRef: input.profile?.webhook_secret_ref ?? (env.stripeWebhookSecret ? "env:STRIPE_WEBHOOK_SECRET" : undefined),
+    metadata: {
+      appId: input.appId ?? "medivault",
+      source: "admin-billing-checkout"
+    }
+  });
+
+  return customer.id;
+}
+
+export async function createClinicSubscriptionCheckoutSession(input: ClinicCheckoutInput) {
+  const priceId = process.env.STRIPE_MEDIVAULT_MONTHLY_PRICE_ID ?? "";
+  if (!priceId) {
+    throw new Error("Missing STRIPE_MEDIVAULT_MONTHLY_PRICE_ID");
+  }
+
+  const profile = await getLatestBillingProfile(input.clientId);
+  const stripeKey = (resolveSecretValue(profile?.key_ref) ?? env.stripeSecretKey) || undefined;
+  const client = getStripeClient(stripeKey);
+  if (!client) {
+    throw new Error("Missing STRIPE_SECRET_KEY");
+  }
+
+  const customerId = await ensureStripeCustomerForClient({
+    clientId: input.clientId,
+    customerEmail: input.customerEmail,
+    profile,
+    appId: input.appId
+  });
+
+  const requestOptions = profile?.stripe_account_id ? { stripeAccount: profile.stripe_account_id } : undefined;
+  const session = await client.checkout.sessions.create(
+    {
+      mode: "subscription",
+      customer: customerId,
+      client_reference_id: input.clientId,
+      success_url: `${input.origin}/billing?checkout=success&clientId=${input.clientId}&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${input.origin}/billing?checkout=cancel&clientId=${input.clientId}`,
+      line_items: [{ price: priceId, quantity: 1 }],
+      allow_promotion_codes: true,
+      billing_address_collection: "auto",
+      metadata: {
+        clientId: input.clientId,
+        appId: input.appId ?? "medivault",
+        flow: "admin-clinic-checkout"
+      },
+      subscription_data: {
+        metadata: {
+          clientId: input.clientId,
+          appId: input.appId ?? "medivault",
+          flow: "admin-clinic-checkout"
+        }
+      }
+    },
+    requestOptions
+  );
+
+  await upsertBillingProfile({
+    clientId: input.clientId,
+    mode: "client",
+    stripeCustomerId: customerId,
+    stripeAccountId: profile?.stripe_account_id ?? undefined,
+    keyRef: profile?.key_ref ?? (env.stripeSecretKey ? "env:STRIPE_SECRET_KEY" : undefined),
+    webhookSecretRef: profile?.webhook_secret_ref ?? (env.stripeWebhookSecret ? "env:STRIPE_WEBHOOK_SECRET" : undefined),
+    metadata: {
+      appId: input.appId ?? "medivault",
+      checkoutSessionId: session.id,
+      latestCheckoutAt: new Date().toISOString(),
+      billingCurrency: "pkr",
+      billingAmountMinor: 400000
+    }
+  });
+
+  return {
+    sessionId: session.id,
+    url: session.url,
+    customerId
+  };
 }

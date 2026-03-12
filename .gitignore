@@ -1,4 +1,5 @@
 node_modules
+.corepack
 .next
 dist
 .turbo
@@ -7,3 +8,4 @@ dist
 .pnpm-store
 _ext
 live-nextwave.html
+
