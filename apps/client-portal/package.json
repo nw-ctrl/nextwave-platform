@@ -16,7 +16,8 @@
     "@nextwave/auth": "workspace:*",
     "@nextwave/database": "workspace:*",
     "@nextwave/config": "workspace:*",
-    "@nextwave/analytics": "workspace:*"
+    "@nextwave/analytics": "workspace:*",
+    "stripe": "^17.7.0"
   },
   "devDependencies": {
     "typescript": "^5.8.2",
