@@ -163,14 +163,22 @@ export function PricingSection() {
         body: JSON.stringify({ tier: tierId })
       });
 
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Checkout failed");
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        throw new Error(`Server returned a non-JSON error. Status: ${response.status}`);
+      }
+
+      if (!response.ok) {
+        throw new Error(data.error || "Checkout failed");
+      }
 
       // Redirect to Stripe Checkout session
       window.location.href = data.url;
     } catch (err) {
-      console.error(err);
-      alert("Failed to start checkout. Please try again.");
+      console.error("[Checkout Frontend Error]", err);
+      alert(`Checkout Error: ${err instanceof Error ? err.message : "Unknown error"}`);
       setLoadingTier(null);
     }
   }
