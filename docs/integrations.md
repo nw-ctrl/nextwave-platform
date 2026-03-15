@@ -16,6 +16,7 @@ Use installation or PAT token in `GITHUB_TOKEN` for repository sync.
 - Billing profile secret references:
   - `key_ref`: Stripe secret key reference (`env:STRIPE_SECRET_KEY_CLIENT_A` or `secret:client-a-stripe-key`)
   - `webhook_secret_ref`: Stripe webhook secret reference (`env:STRIPE_WEBHOOK_SECRET_CLIENT_A` or `secret:client-a-whsec`)
+- Full setup guide (test/live, webhook secrets, platform vs per-client): `docs/stripe-setup.md`
 
 ## Database Router
 - Tenant connection endpoints:

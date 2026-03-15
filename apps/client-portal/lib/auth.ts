@@ -10,6 +10,11 @@ export type PortalMembership = {
   clinicName: string;
   role: string;
   modules: string[];
+  subscription?: {
+    plan: string;
+    status: string;
+    currentPeriodEnd: string | null;
+  } | null;
 };
 
 export type PortalSession = {
@@ -27,7 +32,21 @@ type MembershipRow = {
   client_id: string;
   role_key: string;
   scope: unknown;
-  clients: { name?: string | null } | { name?: string | null }[] | null;
+  clients: {
+    name?: string | null;
+    subscriptions?: {
+      plan: string;
+      status: string;
+      current_period_end: string | null;
+    }[];
+  } | {
+    name?: string | null;
+    subscriptions?: {
+      plan: string;
+      status: string;
+      current_period_end: string | null;
+    }[];
+  }[] | null;
 };
 
 function readModules(scope: unknown) {
@@ -43,11 +62,22 @@ function readClinicName(clients: MembershipRow["clients"]) {
   return typeof record?.name === "string" && record.name.trim() ? record.name : "Clinic";
 }
 
+function readSubscription(clients: MembershipRow["clients"]) {
+  const record = Array.isArray(clients) ? clients[0] : clients;
+  const sub = record?.subscriptions?.[0];
+  if (!sub) return null;
+  return {
+    plan: sub.plan,
+    status: sub.status,
+    currentPeriodEnd: sub.current_period_end
+  };
+}
+
 export async function listPortalMemberships(userId: string) {
   const supabase = createSupabaseServiceClient();
   const { data, error } = await supabase
     .from("user_client_memberships")
-    .select("client_id, role_key, scope, clients(name)")
+    .select("client_id, role_key, scope, clients(name, subscriptions(plan, status, current_period_end))")
     .eq("user_id", userId)
     .eq("is_active", true)
     .order("updated_at", { ascending: false });
@@ -60,7 +90,8 @@ export async function listPortalMemberships(userId: string) {
     clientId: item.client_id,
     clinicName: readClinicName(item.clients),
     role: item.role_key,
-    modules: readModules(item.scope)
+    modules: readModules(item.scope),
+    subscription: readSubscription(item.clients)
   })) satisfies PortalMembership[];
 }
 

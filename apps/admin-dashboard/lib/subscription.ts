@@ -1,7 +1,8 @@
-﻿import Stripe from "stripe";
+import Stripe from "stripe";
 import { env } from "@nextwave/config";
 import { createSupabaseServiceClient } from "@nextwave/database";
 import { resolveSecretValue } from "./secrets";
+import { getClinicUsage } from "./usage"; // Added to support tier recommendations
 
 type BillingProfileInput = {
   clientId: string;
@@ -455,11 +456,110 @@ export async function processStripeWebhookEvent(event: Stripe.Event, context: St
   return { handled: true, type: event.type, skipped: true };
 }
 
-type ClinicCheckoutInput = {
+export async function listStripeCoupons(clientId?: string) {
+  const context = await resolveStripeContext(clientId);
+  const client = getStripeClient(context.stripeKey);
+  if (!client) throw new Error("Missing Stripe client");
+
+  const requestOptions = context.stripeAccountId ? { stripeAccount: context.stripeAccountId } : undefined;
+  const coupons = await client.coupons.list({ limit: 100 }, requestOptions);
+  return coupons.data;
+}
+
+export async function createStripeCoupon(params: {
+  name: string;
+  promoCodeText?: string;
+  percentOff?: number;
+  amountOff?: number;
+  currency?: string;
+  duration: Stripe.Coupon.Duration;
+  durationInMonths?: number;
+  maxRedemptions?: number;
+  redeemBy?: number;
+  clientId?: string;
+}) {
+  const context = await resolveStripeContext(params.clientId);
+  const client = getStripeClient(context.stripeKey);
+  if (!client) throw new Error("Missing Stripe client");
+
+  const requestOptions = context.stripeAccountId ? { stripeAccount: context.stripeAccountId } : undefined;
+  
+  const coupon = await client.coupons.create({
+    name: params.name,
+    percent_off: params.percentOff,
+    amount_off: params.amountOff,
+    currency: params.currency,
+    duration: params.duration,
+    duration_in_months: params.durationInMonths,
+    max_redemptions: params.maxRedemptions,
+    redeem_by: params.redeemBy,
+    metadata: {
+      generatedBy: "nextwave-admin",
+      clientId: params.clientId ?? "global"
+    }
+  }, requestOptions);
+
+  if (params.promoCodeText) {
+    const promoCode = await client.promotionCodes.create({
+      coupon: coupon.id,
+      code: params.promoCodeText.trim().toUpperCase(),
+      max_redemptions: params.maxRedemptions,
+    }, requestOptions);
+    
+    return { coupon, promoCode };
+  }
+
+  return { coupon };
+}
+
+// -------------------------------------------------------------------
+// RECOMMENDATION ENGINE 
+// -------------------------------------------------------------------
+
+export async function getTierRecommendation(clientId: string) {
+  const usage = await getClinicUsage(clientId);
+
+  let recommendedPlan: "basic" | "standard" | "premium" = "basic";
+  const reasons: string[] = [];
+
+  // Thresholds inferred from docs/medivault-integration.md
+  // Basic: 0 storage included
+  const STANDARD_STORAGE_THRESHOLD = 0; 
+  const STANDARD_VISIT_THRESHOLD = 100;
+
+  // Premium: Advanced AI / high storage
+  const PREMIUM_STORAGE_THRESHOLD = 500 * 1024 * 1024; // > 500MB
+  const PREMIUM_VISIT_THRESHOLD = 1000;
+
+  if (usage.storageBytes > PREMIUM_STORAGE_THRESHOLD || usage.visitCount > PREMIUM_VISIT_THRESHOLD) {
+    recommendedPlan = "premium";
+    if (usage.storageBytes > PREMIUM_STORAGE_THRESHOLD) reasons.push("High record storage utilization");
+    if (usage.visitCount > PREMIUM_VISIT_THRESHOLD) reasons.push("High patient volume (ideal for AI insights)");
+  } else if (usage.storageBytes > STANDARD_STORAGE_THRESHOLD || usage.visitCount > STANDARD_VISIT_THRESHOLD) {
+    recommendedPlan = "standard";
+    if (usage.storageBytes > STANDARD_STORAGE_THRESHOLD) reasons.push("Requires secure patient record storage");
+    if (usage.visitCount > STANDARD_VISIT_THRESHOLD) reasons.push("Growing clinical practice");
+  } else {
+    reasons.push("Simple platform access matches current needs");
+  }
+
+  return {
+    clientId,
+    recommendedPlan,
+    reasons,
+    metrics: usage
+  };
+}
+
+// -------------------------------------------------------------------
+
+export type ClinicCheckoutInput = {
   clientId: string;
   origin: string;
   appId?: string;
   customerEmail?: string;
+  couponId?: string;
+  priceId?: string; // <-- Add this line
 };
 
 async function getClientRecord(clientId: string) {
@@ -533,9 +633,11 @@ async function ensureStripeCustomerForClient(input: {
 }
 
 export async function createClinicSubscriptionCheckoutSession(input: ClinicCheckoutInput) {
-  const priceId = process.env.STRIPE_MEDIVAULT_MONTHLY_PRICE_ID ?? "";
+  // Use passed dynamic price ID first, fallback to basic/default config to stay backward compatible
+  const priceId = input.priceId || process.env.STRIPE_MEDIVAULT_MONTHLY_PRICE_ID || "";
+  
   if (!priceId) {
-    throw new Error("Missing STRIPE_MEDIVAULT_MONTHLY_PRICE_ID");
+    throw new Error("Missing Stripe price ID for checkout session");
   }
 
   const profile = await getLatestBillingProfile(input.clientId);
@@ -561,7 +663,8 @@ export async function createClinicSubscriptionCheckoutSession(input: ClinicCheck
       success_url: `${input.origin}/billing?checkout=success&clientId=${input.clientId}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${input.origin}/billing?checkout=cancel&clientId=${input.clientId}`,
       line_items: [{ price: priceId, quantity: 1 }],
-      allow_promotion_codes: true,
+      discounts: input.couponId ? [{ coupon: input.couponId }] : undefined,
+      allow_promotion_codes: !input.couponId,
       billing_address_collection: "auto",
       metadata: {
         clientId: input.clientId,
@@ -591,7 +694,7 @@ export async function createClinicSubscriptionCheckoutSession(input: ClinicCheck
       checkoutSessionId: session.id,
       latestCheckoutAt: new Date().toISOString(),
       billingCurrency: "pkr",
-      billingAmountMinor: 400000
+      // billingAmountMinor is removed since pricing is now dynamic via multiple tiers
     }
   });
 
@@ -600,4 +703,56 @@ export async function createClinicSubscriptionCheckoutSession(input: ClinicCheck
     url: session.url,
     customerId
   };
+}
+
+export async function listSubscriptions(clientId?: string) {
+  const supabase = createSupabaseServiceClient();
+  let query = supabase.from("subscriptions").select("*").order("updated_at", { ascending: false });
+  if (clientId) {
+    query = query.eq("client_id", clientId);
+  }
+
+  const { data, error } = await query;
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data ?? [];
+}
+
+export async function grantManualAccess(params: {
+  clientId: string;
+  plan: string;
+  durationDays: number;
+  metadata?: Record<string, unknown>;
+}) {
+  const supabase = createSupabaseServiceClient();
+  const now = new Date();
+  const expiry = new Date();
+  expiry.setDate(now.getDate() + params.durationDays);
+
+  const payload = {
+    client_id: params.clientId,
+    provider: "manual",
+    external_id: `manual_${now.getTime()}`,
+    plan: params.plan,
+    status: "trialing",
+    current_period_start: now.toISOString(),
+    current_period_end: expiry.toISOString(),
+    metadata: {
+      grantedBy: "superuser-admin",
+      ...params.metadata
+    }
+  };
+
+  const { data, error } = await supabase
+    .from("subscriptions")
+    .insert(payload)
+    .select("*")
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
 }

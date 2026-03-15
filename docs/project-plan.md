@@ -89,31 +89,31 @@ Tasks:
 - review authz enforcement across admin write paths
 - add any missing validation or operational messaging needed for release
 
-### Phase 4: Client Portal Completion
+### Phase 4: MediVault Client Portal Integration
 
-Status: Pending
+Status: Active
 
 Tasks:
-- replace placeholder module pages with actual portal workflows
-- connect tenant bootstrap, branding, and feature flags to UI
-- validate module-based access restrictions in live page flows
+- [ ] Implement tiered pricing UI (Basic, Standard, Premium) with early adopter discounts.
+- [ ] Build "Plan Status Card" with "Founding Doctor" branding for the dashboard.
+- [ ] Enhance billing settings with upsell prompts and history tracking.
+- [ ] Connect "Manage Subscription" to Stripe Customer Portal.
+- [ ] Integrate superuser controls in `admin-dashboard` for discount code and client management.
 
 ### Phase 5: Deployment Readiness
 
 Status: In progress
 
 Tasks:
-- validate Vercel configuration for all three apps
-- confirm wildcard routing behavior for tenant subdomains
-- verify required production environment variables
-- complete the Medivault weekend release checklist
+- [ ] Finalize production Stripe cutover (live PRICE_IDs and webhooks).
+- [ ] Validate Vercel wildcard routing for `apps.nextwave.au`.
+- [ ] Verify production environments for all three apps.
 
 ## Immediate Next Actions
 
-1. Configure production Stripe envs and live webhook endpoint for admin.
-2. Deploy and validate the Medivault admin billing flow on `admin.nextwave.au`.
-3. Move to Android app finalization and production release tasks.
-4. Return to billing page UI polish only after release readiness is stable.
+1. Implement Billing & Tiered Pricing components in `apps/client-portal`.
+2. Configure live Stripe PKR prices for the for Basic, Standard, and Premium tiers.
+3. Build Superuser Discount Management in `apps/admin-dashboard`.
 
 ## Known Good Medivault Test Path
 
@@ -129,6 +129,15 @@ Tasks:
 - Admin UI polish is deferred until after production readiness.
 
 ## Progress Log
+
+### 2026-03-14
+
+- Defined MediVault-specific 3-tier pricing model (Basic, Standard, Premium).
+- Designed "Founding Doctor" exclusivity branding and early adopter pricing logic.
+- Planned Client Portal (`apps.nextwave.au/medivault`) enhancements including Plan Status Card and Billing Hub.
+- Mapped Superuser management requirements for `admin.nextwave.au` (discount codes and access control).
+- Created `docs/medivault-integration.md` as the detailed reference for clinical portal requirements.
+
 
 ### 2026-03-12
 

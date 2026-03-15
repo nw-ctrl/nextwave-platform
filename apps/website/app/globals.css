@@ -36,6 +36,10 @@ a {
   text-decoration: none;
 }
 
+button {
+  font: inherit;
+}
+
 .page {
   width: min(1180px, 92vw);
   margin: 0 auto;
@@ -122,6 +126,7 @@ a {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+  align-items: flex-start;
 }
 
 .btn {
@@ -129,6 +134,12 @@ a {
   padding: 11px 18px;
   font-weight: 600;
   border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.btn:disabled {
+  cursor: progress;
+  opacity: 0.72;
 }
 
 .btn-primary {
@@ -140,6 +151,18 @@ a {
   border-color: var(--line);
   color: var(--text);
   background: rgba(255, 255, 255, 0.04);
+}
+
+.checkout-cta {
+  display: grid;
+  gap: 8px;
+}
+
+.checkout-message {
+  margin: 0;
+  max-width: 36ch;
+  color: #c9fff0;
+  font-size: 0.88rem;
 }
 
 .section {

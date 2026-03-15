@@ -159,6 +159,7 @@ export async function createClinicPortalCheckoutSession(input: {
   userId: string;
   origin: string;
   customerEmail?: string;
+  priceId?: string;
 }) {
   const access = await getClientPortalAccess({ userId: input.userId, clientId: input.clientId });
   const roleAllowed = access.role === "admin" || access.role === "manager";
@@ -172,9 +173,10 @@ export async function createClinicPortalCheckoutSession(input: {
     throw new Error("Billing module access is not enabled for this user");
   }
 
-  const priceId = process.env.STRIPE_MEDIVAULT_MONTHLY_PRICE_ID ?? "";
+  // Use dynamically passed priceId, fallback to environment variable
+  const priceId = input.priceId || process.env.STRIPE_MEDIVAULT_MONTHLY_PRICE_ID || "";
   if (!priceId) {
-    throw new Error("Missing STRIPE_MEDIVAULT_MONTHLY_PRICE_ID");
+    throw new Error("Missing STRIPE_PRICE_ID for checkout session");
   }
 
   const profile = await getLatestBillingProfile(input.clientId);
@@ -223,5 +225,76 @@ export async function createClinicPortalCheckoutSession(input: {
     sessionId: session.id,
     url: session.url,
     customerId
+  };
+}
+
+// -------------------------------------------------------------------
+// USAGE & RECOMMENDATION ENGINE
+// -------------------------------------------------------------------
+
+export async function getClinicUsage(clientId: string) {
+  const supabase = createSupabaseServiceClient();
+
+  const [patientsResult, visitsResult] = await Promise.all([
+    supabase.from("patients").select("id", { count: "estimated", head: true }).eq("clinic_id", clientId).eq("is_deleted", false),
+    supabase.from("visits").select("id", { count: "estimated", head: true }).eq("clinic_id", clientId).eq("is_deleted", false)
+  ]);
+
+  const visitReportsBucket = supabase.storage.from("visit-reports");
+  let totalStorageBytes = 0;
+
+  try {
+    const { data: patientFolders, error: listError } = await visitReportsBucket.list(clientId);
+    if (!listError && patientFolders) {
+      const patientScans = await Promise.all(
+          patientFolders.map(folder => visitReportsBucket.list(`${clientId}/${folder.name}`))
+      );
+
+      patientScans.forEach(({ data }) => {
+          data?.forEach(file => {
+              totalStorageBytes += (file.metadata?.size ?? 0);
+          });
+      });
+    }
+  } catch (e) {
+    // Ignore errors for storage scan missing footprint
+  }
+
+  return {
+    clientId,
+    patientCount: patientsResult.count ?? 0,
+    visitCount: visitsResult.count ?? 0,
+    storageBytes: totalStorageBytes,
+  };
+}
+
+export async function getTierRecommendation(clientId: string) {
+  const usage = await getClinicUsage(clientId);
+
+  let recommendedPlan: "basic" | "standard" | "premium" = "basic";
+  const reasons: string[] = [];
+
+  const STANDARD_STORAGE_THRESHOLD = 0; 
+  const STANDARD_VISIT_THRESHOLD = 100;
+  const PREMIUM_STORAGE_THRESHOLD = 500 * 1024 * 1024; // > 500MB
+  const PREMIUM_VISIT_THRESHOLD = 1000;
+
+  if (usage.storageBytes > PREMIUM_STORAGE_THRESHOLD || usage.visitCount > PREMIUM_VISIT_THRESHOLD) {
+    recommendedPlan = "premium";
+    if (usage.storageBytes > PREMIUM_STORAGE_THRESHOLD) reasons.push("high storage utilization");
+    if (usage.visitCount > PREMIUM_VISIT_THRESHOLD) reasons.push("high patient volume");
+  } else if (usage.storageBytes > STANDARD_STORAGE_THRESHOLD || usage.visitCount > STANDARD_VISIT_THRESHOLD) {
+    recommendedPlan = "standard";
+    if (usage.storageBytes > STANDARD_STORAGE_THRESHOLD) reasons.push("requires secure record storage");
+    if (usage.visitCount > STANDARD_VISIT_THRESHOLD) reasons.push("growing clinical practice");
+  } else {
+    reasons.push("simple platform access fits current needs");
+  }
+
+  return {
+    clientId,
+    recommendedPlan,
+    reasons,
+    metrics: usage
   };
 }
