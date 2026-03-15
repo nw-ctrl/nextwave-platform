@@ -204,6 +204,9 @@ export async function createClinicPortalCheckoutSession(input: {
       line_items: [{ price: priceId, quantity: 1 }],
       allow_promotion_codes: true,
       billing_address_collection: "auto",
+       consent_collection: {
+        terms_of_service: "required",
+      },
       metadata: {
         clientId: input.clientId,
         userId: input.userId,
