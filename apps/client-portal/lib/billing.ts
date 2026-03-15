@@ -173,11 +173,12 @@ export async function createClinicPortalCheckoutSession(input: {
     throw new Error("Billing module access is not enabled for this user");
   }
 
-  // Use dynamically passed priceId, fallback to environment variable
-  const priceId = input.priceId || process.env.STRIPE_MEDIVAULT_MONTHLY_PRICE_ID || "";
+   // Ensure we have a valid priceId passed from the route
+  const priceId = input.priceId;
   if (!priceId) {
-    throw new Error("Missing STRIPE_PRICE_ID for checkout session");
+    throw new Error("Missing Stripe Price ID for checkout session. Please check Vercel environment variables.");
   }
+
 
   const profile = await getLatestBillingProfile(input.clientId);
   const stripeKey = (resolveSecretValue(profile?.key_ref) ?? env.stripeSecretKey) || undefined;
