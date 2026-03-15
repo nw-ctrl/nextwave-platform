@@ -112,9 +112,18 @@ export default async function ClinicPortalHome({
         <section style={{ display: "grid", gap: 8 }}>
           <p style={{ margin: 0, fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "#6b7280" }}>Clinic Portal</p>
           <h1 style={{ margin: 0 }}>{currentMembership.clinicName}</h1>
-          <p style={{ margin: 0, color: "#4b5563" }}>
-            Signed in as {session.user.fullName ?? session.user.email} ({currentMembership.role}). Tenant slug: {tenantSlug ?? "none"}
+         <p style={{ margin: 0, color: "#4b5563" }}>
+            Signed in as <strong>{session.user.fullName ?? session.user.email}</strong> 
+            <span style={{ margin: "0 8px", color: "#d1d5db" }}>|</span> 
+            Role: {currentMembership.role}
+            {tenantSlug && (
+              <>
+                <span style={{ margin: "0 8px", color: "#d1d5db" }}>|</span>
+                Environment: {tenantSlug}
+              </>
+            )}
           </p>
+
         </section>
         
         <ClinicSelectorCard memberships={session.memberships} selectedClientId={session.selectedClientId} />

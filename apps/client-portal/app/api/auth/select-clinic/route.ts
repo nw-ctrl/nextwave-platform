@@ -19,11 +19,15 @@ export async function POST(request: Request) {
     }
 
     const response = NextResponse.json({ ok: true, clientId: membership.clientId });
+    
+    const isProduction = process.env.NODE_ENV === "production";
+    
     response.cookies.set(PORTAL_CLIENT_COOKIE, membership.clientId, {
       httpOnly: true,
       sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
+      secure: isProduction,
       path: "/",
+      ...(isProduction && { domain: ".nextwave.au" }), 
       maxAge: 60 * 60 * 24 * 30
     });
 
