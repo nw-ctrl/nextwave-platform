@@ -110,6 +110,26 @@ function normalizePlanKey(input?: string | null): ClinicBillingSummary["planKey"
   return "unknown";
 }
 
+function planFromPriceId(priceId?: string | null) {
+  if (!priceId) {
+    return null;
+  }
+
+  if (priceId === process.env.STRIPE_BASIC_PRICE_ID) {
+    return { planKey: "basic" as const, planName: "Basic Plan" };
+  }
+
+  if (priceId === process.env.STRIPE_STANDARD_PRICE_ID || priceId === process.env.STRIPE_MEDIVAULT_MONTHLY_PRICE_ID) {
+    return { planKey: "standard" as const, planName: "Standard Plan" };
+  }
+
+  if (priceId === process.env.STRIPE_PREMIUM_PRICE_ID) {
+    return { planKey: "premium" as const, planName: "Premium Plan" };
+  }
+
+  return null;
+}
+
 function getProductName(product?: Stripe.Product | Stripe.DeletedProduct | null) {
   if (!product || product.deleted) {
     return null;
@@ -124,6 +144,11 @@ function inferPlanName(input: {
   productName?: string | null;
   priceId?: string | null;
 }) {
+  const mappedPricePlan = planFromPriceId(input.priceId);
+  if (mappedPricePlan) {
+    return mappedPricePlan;
+  }
+
   const sources = [input.lookupKey, input.nickname, input.productName];
 
   for (const source of sources) {
@@ -144,15 +169,18 @@ function inferPlanName(input: {
     return { planKey: "custom" as const, planName: input.nickname.trim() };
   }
 
-  if (input.priceId?.trim()) {
-    return { planKey: "unknown" as const, planName: input.priceId.trim() };
-  }
-
   return { planKey: "unknown" as const, planName: "Subscription" };
 }
 
 function deriveInvoicePlanName(invoice: Stripe.Invoice, fallback: string) {
-  const description = invoice.lines.data.find((item) => item.description)?.description ?? invoice.description ?? "";
+  const line = invoice.lines.data.find((item) => item.type === "subscription") ?? invoice.lines.data[0];
+  const directPriceId = line && "price" in line ? line.price?.id ?? null : null;
+  const mappedPricePlan = planFromPriceId(directPriceId);
+  if (mappedPricePlan) {
+    return mappedPricePlan.planName;
+  }
+
+  const description = line?.description ?? invoice.description ?? "";
   const normalized = normalizePlanKey(description);
 
   if (normalized !== "unknown") {
@@ -160,6 +188,20 @@ function deriveInvoicePlanName(invoice: Stripe.Invoice, fallback: string) {
   }
 
   return fallback;
+}
+
+export function getReadablePortalPlanName(plan?: string | null) {
+  const mappedPricePlan = planFromPriceId(plan);
+  if (mappedPricePlan) {
+    return mappedPricePlan.planName;
+  }
+
+  const normalized = normalizePlanKey(plan);
+  if (normalized !== "unknown") {
+    return normalized === "custom" ? "Custom Plan" : `${titleCase(normalized)} Plan`;
+  }
+
+  return "Subscription";
 }
 
 export async function getClinicBillingSummary(clientId: string): Promise<ClinicBillingSummary | null> {
@@ -177,8 +219,7 @@ export async function getClinicBillingSummary(clientId: string): Promise<ClinicB
     {
       customer: customerId,
       status: "all",
-      limit: 10,
-      expand: ["data.items.data.price.product"]
+      limit: 10
     },
     requestOptions
   );
