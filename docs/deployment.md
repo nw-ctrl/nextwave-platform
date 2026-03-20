@@ -50,3 +50,13 @@
 5. Verify at least one real Medivault clinic has a clean `client`-mode billing profile before go-live.
 6. Test one final checkout in Stripe test mode before switching production envs to live values.
 7. After release, run one monitored live clinic checkout and verify webhook delivery and subscription status.
+
+## Current Progress
+
+### 2026-03-21
+
+1. First live Medivault clinic subscription completed successfully through Stripe checkout with discount flow applied.
+2. Client portal billing view was corrected to read live Stripe subscription and invoice data instead of showing the raw stored `price_...` identifier as the subscribed package.
+3. Added a Stripe billing portal entrypoint inside the client portal so clinics can manage payment method, invoices, and future subscription changes safely.
+4. Upgraded the billing page UI with a fixed operational clinic header, clearer current-plan summary, billing history, and next-cycle upgrade guidance.
+5. Follow-up still required: normalize webhook-synced subscription labels in shared data storage so admin and downstream views use the same human-readable plan names.
