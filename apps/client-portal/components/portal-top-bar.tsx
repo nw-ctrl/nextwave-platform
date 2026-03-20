@@ -1,4 +1,4 @@
-"use client";
+ï»¿"use client";
 
 import { useState } from "react";
 
@@ -122,9 +122,9 @@ export function PortalTopBar({
             <div style={{ fontSize: 15, fontWeight: 800, color: "#123047" }}>{clinicName}</div>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap", fontSize: 12, color: "#5b7283" }}>
               <span>{planName}</span>
-              <span>•</span>
+              <span>|</span>
               <span>{billingStatus}</span>
-              <span>•</span>
+              <span>|</span>
               <span>Next cycle {nextBillingDate}</span>
             </div>
           </div>
