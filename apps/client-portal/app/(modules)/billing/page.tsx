@@ -11,11 +11,15 @@ function formatMoney(amount: number | null, currency: string) {
     return "TBD";
   }
 
-  return new Intl.NumberFormat("en-PK", {
-    style: "currency",
-    currency,
-    maximumFractionDigits: amount % 1 === 0 ? 0 : 2
-  }).format(amount);
+  try {
+    return new Intl.NumberFormat("en-PK", {
+      style: "currency",
+      currency,
+      maximumFractionDigits: amount % 1 === 0 ? 0 : 2
+    }).format(amount);
+  } catch {
+    return `${currency} ${amount.toLocaleString()}`;
+  }
 }
 
 function formatDate(value?: string | null) {
@@ -23,11 +27,15 @@ function formatDate(value?: string | null) {
     return "TBD";
   }
 
-  return new Intl.DateTimeFormat("en-AU", {
-    day: "numeric",
-    month: "short",
-    year: "numeric"
-  }).format(new Date(value));
+  try {
+    return new Intl.DateTimeFormat("en-AU", {
+      day: "numeric",
+      month: "short",
+      year: "numeric"
+    }).format(new Date(value));
+  } catch {
+    return value;
+  }
 }
 
 function humanizeStatus(status?: string | null) {
@@ -100,7 +108,7 @@ export default async function Page({
           minHeight: "100vh",
           display: "grid",
           placeItems: "center",
-          background: "linear-gradient(180deg, #f4f7fb 0%, #e6f1ef 100%)"
+          background: "linear-gradient(180deg, #ecf4f6 0%, #f6fbff 100%)"
         }}
       >
         <PortalLoginForm />
@@ -131,9 +139,17 @@ export default async function Page({
     );
   }
 
-  const billing = await getClinicBillingSummary(membership.clientId);
+  let billing = null;
+  let billingError: string | null = null;
+
+  try {
+    billing = await getClinicBillingSummary(membership.clientId);
+  } catch (error) {
+    billingError = error instanceof Error ? error.message : "Unable to load live billing details right now.";
+  }
+
   const isActive = billing ? ["active", "trialing", "past_due", "unpaid", "incomplete"].includes(billing.status) : false;
-  const planTone = statusTone(billing?.status);
+  const planTone = statusTone(billing?.status ?? membership.subscription?.status ?? "inactive");
   const checkoutSuccess = resolvedSearchParams.checkout === "success";
   const portalError = resolvedSearchParams.portal === "error";
   const portalMessage = typeof resolvedSearchParams.message === "string" ? resolvedSearchParams.message : null;
@@ -143,7 +159,7 @@ export default async function Page({
     <main
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(180deg, #eef4f7 0%, #e3efed 45%, #f7fafc 100%)",
+        background: "linear-gradient(180deg, #edf5f6 0%, #e7f1f1 42%, #f8fbfd 100%)",
         fontFamily: "ui-sans-serif, system-ui",
         color: "#0f172a"
       }}
@@ -158,9 +174,9 @@ export default async function Page({
             zIndex: 10,
             borderRadius: 28,
             overflow: "hidden",
-            border: "1px solid rgba(15, 118, 110, 0.18)",
-            boxShadow: "0 24px 60px rgba(15, 23, 42, 0.12)",
-            background: "linear-gradient(120deg, #0f172a 0%, #0f766e 58%, #c4f1ea 160%)"
+            border: "1px solid rgba(15, 118, 110, 0.16)",
+            boxShadow: "0 24px 60px rgba(15, 23, 42, 0.1)",
+            background: "linear-gradient(120deg, #123047 0%, #0f766e 54%, #d8f2ec 170%)"
           }}
         >
           <div
@@ -194,7 +210,7 @@ export default async function Page({
                 <div>
                   <h1 style={{ margin: 0, fontSize: 30, lineHeight: 1.05, color: "#ffffff", fontWeight: 800 }}>{membership.clinicName}</h1>
                   <p style={{ margin: "6px 0 0 0", color: "rgba(255,255,255,0.76)", fontSize: 14 }}>
-                    Fixed clinic billing workspace with live subscription details and recent invoice history.
+                    Live billing workspace with operational controls for your clinic account.
                   </p>
                 </div>
               </div>
@@ -206,10 +222,10 @@ export default async function Page({
                     textDecoration: "none",
                     padding: "12px 16px",
                     borderRadius: 14,
-                    background: "#ffffff",
+                    background: "rgba(255,255,255,0.94)",
                     color: "#0f172a",
                     fontWeight: 700,
-                    boxShadow: "0 10px 30px rgba(15,23,42,0.18)"
+                    boxShadow: "0 10px 30px rgba(15,23,42,0.16)"
                   }}
                 >
                   Manage Billing
@@ -223,7 +239,7 @@ export default async function Page({
                     border: "1px solid rgba(255,255,255,0.24)",
                     color: "#ffffff",
                     fontWeight: 700,
-                    background: "rgba(15,23,42,0.22)"
+                    background: "rgba(15,23,42,0.18)"
                   }}
                 >
                   Review Options
@@ -233,9 +249,9 @@ export default async function Page({
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: 14 }}>
               {[
-                { label: "Current plan", value: billing?.planName ?? "Billing sync pending" },
+                { label: "Current plan", value: billing?.planName ?? membership.subscription?.plan ?? "Billing sync pending" },
                 { label: "Current cycle", value: billing ? formatMoney(billing.price, billing.currency) : "TBD" },
-                { label: "Next renewal", value: billing ? formatDate(billing.nextBillingDate) : "TBD" },
+                { label: "Next renewal", value: billing ? formatDate(billing.nextBillingDate) : membership.subscription?.currentPeriodEnd ? formatDate(membership.subscription.currentPeriodEnd) : "TBD" },
                 { label: "Billing role", value: membership.role }
               ].map((item) => (
                 <div
@@ -243,9 +259,9 @@ export default async function Page({
                   style={{
                     padding: 16,
                     borderRadius: 18,
-                    background: "rgba(255,255,255,0.12)",
-                    border: "1px solid rgba(255,255,255,0.12)",
-                    backdropFilter: "blur(10px)"
+                    background: "rgba(255,255,255,0.14)",
+                    border: "1px solid rgba(255,255,255,0.14)",
+                    backdropFilter: "blur(12px)"
                   }}
                 >
                   <div style={{ color: "rgba(255,255,255,0.68)", fontSize: 12, textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 700 }}>{item.label}</div>
@@ -267,16 +283,21 @@ export default async function Page({
               {portalMessage ?? "Unable to open the billing portal for this clinic right now."}
             </div>
           ) : null}
+          {billingError ? (
+            <div style={{ background: "#fff7ed", color: "#9a3412", padding: "14px 16px", borderRadius: 16, border: "1px solid #fdba74", fontWeight: 600 }}>
+              Live billing details could not be loaded right now. The portal stayed online and your clinic access is intact. Error: {billingError}
+            </div>
+          ) : null}
         </section>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 24, alignItems: "start" }}>
           <section style={{ display: "grid", gap: 24 }}>
-            <article style={{ background: "rgba(255,255,255,0.9)", borderRadius: 24, border: "1px solid #dbe4ea", boxShadow: "0 18px 40px rgba(15,23,42,0.06)", overflow: "hidden" }}>
+            <article style={{ background: "rgba(255,255,255,0.92)", borderRadius: 24, border: "1px solid #dbe4ea", boxShadow: "0 18px 40px rgba(15,23,42,0.06)", overflow: "hidden" }}>
               <div style={{ padding: 24, borderBottom: "1px solid #e5e7eb", display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap", alignItems: "center" }}>
                 <div>
                   <h2 style={{ margin: 0, fontSize: 22, fontWeight: 800 }}>Billing History</h2>
                   <p style={{ margin: "6px 0 0 0", color: "#475569", fontSize: 14 }}>
-                    Real invoice records for {membership.clinicName}.
+                    {billingError ? `Recent invoices are temporarily unavailable for ${membership.clinicName}.` : `Real invoice records for ${membership.clinicName}.`}
                   </p>
                 </div>
                 {billing?.invoices?.[0]?.hostedInvoiceUrl ? (
@@ -331,7 +352,7 @@ export default async function Page({
                     ) : (
                       <tr>
                         <td colSpan={5} style={{ padding: 28, textAlign: "center", color: "#64748b" }}>
-                          No Stripe invoices found for this clinic yet.
+                          {billingError ? "Billing history is temporarily unavailable while live billing sync is being retried." : "No Stripe invoices found for this clinic yet."}
                         </td>
                       </tr>
                     )}
@@ -341,14 +362,14 @@ export default async function Page({
             </article>
 
             {!isActive ? (
-              <article id="upgrade-options" style={{ background: "rgba(255,255,255,0.88)", borderRadius: 24, border: "1px solid #dbe4ea", boxShadow: "0 18px 40px rgba(15,23,42,0.06)", overflow: "hidden" }}>
+              <article id="upgrade-options" style={{ background: "rgba(255,255,255,0.9)", borderRadius: 24, border: "1px solid #dbe4ea", boxShadow: "0 18px 40px rgba(15,23,42,0.06)", overflow: "hidden" }}>
                 <PricingSection />
               </article>
             ) : null}
           </section>
 
           <aside style={{ display: "grid", gap: 24 }}>
-            <section style={{ background: "#ffffff", borderRadius: 24, border: "1px solid #dbe4ea", boxShadow: "0 18px 40px rgba(15,23,42,0.06)", padding: 24, display: "grid", gap: 18 }}>
+            <section style={{ background: "rgba(255,255,255,0.94)", borderRadius: 24, border: "1px solid #dbe4ea", boxShadow: "0 18px 40px rgba(15,23,42,0.06)", padding: 24, display: "grid", gap: 18 }}>
               <div>
                 <p style={{ margin: 0, fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "#0f766e", fontWeight: 800 }}>Subscription Console</p>
                 <h2 style={{ margin: "8px 0 0 0", fontSize: 24, fontWeight: 800 }}>Your MediVault plan</h2>
@@ -357,7 +378,7 @@ export default async function Page({
               <div style={{ padding: 18, borderRadius: 20, background: "linear-gradient(180deg, #f8fafc 0%, #eef6f5 100%)", border: "1px solid #dbe4ea", display: "grid", gap: 12 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
                   <div>
-                    <div style={{ fontSize: 20, fontWeight: 800, color: "#0f172a" }}>{billing?.planName ?? "Billing sync pending"}</div>
+                    <div style={{ fontSize: 20, fontWeight: 800, color: "#0f172a" }}>{billing?.planName ?? membership.subscription?.plan ?? "Billing sync pending"}</div>
                     <div style={{ marginTop: 4, color: "#475569", fontSize: 14 }}>
                       {billing?.cancelAtPeriodEnd ? "Cancels at the end of the current cycle." : "Billing remains active for the current clinic cycle."}
                     </div>
@@ -370,9 +391,9 @@ export default async function Page({
 
                 <div style={{ display: "grid", gap: 10 }}>
                   {[
-                    { label: "Next billing date", value: billing ? formatDate(billing.nextBillingDate) : "TBD" },
+                    { label: "Next billing date", value: billing ? formatDate(billing.nextBillingDate) : membership.subscription?.currentPeriodEnd ? formatDate(membership.subscription.currentPeriodEnd) : "TBD" },
                     { label: "Trial end", value: billing?.trialEndsAt ? formatDate(billing.trialEndsAt) : "Not applicable" },
-                    { label: "Billing reference", value: billing?.priceId ?? "Awaiting Stripe sync" }
+                    { label: "Billing reference", value: billing?.priceId ?? membership.subscription?.plan ?? "Awaiting Stripe sync" }
                   ].map((item) => (
                     <div key={item.label} style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 14 }}>
                       <span style={{ color: "#64748b" }}>{item.label}</span>
@@ -392,7 +413,7 @@ export default async function Page({
               </div>
             </section>
 
-            <section id="upgrade-options" style={{ background: "#ffffff", borderRadius: 24, border: "1px solid #dbe4ea", boxShadow: "0 18px 40px rgba(15,23,42,0.06)", padding: 24, display: "grid", gap: 16 }}>
+            <section id="upgrade-options" style={{ background: "rgba(255,255,255,0.94)", borderRadius: 24, border: "1px solid #dbe4ea", boxShadow: "0 18px 40px rgba(15,23,42,0.06)", padding: 24, display: "grid", gap: 16 }}>
               <div>
                 <p style={{ margin: 0, fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "#0f766e", fontWeight: 800 }}>Growth Options</p>
                 <h2 style={{ margin: "8px 0 0 0", fontSize: 24, fontWeight: 800 }}>Next cycle planning</h2>
@@ -406,7 +427,7 @@ export default async function Page({
                 ))}
               </div>
 
-              <div style={{ padding: 18, borderRadius: 20, background: "linear-gradient(135deg, #0f172a 0%, #115e59 100%)", color: "#ffffff", display: "grid", gap: 10 }}>
+              <div style={{ padding: 18, borderRadius: 20, background: "linear-gradient(135deg, #123047 0%, #0f766e 100%)", color: "#ffffff", display: "grid", gap: 10 }}>
                 <div style={{ fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgba(255,255,255,0.7)", fontWeight: 800 }}>
                   Recommended action
                 </div>
@@ -416,7 +437,7 @@ export default async function Page({
                 <p style={{ margin: 0, color: "rgba(255,255,255,0.82)", lineHeight: 1.6 }}>
                   Use the billing portal for the next cycle if you want to change package, update the payment method, or keep invoices under your clinic finance workflow.
                 </p>
-                <a href="/api/billing/manage" style={{ width: "fit-content", textDecoration: "none", padding: "12px 14px", borderRadius: 12, background: "#ffffff", color: "#0f172a", fontWeight: 800 }}>
+                <a href="/api/billing/manage" style={{ width: "fit-content", textDecoration: "none", padding: "12px 14px", borderRadius: 12, background: "rgba(255,255,255,0.96)", color: "#0f172a", fontWeight: 800 }}>
                   Manage Next Cycle
                 </a>
               </div>
