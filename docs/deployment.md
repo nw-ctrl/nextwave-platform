@@ -25,7 +25,8 @@
 1. Configure vars from `/.env.vercel.example` in each Vercel project.
 2. Keep sensitive keys only in Vercel env, not in repository.
 3. Ensure `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` are set for admin and portal apps.
-4. Stripe setup and release checklist: `docs/stripe-setup.md`
+4. For the client portal project, also configure `STRIPE_BASIC_PRICE_ID`, `STRIPE_STANDARD_PRICE_ID`, and `STRIPE_PREMIUM_PRICE_ID` when using the multi-tier pricing screen.
+5. Stripe setup and release checklist: `docs/stripe-setup.md`
 
 ## Wildcard Tenant Routing
 
@@ -40,16 +41,21 @@
    - `STRIPE_WEBHOOK_SECRET=whsec_...`
    - `STRIPE_MEDIVAULT_MONTHLY_PRICE_ID=price_...`
    - `NEXT_PUBLIC_ADMIN_URL=https://admin.nextwave.au`
-3. Create one live recurring Stripe price for Medivault:
-   - currency: `PKR`
-   - amount: `4000`
-   - interval: monthly
-4. In Stripe live mode, create webhook endpoint:
+3. Configure production Stripe tier price variables in the client portal Vercel project:
+   - `STRIPE_BASIC_PRICE_ID=price_...`
+   - `STRIPE_STANDARD_PRICE_ID=price_...`
+   - `STRIPE_PREMIUM_PRICE_ID=price_...`
+   - `NEXT_PUBLIC_PORTAL_ORIGIN=https://medivault.nextwave.au`
+4. Create live recurring Stripe prices for Medivault portal tiers:
+   - Basic: `PKR 2,490` monthly
+   - Standard: `PKR 4,750` monthly or your current standard live price
+   - Premium: `PKR 6,700` monthly or your current premium live price
+5. In Stripe live mode, create webhook endpoint:
    - URL: `https://admin.nextwave.au/api/stripe/webhook`
    - events: `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.paid`
-5. Verify at least one real Medivault clinic has a clean `client`-mode billing profile before go-live.
-6. Test one final checkout in Stripe test mode before switching production envs to live values.
-7. After release, run one monitored live clinic checkout and verify webhook delivery and subscription status.
+6. Verify at least one real Medivault clinic has a clean `client`-mode billing profile before go-live.
+7. Test one final checkout in Stripe test mode before switching production envs to live values.
+8. After release, run one monitored live clinic checkout and verify webhook delivery and subscription status.
 
 ## Current Progress
 
@@ -59,4 +65,6 @@
 2. Client portal billing view was corrected to read live Stripe subscription and invoice data instead of showing the raw stored `price_...` identifier as the subscribed package.
 3. Added a Stripe billing portal entrypoint inside the client portal so clinics can manage payment method, invoices, and future subscription changes safely.
 4. Upgraded the billing page UI with a fixed operational clinic header, clearer current-plan summary, billing history, and next-cycle upgrade guidance.
-5. Follow-up still required: normalize webhook-synced subscription labels in shared data storage so admin and downstream views use the same human-readable plan names.
+5. Redesigned the client portal login experience to look more like a production medical SaaS entry screen while keeping the existing auth flow unchanged.
+6. Added Turbo and deployment config for portal tier price environment variables so Vercel strict-env builds can resolve the client portal pricing settings.
+7. Follow-up still required: normalize webhook-synced subscription labels in shared data storage so admin and downstream views use the same human-readable plan names.

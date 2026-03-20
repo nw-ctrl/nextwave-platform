@@ -7,7 +7,10 @@
     "SUPABASE_PROJECT_REF",
     "GITHUB_TOKEN",
     "STRIPE_SECRET_KEY",
-    "STRIPE_WEBHOOK_SECRET"
+    "STRIPE_WEBHOOK_SECRET",
+    "STRIPE_BASIC_PRICE_ID",
+    "STRIPE_STANDARD_PRICE_ID",
+    "STRIPE_PREMIUM_PRICE_ID"
   ],
   "globalPassThroughEnv": [
     "NEXT_PUBLIC_SUPABASE_URL",
@@ -16,7 +19,10 @@
     "SUPABASE_PROJECT_REF",
     "GITHUB_TOKEN",
     "STRIPE_SECRET_KEY",
-    "STRIPE_WEBHOOK_SECRET"
+    "STRIPE_WEBHOOK_SECRET",
+    "STRIPE_BASIC_PRICE_ID",
+    "STRIPE_STANDARD_PRICE_ID",
+    "STRIPE_PREMIUM_PRICE_ID"
   ],
   "tasks": {
     "build": {
@@ -28,7 +34,10 @@
         "SUPABASE_PROJECT_REF",
         "GITHUB_TOKEN",
         "STRIPE_SECRET_KEY",
-        "STRIPE_WEBHOOK_SECRET"
+        "STRIPE_WEBHOOK_SECRET",
+        "STRIPE_BASIC_PRICE_ID",
+        "STRIPE_STANDARD_PRICE_ID",
+        "STRIPE_PREMIUM_PRICE_ID"
       ],
       "outputs": [".next/**", "dist/**"]
     },
