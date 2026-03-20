@@ -110,6 +110,14 @@ function normalizePlanKey(input?: string | null): ClinicBillingSummary["planKey"
   return "unknown";
 }
 
+function getProductName(product?: Stripe.Product | Stripe.DeletedProduct | null) {
+  if (!product || product.deleted) {
+    return null;
+  }
+
+  return product.name ?? null;
+}
+
 function inferPlanName(input: {
   lookupKey?: string | null;
   nickname?: string | null;
@@ -202,10 +210,11 @@ export async function getClinicBillingSummary(clientId: string): Promise<ClinicB
   const item = subscription.items.data[0];
   const price = item?.price ?? null;
   const product = price && typeof price.product !== "string" ? price.product : null;
+  const productName = getProductName(product);
   const inferred = inferPlanName({
     lookupKey: price?.lookup_key,
     nickname: price?.nickname,
-    productName: product?.name,
+    productName,
     priceId: price?.id
   });
 
@@ -231,7 +240,7 @@ export async function getClinicBillingSummary(clientId: string): Promise<ClinicB
     cancelAtPeriodEnd: subscription.cancel_at_period_end,
     priceId: price?.id ?? null,
     productId: typeof price?.product === "string" ? price.product : product?.id ?? null,
-    productName: product?.name ?? null,
+    productName,
     trialEndsAt: toIsoFromEpoch(subscription.trial_end),
     invoices: invoices.data.map((invoice) => ({
       id: invoice.id,
