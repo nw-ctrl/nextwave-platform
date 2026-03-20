@@ -14,14 +14,28 @@ const fieldStyle: CSSProperties = {
   width: "100%",
   padding: "16px 18px",
   borderRadius: 999,
-  border: "1px solid rgba(142, 141, 136, 0.35)",
-  background: "rgba(255,255,255,0.62)",
-  color: "#4f4a43",
+  border: "1px solid rgba(146, 140, 130, 0.2)",
+  background: "rgba(255,255,255,0.72)",
+  color: "#4f4941",
   fontSize: 15,
   outline: "none",
   boxSizing: "border-box",
-  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.75)",
+  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.82)",
   fontFamily: bodyFont
+};
+
+const mutedText: CSSProperties = {
+  color: "rgba(92, 84, 74, 0.44)",
+  textShadow: "0 1px 0 rgba(255,255,255,0.2)"
+};
+
+const ambientCard: CSSProperties = {
+  padding: 14,
+  borderRadius: 24,
+  background: "rgba(255,255,255,0.18)",
+  border: "1px solid rgba(255,255,255,0.28)",
+  backdropFilter: "blur(18px)",
+  boxShadow: "0 18px 40px rgba(130,120,105,0.05)"
 };
 
 export function PortalLoginForm() {
@@ -59,9 +73,8 @@ export function PortalLoginForm() {
         position: "relative",
         overflow: "hidden",
         borderRadius: 34,
-        background:
-          "linear-gradient(180deg, rgba(240,236,228,0.96) 0%, rgba(232,227,219,0.92) 100%)",
-        boxShadow: "0 30px 80px rgba(92, 83, 71, 0.12)",
+        background: "linear-gradient(180deg, rgba(240,236,228,0.97) 0%, rgba(233,228,220,0.94) 100%)",
+        boxShadow: "0 30px 80px rgba(92, 83, 71, 0.1)",
         fontFamily: bodyFont
       }}
     >
@@ -70,7 +83,7 @@ export function PortalLoginForm() {
           position: "absolute",
           inset: 0,
           background:
-            "radial-gradient(circle at 16% 36%, rgba(98, 177, 182, 0.22), transparent 12%), radial-gradient(circle at 66% 58%, rgba(103, 154, 165, 0.24), transparent 14%), radial-gradient(circle at 60% 46%, rgba(244, 214, 169, 0.22), transparent 12%), linear-gradient(180deg, rgba(255,255,255,0.38), rgba(255,255,255,0.06))"
+            "radial-gradient(circle at 16% 36%, rgba(113, 176, 178, 0.18), transparent 12%), radial-gradient(circle at 66% 58%, rgba(103, 154, 165, 0.18), transparent 14%), radial-gradient(circle at 60% 46%, rgba(244, 214, 169, 0.18), transparent 12%), linear-gradient(180deg, rgba(255,255,255,0.34), rgba(255,255,255,0.08))"
         }}
       />
 
@@ -85,9 +98,9 @@ export function PortalLoginForm() {
           alignItems: "center",
           justifyContent: "space-between",
           padding: "0 28px",
-          background: "rgba(255,255,255,0.34)",
+          background: "rgba(255,255,255,0.24)",
           backdropFilter: "blur(18px)",
-          borderBottom: "1px solid rgba(255,255,255,0.42)"
+          borderBottom: "1px solid rgba(255,255,255,0.34)"
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
@@ -96,14 +109,14 @@ export function PortalLoginForm() {
               width: 34,
               height: 34,
               borderRadius: "50%",
-              background: "radial-gradient(circle, rgba(255,255,255,0.94) 0%, rgba(241,222,190,0.72) 40%, rgba(255,255,255,0.1) 78%)",
-              boxShadow: "0 0 24px rgba(255,244,222,0.9)"
+              background: "radial-gradient(circle, rgba(255,255,255,0.94) 0%, rgba(241,222,190,0.68) 40%, rgba(255,255,255,0.08) 78%)",
+              boxShadow: "0 0 24px rgba(255,244,222,0.74)"
             }}
           />
           <div style={{ fontFamily: headingFont, fontSize: 24, letterSpacing: "0.04em", color: "#322f2a" }}>MEDIVAULT</div>
         </div>
 
-        <div style={{ display: "flex", gap: 32, color: "#58544d", fontSize: 14 }}>
+        <div style={{ display: "flex", gap: 32, fontSize: 14, ...mutedText }}>
           <span>Sanctuary</span>
           <span>Care Team</span>
           <span>Insights</span>
@@ -122,13 +135,13 @@ export function PortalLoginForm() {
         }}
       >
         <div style={{ paddingLeft: 22, display: "grid", gap: 18 }}>
-          <div style={{ padding: 14, borderRadius: 22, background: "rgba(255,255,255,0.46)", border: "1px solid rgba(255,255,255,0.48)", backdropFilter: "blur(16px)", boxShadow: "0 18px 40px rgba(130,120,105,0.08)" }}>
-            <div style={{ width: 90, height: 90, margin: "8px auto 10px auto", borderRadius: "50%", background: "radial-gradient(circle, rgba(94,170,173,0.78) 0%, rgba(94,170,173,0.2) 44%, rgba(94,170,173,0.08) 72%, rgba(255,255,255,0) 78%)" }} />
-            <div style={{ textAlign: "center", color: "#5f5a53", fontSize: 13 }}>Restore calm focus</div>
+          <div style={ambientCard}>
+            <div style={{ width: 90, height: 90, margin: "8px auto 10px auto", borderRadius: "50%", background: "radial-gradient(circle, rgba(94,170,173,0.44) 0%, rgba(94,170,173,0.08) 44%, rgba(94,170,173,0.03) 72%, rgba(255,255,255,0) 78%)" }} />
+            <div style={{ textAlign: "center", fontSize: 13, ...mutedText }}>Restore calm focus</div>
           </div>
-          <div style={{ padding: 14, borderRadius: 22, background: "rgba(255,255,255,0.46)", border: "1px solid rgba(255,255,255,0.48)", backdropFilter: "blur(16px)", boxShadow: "0 18px 40px rgba(130,120,105,0.08)" }}>
-            <div style={{ width: 80, height: 80, margin: "6px auto 10px auto", borderRadius: 20, background: "radial-gradient(circle at 30% 30%, rgba(139, 179, 92, 0.92), rgba(91, 133, 55, 0.48))" }} />
-            <div style={{ textAlign: "center", color: "#5f5a53", fontSize: 13 }}>Private care access</div>
+          <div style={ambientCard}>
+            <div style={{ width: 80, height: 80, margin: "6px auto 10px auto", borderRadius: 20, background: "radial-gradient(circle at 30% 30%, rgba(139, 179, 92, 0.5), rgba(91, 133, 55, 0.18))" }} />
+            <div style={{ textAlign: "center", fontSize: 13, ...mutedText }}>Private care access</div>
           </div>
         </div>
 
@@ -137,14 +150,14 @@ export function PortalLoginForm() {
             style={{
               width: "min(430px, 100%)",
               padding: 34,
-              borderRadius: 26,
-              background: "rgba(255,255,255,0.34)",
-              border: "1px solid rgba(255,248,236,0.85)",
-              backdropFilter: "blur(22px)",
-              boxShadow: "0 0 0 1px rgba(255,226,180,0.25), 0 0 28px rgba(255,225,173,0.42), 0 28px 60px rgba(101, 91, 78, 0.1)"
+              borderRadius: 28,
+              background: "rgba(255,255,255,0.36)",
+              border: "1px solid rgba(255,248,236,0.8)",
+              backdropFilter: "blur(24px)",
+              boxShadow: "0 0 0 1px rgba(255,226,180,0.18), 0 0 28px rgba(255,225,173,0.28), 0 28px 60px rgba(101, 91, 78, 0.08)"
             }}
           >
-            <div style={{ width: 92, height: 92, margin: "0 auto 22px auto", borderRadius: "50%", background: "linear-gradient(180deg, rgba(227,232,235,0.92) 0%, rgba(199,205,210,0.72) 100%)", display: "grid", placeItems: "center" }}>
+            <div style={{ width: 92, height: 92, margin: "0 auto 22px auto", borderRadius: "50%", background: "linear-gradient(180deg, rgba(227,232,235,0.82) 0%, rgba(199,205,210,0.58) 100%)", display: "grid", placeItems: "center" }}>
               <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#79736a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M20 21a8 8 0 1 0-16 0" />
                 <circle cx="12" cy="7" r="4" />
@@ -175,7 +188,7 @@ export function PortalLoginForm() {
                   fontWeight: 500,
                   fontSize: 17,
                   cursor: status.state === "pending" ? "wait" : "pointer",
-                  boxShadow: "0 8px 24px rgba(143, 131, 116, 0.12)",
+                  boxShadow: "0 8px 24px rgba(143, 131, 116, 0.1)",
                   fontFamily: bodyFont
                 }}
               >
@@ -183,7 +196,7 @@ export function PortalLoginForm() {
               </button>
             </form>
 
-            <div style={{ marginTop: 16, display: "flex", justifyContent: "space-between", gap: 16, fontSize: 13, color: "#5e5952" }}>
+            <div style={{ marginTop: 16, display: "flex", justifyContent: "space-between", gap: 16, fontSize: 13, ...mutedText }}>
               <span>Use secure authentication</span>
               <span>Forgot Password?</span>
             </div>
@@ -197,15 +210,15 @@ export function PortalLoginForm() {
         </div>
 
         <div style={{ paddingRight: 22, display: "grid", gap: 18 }}>
-          <div style={{ padding: 16, borderRadius: 22, background: "rgba(255,255,255,0.48)", border: "1px solid rgba(255,255,255,0.5)", backdropFilter: "blur(16px)", boxShadow: "0 18px 40px rgba(130,120,105,0.08)" }}>
-            <div style={{ fontSize: 15, color: "#3d3934", marginBottom: 10 }}>Neural Harmony</div>
-            <div style={{ width: 96, height: 96, margin: "0 auto 10px auto", borderRadius: 24, background: "radial-gradient(circle, rgba(94,170,173,0.26), rgba(94,170,173,0.08))" }} />
-            <div style={{ fontSize: 13, color: "#5f5a53", textAlign: "center" }}>Calm and focused</div>
+          <div style={ambientCard}>
+            <div style={{ fontSize: 15, marginBottom: 10, ...mutedText }}>Neural Harmony</div>
+            <div style={{ width: 96, height: 96, margin: "0 auto 10px auto", borderRadius: 24, background: "radial-gradient(circle, rgba(94,170,173,0.18), rgba(94,170,173,0.04))" }} />
+            <div style={{ fontSize: 13, textAlign: "center", ...mutedText }}>Calm and focused</div>
           </div>
-          <div style={{ padding: 16, borderRadius: 22, background: "rgba(255,255,255,0.48)", border: "1px solid rgba(255,255,255,0.5)", backdropFilter: "blur(16px)", boxShadow: "0 18px 40px rgba(130,120,105,0.08)" }}>
-            <div style={{ fontSize: 15, color: "#3d3934", marginBottom: 10 }}>Breath and Sound</div>
-            <div style={{ width: 110, height: 110, margin: "0 auto 10px auto", borderRadius: "50%", background: "radial-gradient(circle, rgba(94,170,173,0.78) 0%, rgba(94,170,173,0.24) 46%, rgba(94,170,173,0.08) 72%, rgba(255,255,255,0) 78%)" }} />
-            <div style={{ fontSize: 13, color: "#5f5a53", textAlign: "center" }}>Ambient restoration</div>
+          <div style={ambientCard}>
+            <div style={{ fontSize: 15, marginBottom: 10, ...mutedText }}>Breath and Sound</div>
+            <div style={{ width: 110, height: 110, margin: "0 auto 10px auto", borderRadius: "50%", background: "radial-gradient(circle, rgba(94,170,173,0.42) 0%, rgba(94,170,173,0.12) 46%, rgba(94,170,173,0.03) 72%, rgba(255,255,255,0) 78%)" }} />
+            <div style={{ fontSize: 13, textAlign: "center", ...mutedText }}>Ambient restoration</div>
           </div>
         </div>
       </div>

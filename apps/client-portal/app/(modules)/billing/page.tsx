@@ -6,6 +6,9 @@ import { PricingSection } from "../../../components/pricing-section";
 
 export const dynamic = "force-dynamic";
 
+const headingFont = 'Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif';
+const bodyFont = 'Avenir Next, Segoe UI, Helvetica Neue, Arial, sans-serif';
+
 function formatMoney(amount: number | null, currency: string) {
   if (amount == null) {
     return "TBD";
@@ -53,27 +56,34 @@ function statusTone(status?: string | null) {
   switch (status) {
     case "active":
     case "paid":
-      return { background: "#dcfce7", color: "#166534", border: "#86efac" };
+      return { background: "rgba(225, 239, 228, 0.72)", color: "#55635a", border: "rgba(154, 180, 159, 0.5)" };
     case "trialing":
-      return { background: "#dbeafe", color: "#1d4ed8", border: "#93c5fd" };
+      return { background: "rgba(226, 235, 242, 0.72)", color: "#55606b", border: "rgba(171, 185, 198, 0.5)" };
     case "past_due":
     case "open":
-      return { background: "#fef3c7", color: "#92400e", border: "#fcd34d" };
+      return { background: "rgba(246, 233, 214, 0.82)", color: "#7c6548", border: "rgba(216, 181, 138, 0.6)" };
     case "canceled":
     case "unpaid":
     case "void":
-      return { background: "#fee2e2", color: "#991b1b", border: "#fca5a5" };
+      return { background: "rgba(245, 226, 226, 0.86)", color: "#8b5f5f", border: "rgba(220, 181, 181, 0.6)" };
     default:
-      return { background: "#e5e7eb", color: "#374151", border: "#d1d5db" };
+      return { background: "rgba(234, 231, 228, 0.86)", color: "#6f665d", border: "rgba(201, 193, 184, 0.6)" };
   }
 }
 
 const planFeatureNotes: Record<string, string[]> = {
-  basic: ["Platform access is active.", "Upgrade when your clinic needs secure record storage and deeper workflow tools."],
-  standard: ["Best fit for routine clinic operations.", "Premium is available later if you want AI assistance and higher capacity."],
+  basic: ["Platform access is active.", "Upgrade later when your clinic needs deeper records and workflow tools."],
+  standard: ["Best fit for routine clinic operations.", "Premium remains available if you want AI assistance and higher capacity."],
   premium: ["Your clinic is on the highest MediVault tier.", "Use billing controls for payment method, invoices, and future cycle changes."],
   custom: ["Your clinic is on a custom plan configuration.", "Use the billing portal for payment controls and contact NextWave for contract changes."],
   unknown: ["Live plan data is being normalized.", "Your clinic access remains active while billing labels are cleaned up."]
+};
+
+const shellSurface = {
+  background: "rgba(255,255,255,0.34)",
+  border: "1px solid rgba(255,255,255,0.48)",
+  boxShadow: "0 18px 42px rgba(95, 84, 71, 0.06)",
+  backdropFilter: "blur(22px)"
 };
 
 export default async function Page({
@@ -89,11 +99,11 @@ export default async function Page({
       <main
         style={{
           padding: 24,
-          fontFamily: "ui-sans-serif, system-ui",
+          fontFamily: bodyFont,
           minHeight: "100vh",
           display: "grid",
           placeItems: "center",
-          background: "linear-gradient(180deg, #edf6f7 0%, #f7fbfd 100%)"
+          background: "linear-gradient(180deg, #efe9df 0%, #f5f0e8 100%)"
         }}
       >
         <PortalLoginForm />
@@ -103,7 +113,7 @@ export default async function Page({
 
   if (session.memberships.length === 0) {
     return (
-      <main style={{ padding: 24, fontFamily: "ui-sans-serif, system-ui" }}>
+      <main style={{ padding: 24, fontFamily: bodyFont }}>
         <h1>Billing</h1>
         <p>Your account does not have a clinic membership yet.</p>
       </main>
@@ -116,7 +126,7 @@ export default async function Page({
 
   if (!roleAllowed || !moduleAllowed) {
     return (
-      <main style={{ padding: 24, fontFamily: "ui-sans-serif, system-ui", minHeight: "100vh", background: "linear-gradient(180deg, #edf6f7 0%, #f7fbfd 100%)" }}>
+      <main style={{ padding: 24, fontFamily: bodyFont, minHeight: "100vh", background: "linear-gradient(180deg, #efe9df 0%, #f5f0e8 100%)" }}>
         <h1>Billing</h1>
         <p>Your account does not currently have permission to manage clinic billing.</p>
       </main>
@@ -147,9 +157,10 @@ export default async function Page({
     <main
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(180deg, #edf6f7 0%, #f7fbfd 100%)",
-        fontFamily: "ui-sans-serif, system-ui",
-        color: "#123047"
+        background:
+          "radial-gradient(circle at top left, rgba(111, 174, 178, 0.12), transparent 18%), radial-gradient(circle at 82% 28%, rgba(243, 218, 181, 0.16), transparent 18%), linear-gradient(180deg, #efe9df 0%, #f5f0e8 100%)",
+        fontFamily: bodyFont,
+        color: "#3d3731"
       }}
     >
       <PortalTopBar
@@ -161,21 +172,21 @@ export default async function Page({
         nextBillingDate={formatDate(nextBillingDate)}
       />
 
-      <div style={{ maxWidth: 1240, margin: "0 auto", padding: "20px 20px 32px 20px", display: "grid", gap: 18 }}>
+      <div style={{ maxWidth: 1240, margin: "0 auto", padding: "24px 20px 40px 20px", display: "grid", gap: 18 }}>
         {checkoutSuccess ? (
-          <div style={{ background: "#ecfdf5", color: "#065f46", padding: "14px 16px", borderRadius: 16, border: "1px solid #10b981", fontWeight: 600 }}>
+          <div style={{ ...shellSurface, padding: "14px 16px", color: "#5e6f63", borderRadius: 18 }}>
             Payment completed successfully.
           </div>
         ) : null}
 
         {portalError ? (
-          <div style={{ background: "#fef2f2", color: "#991b1b", padding: "14px 16px", borderRadius: 16, border: "1px solid #fca5a5", fontWeight: 600 }}>
+          <div style={{ ...shellSurface, padding: "14px 16px", color: "#8b5f5f", borderRadius: 18 }}>
             {portalMessage ?? "Unable to open the billing portal for this clinic right now."}
           </div>
         ) : null}
 
         {billingError ? (
-          <div style={{ background: "#fff7ed", color: "#9a3412", padding: "14px 16px", borderRadius: 16, border: "1px solid #fdba74", fontWeight: 600 }}>
+          <div style={{ ...shellSurface, padding: "14px 16px", color: "#7b6549", borderRadius: 18 }}>
             Live billing sync is temporarily unavailable. The portal is still usable and your clinic access is intact.
           </div>
         ) : null}
@@ -187,46 +198,46 @@ export default async function Page({
             gap: 14
           }}
         >
-          <article style={{ padding: 18, borderRadius: 22, background: "rgba(255,255,255,0.82)", border: "1px solid #dbe4ea", boxShadow: "0 12px 30px rgba(15,23,42,0.05)" }}>
-            <div style={{ fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "#5b7283", fontWeight: 800 }}>Current Plan</div>
-            <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-              <div style={{ fontSize: 28, fontWeight: 900, letterSpacing: "-0.03em", color: "#123047" }}>{planName}</div>
-              <span style={{ padding: "6px 10px", borderRadius: 999, border: `1px solid ${planTone.border}`, background: planTone.background, color: planTone.color, fontSize: 12, fontWeight: 800 }}>
+          <article style={{ ...shellSurface, padding: 22, borderRadius: 26 }}>
+            <div style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(92, 84, 74, 0.44)" }}>Current Plan</div>
+            <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+              <div style={{ fontSize: 32, color: "#3e3832", fontFamily: headingFont }}>{planName}</div>
+              <span style={{ padding: "6px 10px", borderRadius: 999, border: `1px solid ${planTone.border}`, background: planTone.background, color: planTone.color, fontSize: 12, fontWeight: 500 }}>
                 {billingStatus}
               </span>
             </div>
-            <div style={{ marginTop: 12, color: "#5b7283", fontSize: 14, lineHeight: 1.6 }}>{slimNotes[0]}</div>
+            <div style={{ marginTop: 12, color: "rgba(92, 84, 74, 0.56)", fontSize: 14, lineHeight: 1.6 }}>{slimNotes[0]}</div>
           </article>
 
-          <article style={{ padding: 18, borderRadius: 22, background: "rgba(255,255,255,0.82)", border: "1px solid #dbe4ea", boxShadow: "0 12px 30px rgba(15,23,42,0.05)" }}>
-            <div style={{ fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "#5b7283", fontWeight: 800 }}>Cycle</div>
-            <div style={{ marginTop: 10, fontSize: 28, fontWeight: 900, letterSpacing: "-0.03em", color: "#123047" }}>{billing ? formatMoney(billing.price, billing.currency) : "TBD"}</div>
-            <div style={{ marginTop: 12, color: "#5b7283", fontSize: 14 }}>Next billing: {formatDate(nextBillingDate)}</div>
+          <article style={{ ...shellSurface, padding: 22, borderRadius: 26 }}>
+            <div style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(92, 84, 74, 0.44)" }}>Cycle</div>
+            <div style={{ marginTop: 12, fontSize: 32, color: "#3e3832", fontFamily: headingFont }}>{billing ? formatMoney(billing.price, billing.currency) : "TBD"}</div>
+            <div style={{ marginTop: 12, color: "rgba(92, 84, 74, 0.56)", fontSize: 14 }}>Next billing: {formatDate(nextBillingDate)}</div>
           </article>
 
-          <article style={{ padding: 18, borderRadius: 22, background: "rgba(255,255,255,0.82)", border: "1px solid #dbe4ea", boxShadow: "0 12px 30px rgba(15,23,42,0.05)" }}>
-            <div style={{ fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "#5b7283", fontWeight: 800 }}>Next Step</div>
-            <div style={{ marginTop: 10, fontSize: 18, fontWeight: 800, color: "#123047" }}>{slimNotes[1]}</div>
-            <div style={{ marginTop: 14 }}>
-              <a href="/api/billing/manage" style={{ textDecoration: "none", padding: "10px 14px", borderRadius: 12, background: "#123047", color: "#ffffff", fontWeight: 800, display: "inline-block" }}>
+          <article style={{ ...shellSurface, padding: 22, borderRadius: 26 }}>
+            <div style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(92, 84, 74, 0.44)" }}>Next Step</div>
+            <div style={{ marginTop: 12, fontSize: 18, color: "#4a433c", lineHeight: 1.5 }}>{slimNotes[1]}</div>
+            <div style={{ marginTop: 16 }}>
+              <a href="/api/billing/manage" style={{ textDecoration: "none", padding: "10px 14px", borderRadius: 14, background: "rgba(255,255,255,0.5)", border: "1px solid rgba(255,255,255,0.6)", color: "#3e3832", fontWeight: 500, display: "inline-block" }}>
                 Open Billing Controls
               </a>
             </div>
           </article>
         </section>
 
-        <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.25fr) minmax(280px, 0.75fr)", gap: 18, alignItems: "start" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.3fr) minmax(280px, 0.7fr)", gap: 18, alignItems: "start" }}>
           <section style={{ display: "grid", gap: 18 }}>
-            <article style={{ background: "rgba(255,255,255,0.88)", borderRadius: 24, border: "1px solid #dbe4ea", boxShadow: "0 16px 36px rgba(15,23,42,0.05)", overflow: "hidden" }}>
-              <div style={{ padding: 20, borderBottom: "1px solid #e5e7eb", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+            <article style={{ ...shellSurface, borderRadius: 28, overflow: "hidden" }}>
+              <div style={{ padding: 22, borderBottom: "1px solid rgba(146, 140, 130, 0.12)", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
                 <div>
-                  <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, color: "#123047" }}>Billing History</h2>
-                  <p style={{ margin: "6px 0 0 0", color: "#5b7283", fontSize: 14 }}>
+                  <h2 style={{ margin: 0, fontSize: 28, color: "#3e3832", fontFamily: headingFont, fontWeight: 400 }}>Billing History</h2>
+                  <p style={{ margin: "6px 0 0 0", color: "rgba(92, 84, 74, 0.56)", fontSize: 14 }}>
                     {billing?.invoices?.length ? "Recent posted invoices from Stripe." : "Invoices will appear here after Stripe posts them to the clinic account."}
                   </p>
                 </div>
                 {billing?.invoices?.[0]?.hostedInvoiceUrl ? (
-                  <a href={billing.invoices[0].hostedInvoiceUrl} target="_blank" rel="noreferrer" style={{ color: "#0f766e", fontWeight: 800, textDecoration: "none" }}>
+                  <a href={billing.invoices[0].hostedInvoiceUrl} target="_blank" rel="noreferrer" style={{ color: "rgba(74, 67, 60, 0.7)", fontWeight: 500, textDecoration: "none" }}>
                     Latest invoice
                   </a>
                 ) : null}
@@ -235,7 +246,7 @@ export default async function Page({
               <div style={{ overflowX: "auto" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 620 }}>
                   <thead>
-                    <tr style={{ background: "#f8fafc", color: "#64748b", fontSize: 12, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                    <tr style={{ color: "rgba(92, 84, 74, 0.44)", fontSize: 12, textTransform: "uppercase", letterSpacing: "0.08em" }}>
                       <th style={{ textAlign: "left", padding: "14px 18px" }}>Date</th>
                       <th style={{ textAlign: "left", padding: "14px 18px" }}>Plan</th>
                       <th style={{ textAlign: "left", padding: "14px 18px" }}>Amount</th>
@@ -247,12 +258,12 @@ export default async function Page({
                       billing.invoices.map((invoice) => {
                         const tone = statusTone(invoice.status);
                         return (
-                          <tr key={invoice.id} style={{ borderTop: "1px solid #e5e7eb" }}>
-                            <td style={{ padding: "16px 18px", color: "#123047", fontWeight: 700 }}>{formatDate(invoice.date)}</td>
-                            <td style={{ padding: "16px 18px", color: "#365062" }}>{invoice.planName}</td>
-                            <td style={{ padding: "16px 18px", color: "#123047", fontWeight: 800 }}>{formatMoney(invoice.amount, invoice.currency)}</td>
+                          <tr key={invoice.id} style={{ borderTop: "1px solid rgba(146, 140, 130, 0.12)" }}>
+                            <td style={{ padding: "16px 18px", color: "#4a433c", fontWeight: 500 }}>{formatDate(invoice.date)}</td>
+                            <td style={{ padding: "16px 18px", color: "rgba(92, 84, 74, 0.72)" }}>{invoice.planName}</td>
+                            <td style={{ padding: "16px 18px", color: "#4a433c", fontWeight: 500 }}>{formatMoney(invoice.amount, invoice.currency)}</td>
                             <td style={{ padding: "16px 18px" }}>
-                              <span style={{ padding: "6px 10px", borderRadius: 999, border: `1px solid ${tone.border}`, background: tone.background, color: tone.color, fontSize: 12, fontWeight: 800 }}>
+                              <span style={{ padding: "6px 10px", borderRadius: 999, border: `1px solid ${tone.border}`, background: tone.background, color: tone.color, fontSize: 12, fontWeight: 500 }}>
                                 {humanizeStatus(invoice.status)}
                               </span>
                             </td>
@@ -261,7 +272,7 @@ export default async function Page({
                       })
                     ) : (
                       <tr>
-                        <td colSpan={4} style={{ padding: 28, textAlign: "center", color: "#5b7283" }}>
+                        <td colSpan={4} style={{ padding: 30, textAlign: "center", color: "rgba(92, 84, 74, 0.56)" }}>
                           No invoice entries available yet.
                         </td>
                       </tr>
@@ -273,36 +284,36 @@ export default async function Page({
           </section>
 
           <aside style={{ display: "grid", gap: 18 }}>
-            <section style={{ background: "rgba(255,255,255,0.88)", borderRadius: 24, border: "1px solid #dbe4ea", boxShadow: "0 16px 36px rgba(15,23,42,0.05)", padding: 20, display: "grid", gap: 14 }}>
+            <section style={{ ...shellSurface, borderRadius: 28, padding: 22, display: "grid", gap: 14 }}>
               <div>
-                <div style={{ fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "#5b7283", fontWeight: 800 }}>Plan Summary</div>
-                <div style={{ marginTop: 8, fontSize: 22, fontWeight: 900, color: "#123047" }}>{planName}</div>
+                <div style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(92, 84, 74, 0.44)" }}>Plan Summary</div>
+                <div style={{ marginTop: 8, fontSize: 28, color: "#3e3832", fontFamily: headingFont }}>{planName}</div>
               </div>
-              <div style={{ display: "grid", gap: 10 }}>
+              <div style={{ display: "grid", gap: 12 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 14 }}>
-                  <span style={{ color: "#5b7283" }}>Status</span>
-                  <span style={{ color: "#123047", fontWeight: 800 }}>{billingStatus}</span>
+                  <span style={{ color: "rgba(92, 84, 74, 0.56)" }}>Status</span>
+                  <span style={{ color: "#4a433c", fontWeight: 500 }}>{billingStatus}</span>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 14 }}>
-                  <span style={{ color: "#5b7283" }}>Next billing</span>
-                  <span style={{ color: "#123047", fontWeight: 800 }}>{formatDate(nextBillingDate)}</span>
+                  <span style={{ color: "rgba(92, 84, 74, 0.56)" }}>Next billing</span>
+                  <span style={{ color: "#4a433c", fontWeight: 500 }}>{formatDate(nextBillingDate)}</span>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 14 }}>
-                  <span style={{ color: "#5b7283" }}>Cycle price</span>
-                  <span style={{ color: "#123047", fontWeight: 800 }}>{billing ? formatMoney(billing.price, billing.currency) : "TBD"}</span>
+                  <span style={{ color: "rgba(92, 84, 74, 0.56)" }}>Cycle price</span>
+                  <span style={{ color: "#4a433c", fontWeight: 500 }}>{billing ? formatMoney(billing.price, billing.currency) : "TBD"}</span>
                 </div>
               </div>
             </section>
 
             {!isActive ? (
-              <section id="upgrade-options" style={{ background: "rgba(255,255,255,0.88)", borderRadius: 24, border: "1px solid #dbe4ea", boxShadow: "0 16px 36px rgba(15,23,42,0.05)", overflow: "hidden" }}>
+              <section id="upgrade-options" style={{ ...shellSurface, borderRadius: 28, overflow: "hidden" }}>
                 <PricingSection />
               </section>
             ) : (
-              <section id="upgrade-options" style={{ background: "rgba(255,255,255,0.88)", borderRadius: 24, border: "1px solid #dbe4ea", boxShadow: "0 16px 36px rgba(15,23,42,0.05)", padding: 20, display: "grid", gap: 12 }}>
-                <div style={{ fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "#5b7283", fontWeight: 800 }}>Future Upgrade</div>
-                <div style={{ fontSize: 16, fontWeight: 800, color: "#123047" }}>{slimNotes[1]}</div>
-                <a href="/api/billing/manage" style={{ textDecoration: "none", width: "fit-content", padding: "10px 14px", borderRadius: 12, background: "#eef6f5", color: "#0f766e", fontWeight: 800 }}>
+              <section id="upgrade-options" style={{ ...shellSurface, borderRadius: 28, padding: 22, display: "grid", gap: 12 }}>
+                <div style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(92, 84, 74, 0.44)" }}>Future Upgrade</div>
+                <div style={{ fontSize: 16, color: "#4a433c", lineHeight: 1.6 }}>{slimNotes[1]}</div>
+                <a href="/api/billing/manage" style={{ textDecoration: "none", width: "fit-content", padding: "10px 14px", borderRadius: 14, background: "rgba(255,255,255,0.5)", border: "1px solid rgba(255,255,255,0.6)", color: "#4a433c", fontWeight: 500 }}>
                   Review change options
                 </a>
               </section>
