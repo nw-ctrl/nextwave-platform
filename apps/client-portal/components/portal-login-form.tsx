@@ -246,24 +246,24 @@ export function PortalLoginForm() {
             <div className="portal-login-dashboard" style={{ display: "grid", gridTemplateColumns: "160px 1fr", minHeight: 420 }}>
               <div style={{ padding: 16, borderRight: "1px solid rgba(65, 92, 121, 0.46)", display: "grid", alignContent: "start", gap: 10 }}>
                 {[
-                  ["Dashboard", false],
-                  ["Billing", true],
-                  ["Invoices", false],
-                  ["Messages", false],
-                  ["Settings", false]
-                ].map(([label, active]) => (
+                  { label: "Dashboard", active: false },
+                  { label: "Billing", active: true },
+                  { label: "Invoices", active: false },
+                  { label: "Messages", active: false },
+                  { label: "Settings", active: false }
+                ].map((item) => (
                   <div
-                    key={label}
+                    key={item.label}
                     style={{
                       padding: "12px 14px",
                       borderRadius: 12,
-                      background: active ? "linear-gradient(180deg, #23d7dc 0%, #1ebfc6 100%)" : "transparent",
-                      color: active ? "#08242d" : "#d4e4ec",
+                      background: item.active ? "linear-gradient(180deg, #23d7dc 0%, #1ebfc6 100%)" : "transparent",
+                      color: item.active ? "#08242d" : "#d4e4ec",
                       fontWeight: 600,
                       fontSize: 14
                     }}
                   >
-                    {label}
+                    {item.label}
                   </div>
                 ))}
               </div>
