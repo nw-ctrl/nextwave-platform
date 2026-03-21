@@ -79,7 +79,8 @@ export function PortalLoginForm() {
           position: "absolute",
           inset: 0,
           background:
-            "radial-gradient(circle at 15% 78%, rgba(101, 199, 215, 0.22), transparent 20%), radial-gradient(circle at 72% 20%, rgba(71, 138, 196, 0.16), transparent 18%), radial-gradient(circle at 86% 78%, rgba(49, 104, 160, 0.22), transparent 24%)"
+            "radial-gradient(circle at 15% 78%, rgba(101, 199, 215, 0.22), transparent 20%), radial-gradient(circle at 72% 20%, rgba(71, 138, 196, 0.16), transparent 18%), radial-gradient(circle at 86% 78%, rgba(49, 104, 160, 0.22), transparent 24%)",
+          pointerEvents: "none"
         }}
       />
 
@@ -170,7 +171,7 @@ export function PortalLoginForm() {
           </div>
         </div>
 
-        <div className="portal-login-right" style={{ padding: "48px 28px 28px 12px", display: "grid", alignContent: "center" }}>
+        <div className="portal-login-right" style={{ padding: "48px 28px 28px 12px", display: "grid", alignContent: "center", position: "relative", zIndex: 3 }}>
           <div style={{ color: "#f3f8fb", fontSize: 18, fontWeight: 700, marginBottom: 18, maxWidth: 440 }}>
             Clinician and client portal with actionable billing, renewals, and operational visibility.
           </div>
