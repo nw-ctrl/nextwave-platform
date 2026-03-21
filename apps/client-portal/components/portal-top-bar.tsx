@@ -75,10 +75,10 @@ export function PortalTopBar({
         top: 0,
         zIndex: 20,
         width: "100%",
-        borderBottom: "1px solid rgba(255,255,255,0.18)",
-        background: "linear-gradient(180deg, rgba(38,42,40,0.88) 0%, rgba(57,63,59,0.74) 100%)",
-        backdropFilter: "blur(24px) saturate(145%)",
-        boxShadow: "0 18px 42px rgba(22, 25, 24, 0.18)",
+        borderBottom: "1px solid rgba(255,255,255,0.46)",
+        background: "rgba(236, 243, 244, 0.76)",
+        backdropFilter: "blur(22px) saturate(145%)",
+        boxShadow: "0 14px 34px rgba(70, 92, 99, 0.08)",
         fontFamily: bodyFont
       }}
     >
@@ -104,9 +104,9 @@ export function PortalTopBar({
                 borderRadius: 18,
                 display: "grid",
                 placeItems: "center",
-                background: "linear-gradient(135deg, rgba(190,176,140,0.96) 0%, rgba(130,147,128,0.86) 100%)",
-                color: "#1f2521",
-                boxShadow: "0 12px 22px rgba(12,16,15,0.16)"
+                background: "linear-gradient(135deg, rgba(115,156,148,0.94) 0%, rgba(156,188,181,0.92) 100%)",
+                color: "#f8fbfb",
+                boxShadow: "0 12px 22px rgba(96,137,130,0.16)"
               }}
             >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.85" strokeLinecap="round" strokeLinejoin="round">
@@ -117,16 +117,16 @@ export function PortalTopBar({
               </svg>
             </div>
             <div>
-              <div style={{ fontFamily: headingFont, fontSize: 24, color: "#f5efe4", letterSpacing: "0.04em" }}>MediVault</div>
-              <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.12em", color: "rgba(232, 224, 210, 0.58)", fontWeight: 600 }}>Clinic Portal</div>
+              <div style={{ fontFamily: headingFont, fontSize: 24, color: "#234048", letterSpacing: "0.04em" }}>MediVault</div>
+              <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.12em", color: "rgba(70, 92, 99, 0.56)", fontWeight: 600 }}>Clinic Portal</div>
             </div>
           </div>
 
-          <div className="portal-topbar-divider" style={{ height: 28, width: 1, background: "rgba(232, 224, 210, 0.16)" }} />
+          <div className="portal-topbar-divider" style={{ height: 28, width: 1, background: "rgba(128, 148, 154, 0.18)" }} />
 
           <div style={{ display: "grid", gap: 6 }}>
-            <div style={{ fontSize: 18, lineHeight: 1.05, color: "#f6f0e5", fontFamily: headingFont }}>{clinicName}</div>
-            <div className="portal-topbar-meta" style={{ display: "flex", gap: 10, flexWrap: "wrap", fontSize: 12, color: "rgba(232, 224, 210, 0.66)" }}>
+            <div style={{ fontSize: 18, lineHeight: 1.05, color: "#234048", fontFamily: headingFont }}>{clinicName}</div>
+            <div className="portal-topbar-meta" style={{ display: "flex", gap: 10, flexWrap: "wrap", fontSize: 12, color: "rgba(70, 92, 99, 0.68)" }}>
               <span>{planName}</span>
               <span>|</span>
               <span>{billingStatus}</span>
@@ -134,7 +134,7 @@ export function PortalTopBar({
               <span>Next cycle {nextBillingDate}</span>
             </div>
             {billingNote ? (
-              <div style={{ display: "inline-flex", width: "fit-content", padding: "6px 10px", borderRadius: 999, background: "rgba(190,176,140,0.16)", border: "1px solid rgba(190,176,140,0.22)", color: "#efe5d0", fontSize: 12 }}>
+              <div style={{ display: "inline-flex", width: "fit-content", padding: "6px 10px", borderRadius: 999, background: "rgba(115,156,148,0.12)", border: "1px solid rgba(115,156,148,0.18)", color: "#41615e", fontSize: 12 }}>
                 {billingNote}
               </div>
             ) : null}
@@ -151,9 +151,9 @@ export function PortalTopBar({
                 style={{
                   padding: "10px 12px",
                   borderRadius: 14,
-                  border: "1px solid rgba(232, 224, 210, 0.12)",
-                  background: "rgba(255,255,255,0.08)",
-                  color: "#f3eadb",
+                  border: "1px solid rgba(128, 148, 154, 0.18)",
+                  background: "rgba(255,255,255,0.74)",
+                  color: "#24414a",
                   fontWeight: 500,
                   fontFamily: bodyFont,
                   backdropFilter: "blur(16px)"
@@ -173,9 +173,9 @@ export function PortalTopBar({
                 style={{
                   padding: "10px 14px",
                   borderRadius: 14,
-                  border: "1px solid rgba(232, 224, 210, 0.12)",
-                  background: "rgba(255,255,255,0.08)",
-                  color: "#f3eadb",
+                  border: "1px solid rgba(128, 148, 154, 0.18)",
+                  background: "rgba(255,255,255,0.74)",
+                  color: "#24414a",
                   fontWeight: 500,
                   cursor: pending ? "wait" : "pointer",
                   fontFamily: bodyFont,
@@ -194,11 +194,11 @@ export function PortalTopBar({
               textDecoration: "none",
               padding: "10px 14px",
               borderRadius: 14,
-              background: "linear-gradient(180deg, rgba(198,184,146,0.96) 0%, rgba(172,156,121,0.92) 100%)",
-              border: "1px solid rgba(230, 220, 191, 0.28)",
-              color: "#202521",
+              background: "linear-gradient(180deg, rgba(124,163,155,0.96) 0%, rgba(96,137,130,0.94) 100%)",
+              border: "1px solid rgba(108, 146, 138, 0.3)",
+              color: "#f7fbfb",
               fontWeight: 600,
-              boxShadow: "0 10px 20px rgba(17,20,19,0.18)"
+              boxShadow: "0 10px 20px rgba(96,137,130,0.16)"
             }}
           >
             Manage Billing
@@ -212,9 +212,9 @@ export function PortalTopBar({
             style={{
               padding: "10px 14px",
               borderRadius: 14,
-              border: "1px solid rgba(232, 224, 210, 0.12)",
-              background: "rgba(255,255,255,0.06)",
-              color: "rgba(243, 234, 219, 0.86)",
+              border: "1px solid rgba(128, 148, 154, 0.18)",
+              background: "rgba(255,255,255,0.68)",
+              color: "#41615e",
               fontWeight: 500,
               cursor: pending ? "wait" : "pointer",
               fontFamily: bodyFont,
@@ -226,7 +226,7 @@ export function PortalTopBar({
         </div>
       </div>
       {status ? (
-        <div style={{ maxWidth: 1240, margin: "0 auto", padding: "0 22px 10px 22px", color: status.includes("Unable") || status.includes("failed") ? "#f7b6b6" : "rgba(232, 224, 210, 0.66)", fontSize: 13, fontWeight: 500 }}>
+        <div style={{ maxWidth: 1240, margin: "0 auto", padding: "0 22px 10px 22px", color: status.includes("Unable") || status.includes("failed") ? "#b91c1c" : "rgba(70, 92, 99, 0.66)", fontSize: 13, fontWeight: 500 }}>
           {status}
         </div>
       ) : null}

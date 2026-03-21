@@ -14,27 +14,27 @@ const fieldStyle: CSSProperties = {
   width: "100%",
   padding: "16px 18px",
   borderRadius: 999,
-  border: "1px solid rgba(255, 255, 255, 0.12)",
-  background: "rgba(255,255,255,0.08)",
-  color: "#f2eadf",
+  border: "1px solid rgba(128, 148, 154, 0.2)",
+  background: "rgba(255,255,255,0.88)",
+  color: "#24414a",
   fontSize: 15,
   outline: "none",
   boxSizing: "border-box",
-  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.08)",
+  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.8)",
   fontFamily: bodyFont
 };
 
 const mutedText: CSSProperties = {
-  color: "rgba(240, 230, 216, 0.44)"
+  color: "rgba(70, 92, 99, 0.54)"
 };
 
 const ambientCard: CSSProperties = {
   padding: 14,
   borderRadius: 24,
-  background: "rgba(255,255,255,0.04)",
-  border: "1px solid rgba(255,255,255,0.08)",
+  background: "rgba(255,255,255,0.34)",
+  border: "1px solid rgba(255,255,255,0.42)",
   backdropFilter: "blur(18px)",
-  boxShadow: "0 18px 40px rgba(10,12,11,0.18)"
+  boxShadow: "0 18px 40px rgba(66, 89, 98, 0.08)"
 };
 
 export function PortalLoginForm() {
@@ -73,8 +73,8 @@ export function PortalLoginForm() {
         position: "relative",
         overflow: "hidden",
         borderRadius: 34,
-        background: "linear-gradient(180deg, rgba(27,31,29,0.98) 0%, rgba(38,44,41,0.96) 100%)",
-        boxShadow: "0 30px 80px rgba(8, 10, 10, 0.34)",
+        background: "linear-gradient(180deg, rgba(241,246,247,0.98) 0%, rgba(232,239,241,0.96) 100%)",
+        boxShadow: "0 28px 70px rgba(72, 94, 103, 0.14)",
         fontFamily: bodyFont
       }}
     >
@@ -83,7 +83,7 @@ export function PortalLoginForm() {
           position: "absolute",
           inset: 0,
           background:
-            "radial-gradient(circle at 16% 30%, rgba(197, 182, 145, 0.12), transparent 12%), radial-gradient(circle at 74% 22%, rgba(126, 149, 121, 0.16), transparent 14%), radial-gradient(circle at 56% 54%, rgba(197, 182, 145, 0.1), transparent 12%), linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02))"
+            "radial-gradient(circle at 14% 28%, rgba(127, 165, 157, 0.14), transparent 12%), radial-gradient(circle at 78% 18%, rgba(182, 201, 204, 0.22), transparent 14%), radial-gradient(circle at 56% 54%, rgba(210, 220, 224, 0.26), transparent 14%), linear-gradient(180deg, rgba(255,255,255,0.24), rgba(255,255,255,0.08))"
         }}
       />
 
@@ -99,9 +99,9 @@ export function PortalLoginForm() {
           alignItems: "center",
           justifyContent: "space-between",
           padding: "0 28px",
-          background: "rgba(255,255,255,0.04)",
+          background: "rgba(255,255,255,0.34)",
           backdropFilter: "blur(18px)",
-          borderBottom: "1px solid rgba(255,255,255,0.08)"
+          borderBottom: "1px solid rgba(255,255,255,0.46)"
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
@@ -110,18 +110,18 @@ export function PortalLoginForm() {
               width: 34,
               height: 34,
               borderRadius: "50%",
-              background: "radial-gradient(circle, rgba(201,184,145,0.94) 0%, rgba(160,174,137,0.72) 56%, rgba(255,255,255,0.02) 78%)",
-              boxShadow: "0 0 24px rgba(201,184,145,0.22)"
+              background: "radial-gradient(circle, rgba(113,153,145,0.92) 0%, rgba(176,201,196,0.88) 56%, rgba(255,255,255,0.4) 78%)",
+              boxShadow: "0 0 24px rgba(154, 183, 176, 0.34)"
             }}
           />
-          <div style={{ fontFamily: headingFont, fontSize: 24, letterSpacing: "0.04em", color: "#f5efe4" }}>MEDIVAULT</div>
+          <div style={{ fontFamily: headingFont, fontSize: 24, letterSpacing: "0.04em", color: "#234048" }}>MEDIVAULT</div>
         </div>
 
         <div className="portal-login-nav-links" style={{ display: "flex", gap: 32, fontSize: 14, ...mutedText }}>
-          <span>Private Care</span>
+          <span>Practice Access</span>
           <span>Billing</span>
           <span>Membership</span>
-          <span>Access</span>
+          <span>Support</span>
         </div>
       </div>
 
@@ -138,12 +138,12 @@ export function PortalLoginForm() {
       >
         <div className="portal-login-ambient-left" style={{ paddingLeft: 22, display: "grid", gap: 18 }}>
           <div style={ambientCard}>
-            <div style={{ width: 90, height: 90, margin: "8px auto 10px auto", borderRadius: "50%", background: "radial-gradient(circle, rgba(126,149,121,0.44) 0%, rgba(126,149,121,0.08) 44%, rgba(126,149,121,0.03) 72%, rgba(255,255,255,0) 78%)" }} />
-            <div style={{ textAlign: "center", fontSize: 13, ...mutedText }}>Secure clinical continuity</div>
+            <div style={{ width: 90, height: 90, margin: "8px auto 10px auto", borderRadius: "50%", background: "radial-gradient(circle, rgba(127,165,157,0.42) 0%, rgba(127,165,157,0.1) 44%, rgba(127,165,157,0.04) 72%, rgba(255,255,255,0) 78%)" }} />
+            <div style={{ textAlign: "center", fontSize: 13, ...mutedText }}>Secure clinic continuity</div>
           </div>
           <div style={ambientCard}>
-            <div style={{ width: 80, height: 80, margin: "6px auto 10px auto", borderRadius: 20, background: "radial-gradient(circle at 30% 30%, rgba(193, 178, 141, 0.46), rgba(117, 127, 101, 0.12))" }} />
-            <div style={{ textAlign: "center", fontSize: 13, ...mutedText }}>Founder access tier</div>
+            <div style={{ width: 80, height: 80, margin: "6px auto 10px auto", borderRadius: 20, background: "radial-gradient(circle at 30% 30%, rgba(172, 193, 198, 0.5), rgba(127,165,157,0.14))" }} />
+            <div style={{ textAlign: "center", fontSize: 13, ...mutedText }}>Founder member access</div>
           </div>
         </div>
 
@@ -154,26 +154,26 @@ export function PortalLoginForm() {
               width: "min(430px, 100%)",
               padding: 34,
               borderRadius: 28,
-              background: "linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.05) 100%)",
-              border: "1px solid rgba(255,255,255,0.1)",
+              background: "linear-gradient(180deg, rgba(255,255,255,0.62) 0%, rgba(255,255,255,0.48) 100%)",
+              border: "1px solid rgba(255,255,255,0.7)",
               backdropFilter: "blur(24px)",
-              boxShadow: "0 0 0 1px rgba(198,184,146,0.06), 0 24px 60px rgba(8,10,10,0.26)"
+              boxShadow: "0 0 0 1px rgba(255,255,255,0.18), 0 24px 52px rgba(72,94,103,0.12)"
             }}
           >
-            <div style={{ width: 92, height: 92, margin: "0 auto 22px auto", borderRadius: "50%", background: "linear-gradient(180deg, rgba(214,219,214,0.28) 0%, rgba(171,175,170,0.14) 100%)", display: "grid", placeItems: "center" }}>
-              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#dfd5c8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <div style={{ width: 92, height: 92, margin: "0 auto 22px auto", borderRadius: "50%", background: "linear-gradient(180deg, rgba(220,231,234,0.9) 0%, rgba(201,214,218,0.66) 100%)", display: "grid", placeItems: "center" }}>
+              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#537079" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M20 21a8 8 0 1 0-16 0" />
                 <circle cx="12" cy="7" r="4" />
               </svg>
             </div>
 
             <form onSubmit={handleSubmit} style={{ display: "grid", gap: 14 }}>
-              <label style={{ display: "grid", gap: 8, color: "#f2eadf", fontSize: 14, fontWeight: 500 }}>
+              <label style={{ display: "grid", gap: 8, color: "#24414a", fontSize: 14, fontWeight: 600 }}>
                 Username / Email
                 <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" required placeholder="Username / Email" style={fieldStyle} />
               </label>
 
-              <label style={{ display: "grid", gap: 8, color: "#f2eadf", fontSize: 14, fontWeight: 500 }}>
+              <label style={{ display: "grid", gap: 8, color: "#24414a", fontSize: 14, fontWeight: 600 }}>
                 Password
                 <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="current-password" required placeholder="Password" style={fieldStyle} />
               </label>
@@ -185,13 +185,13 @@ export function PortalLoginForm() {
                   marginTop: 12,
                   padding: "16px 18px",
                   borderRadius: 999,
-                  border: "1px solid rgba(230, 220, 191, 0.28)",
-                  background: "linear-gradient(180deg, rgba(198,184,146,0.96) 0%, rgba(172,156,121,0.92) 100%)",
-                  color: "#202521",
+                  border: "1px solid rgba(108, 146, 138, 0.34)",
+                  background: "linear-gradient(180deg, rgba(124,163,155,0.96) 0%, rgba(96,137,130,0.94) 100%)",
+                  color: "#f7fbfb",
                   fontWeight: 600,
                   fontSize: 17,
                   cursor: status.state === "pending" ? "wait" : "pointer",
-                  boxShadow: "0 12px 28px rgba(10,12,11,0.24)",
+                  boxShadow: "0 12px 28px rgba(88, 121, 117, 0.2)",
                   fontFamily: bodyFont
                 }}
               >
@@ -200,12 +200,12 @@ export function PortalLoginForm() {
             </form>
 
             <div className="portal-login-foot" style={{ marginTop: 16, display: "flex", justifyContent: "space-between", gap: 16, fontSize: 13, ...mutedText }}>
-              <span>Secure practice access</span>
+              <span>Protected practice access</span>
               <span>Forgot Password?</span>
             </div>
 
             {status.state === "error" ? (
-              <div style={{ marginTop: 14, padding: "12px 14px", borderRadius: 16, background: "rgba(120, 52, 52, 0.26)", border: "1px solid rgba(190, 112, 112, 0.28)", color: "#f6d4d4", fontSize: 14, fontWeight: 600 }}>
+              <div style={{ marginTop: 14, padding: "12px 14px", borderRadius: 16, background: "rgba(254,242,242,0.94)", border: "1px solid #fecaca", color: "#b91c1c", fontSize: 14, fontWeight: 600 }}>
                 {status.message}
               </div>
             ) : null}
@@ -214,13 +214,13 @@ export function PortalLoginForm() {
 
         <div className="portal-login-ambient-right" style={{ paddingRight: 22, display: "grid", gap: 18 }}>
           <div style={ambientCard}>
-            <div style={{ fontSize: 15, marginBottom: 10, ...mutedText }}>Concierge support</div>
-            <div style={{ width: 96, height: 96, margin: "0 auto 10px auto", borderRadius: 24, background: "radial-gradient(circle, rgba(126,149,121,0.18), rgba(126,149,121,0.04))" }} />
-            <div style={{ fontSize: 13, textAlign: "center", ...mutedText }}>Quiet and focused</div>
+            <div style={{ fontSize: 15, marginBottom: 10, ...mutedText }}>Clinic support</div>
+            <div style={{ width: 96, height: 96, margin: "0 auto 10px auto", borderRadius: 24, background: "radial-gradient(circle, rgba(127,165,157,0.2), rgba(127,165,157,0.05))" }} />
+            <div style={{ fontSize: 13, textAlign: "center", ...mutedText }}>Calm and clear</div>
           </div>
           <div style={ambientCard}>
-            <div style={{ fontSize: 15, marginBottom: 10, ...mutedText }}>Protected billing</div>
-            <div style={{ width: 110, height: 110, margin: "0 auto 10px auto", borderRadius: "50%", background: "radial-gradient(circle, rgba(193,178,141,0.32) 0%, rgba(193,178,141,0.08) 46%, rgba(193,178,141,0.03) 72%, rgba(255,255,255,0) 78%)" }} />
+            <div style={{ fontSize: 15, marginBottom: 10, ...mutedText }}>Billing assurance</div>
+            <div style={{ width: 110, height: 110, margin: "0 auto 10px auto", borderRadius: "50%", background: "radial-gradient(circle, rgba(172,193,198,0.34) 0%, rgba(172,193,198,0.12) 46%, rgba(172,193,198,0.04) 72%, rgba(255,255,255,0) 78%)" }} />
             <div style={{ fontSize: 13, textAlign: "center", ...mutedText }}>Membership continuity</div>
           </div>
         </div>
@@ -228,7 +228,7 @@ export function PortalLoginForm() {
 
       <style jsx>{`
         input::placeholder {
-          color: rgba(242, 234, 223, 0.42);
+          color: rgba(90, 114, 121, 0.48);
         }
 
         @media (max-width: 980px) {
