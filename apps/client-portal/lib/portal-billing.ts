@@ -20,6 +20,17 @@ export type ClinicBillingInvoice = {
   pdfUrl: string | null;
 };
 
+export type ClinicBillingDiscount = {
+  label: string;
+  amountOff: number | null;
+  percentOff: number | null;
+  duration: string | null;
+  durationInMonths: number | null;
+  currency: string | null;
+  isLifetime: boolean;
+  isFounderOffer: boolean;
+};
+
 export type ClinicBillingSummary = {
   customerId: string | null;
   subscriptionId: string | null;
@@ -27,6 +38,7 @@ export type ClinicBillingSummary = {
   planKey: "basic" | "standard" | "premium" | "custom" | "unknown";
   planName: string;
   price: number | null;
+  basePrice: number | null;
   currency: string;
   interval: string | null;
   nextBillingDate: string | null;
@@ -35,6 +47,7 @@ export type ClinicBillingSummary = {
   productId: string | null;
   productName: string | null;
   trialEndsAt: string | null;
+  discount: ClinicBillingDiscount | null;
   invoices: ClinicBillingInvoice[];
 };
 
@@ -190,6 +203,55 @@ function deriveInvoicePlanName(invoice: Stripe.Invoice, fallback: string) {
   return fallback;
 }
 
+function deriveDiscount(input: {
+  subscriptionDiscount?: Stripe.Discount | null;
+  upcomingInvoice?: Stripe.Invoice | null;
+  price?: Stripe.Price | null;
+  planName: string;
+}) {
+  const coupon = input.subscriptionDiscount?.coupon ?? null;
+  const currency = (coupon?.currency ?? input.price?.currency ?? null)?.toUpperCase() ?? null;
+  const amountOff = typeof coupon?.amount_off === "number" ? coupon.amount_off / 100 : null;
+  const percentOff = coupon?.percent_off ?? null;
+  const duration = coupon?.duration ?? null;
+  const durationInMonths = coupon?.duration_in_months ?? null;
+  const labelSource = coupon?.name ?? null;
+  const detectedText = [labelSource, input.planName, input.price?.nickname, input.price?.lookup_key].filter(Boolean).join(" ");
+  const isFounderOffer = /found|early|doctor|adopter|lifetime|locked/i.test(detectedText);
+
+  if (coupon) {
+    return {
+      label:
+        labelSource ??
+        (percentOff ? `${percentOff}% plan discount` : amountOff && currency ? `${currency} ${amountOff} off` : "Plan discount applied"),
+      amountOff,
+      percentOff,
+      duration,
+      durationInMonths,
+      currency,
+      isLifetime: duration === "forever",
+      isFounderOffer
+    } satisfies ClinicBillingDiscount;
+  }
+
+  const upcomingInvoice = input.upcomingInvoice;
+  const baseUnitAmount = typeof input.price?.unit_amount === "number" ? input.price.unit_amount : null;
+  if (upcomingInvoice && typeof baseUnitAmount === "number" && upcomingInvoice.total < baseUnitAmount) {
+    return {
+      label: isFounderOffer ? "Founder pricing applied" : "Discount applied",
+      amountOff: (baseUnitAmount - upcomingInvoice.total) / 100,
+      percentOff: null,
+      duration: null,
+      durationInMonths: null,
+      currency: (upcomingInvoice.currency ?? input.price?.currency ?? "pkr").toUpperCase(),
+      isLifetime: false,
+      isFounderOffer
+    } satisfies ClinicBillingDiscount;
+  }
+
+  return null;
+}
+
 export function getReadablePortalPlanName(plan?: string | null) {
   const mappedPricePlan = planFromPriceId(plan);
   if (mappedPricePlan) {
@@ -224,11 +286,11 @@ export async function getClinicBillingSummary(clientId: string): Promise<ClinicB
     requestOptions
   );
 
-  const subscription =
+  const summarySubscription =
     subscriptions.data.find((item) => ["active", "trialing", "past_due", "unpaid", "incomplete"].includes(item.status)) ??
     subscriptions.data[0];
 
-  if (!subscription) {
+  if (!summarySubscription) {
     return {
       customerId,
       subscriptionId: null,
@@ -236,6 +298,7 @@ export async function getClinicBillingSummary(clientId: string): Promise<ClinicB
       planKey: "unknown",
       planName: "No active plan",
       price: null,
+      basePrice: null,
       currency: "PKR",
       interval: null,
       nextBillingDate: null,
@@ -244,9 +307,18 @@ export async function getClinicBillingSummary(clientId: string): Promise<ClinicB
       productId: null,
       productName: null,
       trialEndsAt: null,
+      discount: null,
       invoices: []
     };
   }
+
+  const subscription = await client.subscriptions.retrieve(
+    summarySubscription.id,
+    {
+      expand: ["discount.coupon", "items.data.price.product"]
+    },
+    requestOptions
+  );
 
   const item = subscription.items.data[0];
   const price = item?.price ?? null;
@@ -259,6 +331,26 @@ export async function getClinicBillingSummary(clientId: string): Promise<ClinicB
     priceId: price?.id
   });
 
+  let upcomingInvoice: Stripe.Invoice | null = null;
+  try {
+    upcomingInvoice = await client.invoices.retrieveUpcoming(
+      {
+        customer: customerId,
+        subscription: subscription.id
+      },
+      requestOptions
+    );
+  } catch {
+    upcomingInvoice = null;
+  }
+
+  const discount = deriveDiscount({
+    subscriptionDiscount: subscription.discount,
+    upcomingInvoice,
+    price,
+    planName: inferred.planName
+  });
+
   const invoices = await client.invoices.list(
     {
       customer: customerId,
@@ -268,21 +360,27 @@ export async function getClinicBillingSummary(clientId: string): Promise<ClinicB
     requestOptions
   );
 
+  const basePrice = typeof price?.unit_amount === "number" ? price.unit_amount / 100 : null;
+  const effectivePrice = typeof upcomingInvoice?.total === "number" ? upcomingInvoice.total / 100 : basePrice;
+  const effectiveNextBillingDate = toIsoFromEpoch(upcomingInvoice?.period_end ?? subscription.current_period_end);
+
   return {
     customerId,
     subscriptionId: subscription.id,
     status: subscription.status,
     planKey: inferred.planKey,
     planName: inferred.planName,
-    price: typeof price?.unit_amount === "number" ? price.unit_amount / 100 : null,
-    currency: price?.currency?.toUpperCase() ?? "PKR",
+    price: effectivePrice,
+    basePrice,
+    currency: (upcomingInvoice?.currency ?? price?.currency ?? "pkr").toUpperCase(),
     interval: price?.recurring?.interval ?? null,
-    nextBillingDate: toIsoFromEpoch(subscription.current_period_end),
+    nextBillingDate: effectiveNextBillingDate,
     cancelAtPeriodEnd: subscription.cancel_at_period_end,
     priceId: price?.id ?? null,
     productId: typeof price?.product === "string" ? price.product : product?.id ?? null,
     productName,
     trialEndsAt: toIsoFromEpoch(subscription.trial_end),
+    discount,
     invoices: invoices.data.map((invoice) => ({
       id: invoice.id,
       date: toIsoFromEpoch(invoice.status_transitions?.paid_at ?? invoice.created) ?? new Date().toISOString(),
