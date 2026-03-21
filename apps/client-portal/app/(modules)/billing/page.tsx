@@ -9,6 +9,22 @@ export const dynamic = "force-dynamic";
 const headingFont = 'Avenir Next, Segoe UI, Helvetica Neue, Arial, sans-serif';
 const bodyFont = 'Avenir Next, Segoe UI, Helvetica Neue, Arial, sans-serif';
 
+const workspaceActions = [
+  "Visits",
+  "Messages",
+  "Appointments",
+  "Reports",
+  "Billing",
+  "Settings"
+];
+
+const futureSpotlight = [
+  "Telehealth join",
+  "Consent tracking",
+  "Lab requests",
+  "Priority queue"
+];
+
 function formatMoney(amount: number | null, currency: string) {
   if (amount == null) {
     return "TBD";
@@ -188,7 +204,7 @@ export default async function Page({
         savingsSubnote={savingsSubnote}
       />
 
-      <div className="portal-page-wrap" style={{ maxWidth: 1280, margin: "0 auto", padding: "24px 20px 40px 20px", display: "grid", gap: 18 }}>
+      <div className="portal-content-wrap" style={{ maxWidth: 1280, margin: "0 auto", padding: "24px 20px 40px 20px", display: "grid", gap: 18 }}>
         {checkoutSuccess ? (
           <div style={{ ...shellSurface, padding: "14px 16px", color: "#87f2f4", borderRadius: 18 }}>
             Payment completed successfully.
@@ -207,56 +223,103 @@ export default async function Page({
           </div>
         ) : null}
 
-        <section
-          className="portal-summary-grid"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-            gap: 14
-          }}
-        >
-          <article style={{ ...shellSurface, padding: 22, borderRadius: 22 }}>
-            <div style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "#8dabc0" }}>Current Plan</div>
-            <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-              <div style={{ fontSize: 30, color: "#f2fbfd", fontFamily: headingFont, fontWeight: 700 }}>{planName}</div>
-              <span style={{ padding: "6px 10px", borderRadius: 999, border: `1px solid ${planTone.border}`, background: planTone.background, color: planTone.color, fontSize: 12, fontWeight: 600 }}>
-                {billingStatus}
-              </span>
+        <div className="portal-layout" style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: 18, alignItems: "start" }}>
+          <aside
+            className="portal-side-panel"
+            style={{
+              borderRadius: 24,
+              padding: 20,
+              background: "linear-gradient(180deg, rgba(29, 78, 146, 0.95) 0%, rgba(14, 26, 52, 0.98) 100%)",
+              border: "1px solid rgba(58, 92, 123, 0.6)"
+            }}
+          >
+            <div style={{ marginBottom: 18 }}>
+              <div style={{ color: "#87f2f4", fontWeight: 700, fontSize: 16 }}>Expandable workspace</div>
+              <p style={{ marginTop: 6, color: "#9fb8c5", fontSize: 13 }}>Add future modules here as your clinic grows.</p>
             </div>
-            <div style={{ marginTop: 12, color: "#9fb8c5", fontSize: 14, lineHeight: 1.6 }}>{slimNotes[0]}</div>
-          </article>
-
-          <article style={{ ...shellSurface, padding: 22, borderRadius: 22 }}>
-            <div style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "#8dabc0" }}>Next Cycle</div>
-            <div style={{ marginTop: 12, fontSize: 30, color: "#f2fbfd", fontFamily: headingFont, fontWeight: 700 }}>{formatMoney(cyclePrice, billing?.currency ?? "PKR")}</div>
-            {hasDiscount && baseCyclePrice != null && cyclePrice != null && baseCyclePrice > cyclePrice ? (
-              <div style={{ marginTop: 8, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
-                <span style={{ color: "#6f8ba1", textDecoration: "line-through", fontSize: 14 }}>{formatMoney(baseCyclePrice, billing?.currency ?? "PKR")}</span>
-                <span style={{ padding: "5px 10px", borderRadius: 999, background: "rgba(29,213,217,0.16)", border: "1px solid rgba(29,213,217,0.28)", color: "#87f2f4", fontSize: 12 }}>
-                  {billing?.discount?.label ?? "Discounted renewal"}
-                </span>
+            <div style={{ display: "grid", gap: 12 }}>
+              {workspaceActions.map((label) => (
+                <button
+                  key={label}
+                  type="button"
+                  style={{
+                    width: "100%",
+                    padding: "12px 14px",
+                    borderRadius: 14,
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    background: "rgba(255,255,255,0.04)",
+                    color: "#e7f6fb",
+                    fontWeight: 600,
+                    fontSize: 14,
+                    textAlign: "left"
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            <div style={{ marginTop: 22, borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: 14 }}>
+              <div style={{ color: "#9fb8c5", fontSize: 13 }}>Future features</div>
+              <div style={{ marginTop: 8, display: "grid", gap: 8 }}>
+                {futureSpotlight.map((feature) => (
+                  <div key={feature} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                    <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#87f2f4" }} />
+                    <span style={{ color: "#cde5f4", fontSize: 13 }}>{feature}</span>
+                  </div>
+                ))}
               </div>
-            ) : null}
-            <div style={{ marginTop: 12, color: "#9fb8c5", fontSize: 14 }}>Renews on {formatDate(nextBillingDate)}</div>
-          </article>
-
-          <article style={{ ...shellSurface, padding: 22, borderRadius: 22 }}>
-            <div style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "#8dabc0" }}>{lockedRateNote ? "Founder Advantage" : "Next Step"}</div>
-            <div style={{ marginTop: 12, fontSize: 18, color: "#e7f6fb", lineHeight: 1.5 }}>
-              {lockedRateNote ?? slimNotes[1]}
             </div>
-            <div style={{ marginTop: 16 }}>
-              <a href="/api/billing/manage" style={{ textDecoration: "none", padding: "10px 14px", borderRadius: 12, background: "linear-gradient(180deg, #22d6dc 0%, #1ebec6 100%)", border: "1px solid rgba(29,213,217,0.72)", color: "#07212a", fontWeight: 700, display: "inline-block" }}>
-                Open Billing Controls
-              </a>
-            </div>
-          </article>
-        </section>
+          </aside>
 
-        <div className="portal-content-grid" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.32fr) minmax(300px, 0.68fr)", gap: 18, alignItems: "start" }}>
-          <section style={{ display: "grid", gap: 18 }}>
-            <article style={{ ...shellSurface, borderRadius: 24, overflow: "hidden" }}>
-              <div style={{ padding: 22, borderBottom: "1px solid rgba(60, 94, 125, 0.42)", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+          <section className="portal-main-panel" style={{ display: "grid", gap: 18 }}>
+            <section
+              className="portal-summary-grid"
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+                gap: 14
+              }}
+            >
+              <article style={{ ...shellSurface, padding: 22, borderRadius: 22 }}>
+                <div style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "#8dabc0" }}>Current Plan</div>
+                <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                  <div style={{ fontSize: 30, color: "#f2fbfd", fontFamily: headingFont, fontWeight: 700 }}>{planName}</div>
+                  <span style={{ padding: "6px 10px", borderRadius: 999, border: `1px solid ${planTone.border}`, background: planTone.background, color: planTone.color, fontSize: 12, fontWeight: 600 }}>
+                    {billingStatus}
+                  </span>
+                </div>
+                <div style={{ marginTop: 12, color: "#9fb8c5", fontSize: 14 }}>{slimNotes[0]}</div>
+              </article>
+
+              <article style={{ ...shellSurface, padding: 22, borderRadius: 22 }}>
+                <div style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "#8dabc0" }}>Next Cycle</div>
+                <div style={{ marginTop: 12, fontSize: 30, color: "#f2fbfd", fontFamily: headingFont, fontWeight: 700 }}>{formatMoney(cyclePrice, billing?.currency ?? "PKR")}</div>
+                {hasDiscount && baseCyclePrice != null && cyclePrice != null && baseCyclePrice > cyclePrice ? (
+                  <div style={{ marginTop: 8, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+                    <span style={{ color: "#6f8ba1", textDecoration: "line-through", fontSize: 14 }}>{formatMoney(baseCyclePrice, billing?.currency ?? "PKR")}</span>
+                    <span style={{ padding: "5px 10px", borderRadius: 999, background: "rgba(29,213,217,0.16)", border: "1px solid rgba(29,213,217,0.28)", color: "#87f2f4", fontSize: 12 }}>
+                      {billing?.discount?.label ?? "Discounted renewal"}
+                    </span>
+                  </div>
+                ) : null}
+                <div style={{ marginTop: 12, color: "#9fb8c5", fontSize: 14 }}>Renews on {formatDate(nextBillingDate)}</div>
+              </article>
+
+              <article style={{ ...shellSurface, padding: 22, borderRadius: 22 }}>
+                <div style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "#8dabc0" }}>{lockedRateNote ? "Founder Advantage" : "Next Step"}</div>
+                <div style={{ marginTop: 12, fontSize: 18, color: "#e7f6fb", lineHeight: 1.5 }}>
+                  {lockedRateNote ?? slimNotes[1]}
+                </div>
+                <div style={{ marginTop: 16 }}>
+                  <a href="/api/billing/manage" style={{ textDecoration: "none", padding: "10px 14px", borderRadius: 12, background: "linear-gradient(180deg, #22d6dc 0%, #1ebec6 100%)", border: "1px solid rgba(29,213,217,0.72)", color: "#07212a", fontWeight: 700, display: "inline-block" }}>
+                    Open Billing Controls
+                  </a>
+                </div>
+              </article>
+            </section>
+
+            <div style={{ ...shellSurface, borderRadius: 24, padding: 22, display: "grid", gap: 12 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
                 <div>
                   <h2 style={{ margin: 0, fontSize: 28, color: "#f2fbfd", fontFamily: headingFont, fontWeight: 700 }}>Billing History</h2>
                   <p style={{ margin: "6px 0 0 0", color: "#9fb8c5", fontSize: 14 }}>
@@ -269,7 +332,6 @@ export default async function Page({
                   </a>
                 ) : null}
               </div>
-
               <div className="portal-history-table" style={{ overflowX: "auto" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 620 }}>
                   <thead>
@@ -307,7 +369,6 @@ export default async function Page({
                   </tbody>
                 </table>
               </div>
-
               <div className="portal-history-mobile" style={{ display: "none", padding: 18 }}>
                 {invoices.length ? (
                   invoices.map((invoice) => {
@@ -329,85 +390,82 @@ export default async function Page({
                   <div style={{ color: "#9fb8c5", textAlign: "center", padding: "10px 0 4px 0" }}>No invoice entries available yet.</div>
                 )}
               </div>
-            </article>
-          </section>
+            </div>
 
-          <aside className="portal-sidebar" style={{ display: "grid", gap: 18 }}>
-            <section style={{ ...shellSurface, borderRadius: 24, padding: 22, display: "grid", gap: 14 }}>
-              <div>
+            <aside className="portal-sidebar" style={{ display: "grid", gap: 18 }}>
+              <section style={{ ...shellSurface, borderRadius: 24, padding: 22, display: "grid", gap: 12 }}>
                 <div style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "#8dabc0" }}>Plan Summary</div>
                 <div style={{ marginTop: 8, fontSize: 28, color: "#f2fbfd", fontFamily: headingFont, fontWeight: 700 }}>{planName}</div>
-              </div>
-              <div style={{ display: "grid", gap: 12 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 14 }}>
-                  <span style={{ color: "#9fb8c5" }}>Status</span>
-                  <span style={{ color: "#e8f7fb", fontWeight: 500 }}>{billingStatus}</span>
-                </div>
-                <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 14 }}>
-                  <span style={{ color: "#9fb8c5" }}>Next billing</span>
-                  <span style={{ color: "#e8f7fb", fontWeight: 500 }}>{formatDate(nextBillingDate)}</span>
-                </div>
-                <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 14 }}>
-                  <span style={{ color: "#9fb8c5" }}>Renewal total</span>
-                  <span style={{ color: "#e8f7fb", fontWeight: 500 }}>{formatMoney(cyclePrice, billing?.currency ?? "PKR")}</span>
-                </div>
-                {hasDiscount && baseCyclePrice != null && cyclePrice != null && baseCyclePrice > cyclePrice ? (
+                <div style={{ display: "grid", gap: 12 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 14 }}>
-                    <span style={{ color: "#9fb8c5" }}>Standard rate</span>
-                    <span style={{ color: "#6f8ba1", textDecoration: "line-through" }}>{formatMoney(baseCyclePrice, billing?.currency ?? "PKR")}</span>
+                    <span style={{ color: "#9fb8c5" }}>Status</span>
+                    <span style={{ color: "#e8f7fb", fontWeight: 500 }}>{billingStatus}</span>
                   </div>
-                ) : null}
-                {cumulativeSavingsToDate != null && cumulativeSavingsToDate > 0 ? (
                   <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 14 }}>
-                    <span style={{ color: "#9fb8c5" }}>Saved to date</span>
-                    <span style={{ color: "#87f2f4", fontWeight: 700 }}>{formatMoney(cumulativeSavingsToDate, billing?.currency ?? "PKR")}</span>
+                    <span style={{ color: "#9fb8c5" }}>Next billing</span>
+                    <span style={{ color: "#e8f7fb", fontWeight: 500 }}>{formatDate(nextBillingDate)}</span>
                   </div>
-                ) : null}
-              </div>
-            </section>
-
-            <section style={{ ...shellSurface, borderRadius: 24, padding: 22, display: "grid", gap: 12 }}>
-              <div style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "#8dabc0" }}>{lockedRateNote ? "Founder Pricing" : "What You Can Do Here"}</div>
-              <div style={{ color: "#e7f6fb", lineHeight: 1.6 }}>
-                {lockedRateNote ? lockedRateNote : "Update payment details, download invoices, and manage the next subscription cycle without contacting support."}
-              </div>
-              <div style={{ color: "#9fb8c5", fontSize: 14, lineHeight: 1.6 }}>
-                {billing?.discount
-                  ? `${billing.discount.label}${billing.discount.isLifetime ? " is attached to the subscription in Stripe and should continue on future renewals." : " is currently applied to this subscription."}`
-                  : "For plan changes or failed payments, start with Manage Billing. That keeps the clinic subscription accurate while preserving your current access."}
-              </div>
-            </section>
-
-            {!isActive ? (
-              <section id="upgrade-options" style={{ ...shellSurface, borderRadius: 24, overflow: "hidden" }}>
-                <PricingSection />
+                  <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 14 }}>
+                    <span style={{ color: "#9fb8c5" }}>Renewal total</span>
+                    <span style={{ color: "#e8f7fb", fontWeight: 500 }}>{formatMoney(cyclePrice, billing?.currency ?? "PKR")}</span>
+                  </div>
+                  {hasDiscount && baseCyclePrice != null && cyclePrice != null && baseCyclePrice > cyclePrice ? (
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 14 }}>
+                      <span style={{ color: "#9fb8c5" }}>Standard rate</span>
+                      <span style={{ color: "#6f8ba1", textDecoration: "line-through" }}>{formatMoney(baseCyclePrice, billing?.currency ?? "PKR")}</span>
+                    </div>
+                  ) : null}
+                  {cumulativeSavingsToDate != null && cumulativeSavingsToDate > 0 ? (
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 14 }}>
+                      <span style={{ color: "#9fb8c5" }}>Saved to date</span>
+                      <span style={{ color: "#87f2f4", fontWeight: 700 }}>{formatMoney(cumulativeSavingsToDate, billing?.currency ?? "PKR")}</span>
+                    </div>
+                  ) : null}
+                </div>
               </section>
-            ) : (
-              <section id="upgrade-options" style={{ ...shellSurface, borderRadius: 24, padding: 22, display: "grid", gap: 12 }}>
-                <div style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "#8dabc0" }}>Future Upgrade</div>
-                <div style={{ fontSize: 16, color: "#e7f6fb", lineHeight: 1.6 }}>{slimNotes[1]}</div>
-                <a href="/api/billing/manage" style={{ textDecoration: "none", width: "fit-content", padding: "10px 14px", borderRadius: 12, background: "rgba(29,213,217,0.16)", border: "1px solid rgba(29,213,217,0.32)", color: "#87f2f4", fontWeight: 600 }}>
-                  Review change options
-                </a>
+
+              <section style={{ ...shellSurface, borderRadius: 24, padding: 22, display: "grid", gap: 12 }}>
+                <div style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "#8dabc0" }}>{lockedRateNote ? "Founder Pricing" : "What You Can Do Here"}</div>
+                <div style={{ color: "#e7f6fb", lineHeight: 1.6 }}>
+                  {lockedRateNote ? lockedRateNote : "Update payment details, download invoices, and manage the next subscription cycle without contacting support."}
+                </div>
+                <div style={{ color: "#9fb8c5", fontSize: 14, lineHeight: 1.6 }}>
+                  {billing?.discount
+                    ? `${billing.discount.label}${billing.discount.isLifetime ? " is attached to the subscription in Stripe and should continue on future renewals." : " is currently applied to this subscription."}`
+                    : "For plan changes or failed payments, start with Manage Billing. That keeps the clinic subscription accurate while preserving your current access."}
+                </div>
               </section>
-            )}
-          </aside>
+
+              {!isActive ? (
+                <section id="upgrade-options" style={{ ...shellSurface, borderRadius: 24, overflow: "hidden" }}>
+                  <PricingSection />
+                </section>
+              ) : (
+                <section id="upgrade-options" style={{ ...shellSurface, borderRadius: 24, padding: 22, display: "grid", gap: 12 }}>
+                  <div style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "#8dabc0" }}>Future Upgrade</div>
+                  <div style={{ fontSize: 16, color: "#e7f6fb", lineHeight: 1.6 }}>{slimNotes[1]}</div>
+                  <a href="/api/billing/manage" style={{ textDecoration: "none", width: "fit-content", padding: "10px 14px", borderRadius: 12, background: "rgba(29,213,217,0.16)", border: "1px solid rgba(29,213,217,0.32)", color: "#87f2f4", fontWeight: 600 }}>
+                    Review change options
+                  </a>
+                </section>
+              )}
+            </aside>
+          </section>
         </div>
       </div>
 
       <style>{`
         @media (max-width: 980px) {
-          .portal-content-grid {
+          .portal-layout {
             grid-template-columns: 1fr !important;
           }
-
-          .portal-sidebar {
-            order: -1;
+          .portal-side-panel {
+            grid-column: 1 / -1;
           }
         }
 
-        @media (max-width: 720px) {
-          .portal-page-wrap {
+        @media (max-width: 760px) {
+          .portal-content-wrap {
             padding: 18px 14px 28px 14px !important;
           }
 
