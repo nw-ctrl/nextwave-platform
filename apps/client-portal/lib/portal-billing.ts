@@ -205,7 +205,7 @@ function deriveInvoicePlanName(invoice: Stripe.Invoice, fallback: string) {
 
 function deriveDiscount(input: {
   subscriptionDiscount?: Stripe.Discount | null;
-  upcomingInvoice?: Stripe.Invoice | null;
+  upcomingInvoice?: Stripe.UpcomingInvoice | null;
   price?: Stripe.Price | null;
   planName: string;
 }) {
@@ -331,7 +331,7 @@ export async function getClinicBillingSummary(clientId: string): Promise<ClinicB
     priceId: price?.id
   });
 
-  let upcomingInvoice: Stripe.Invoice | null = null;
+  let upcomingInvoice: Stripe.UpcomingInvoice | null = null;
   try {
     upcomingInvoice = await client.invoices.retrieveUpcoming(
       {
