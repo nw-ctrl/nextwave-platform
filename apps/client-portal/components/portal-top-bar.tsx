@@ -16,6 +16,8 @@ type Props = {
   billingStatus: string;
   nextBillingDate: string;
   billingNote?: string | null;
+  savingsHighlight?: string | null;
+  savingsSubnote?: string | null;
 };
 
 const headingFont = 'Avenir Next, Segoe UI, Helvetica Neue, Arial, sans-serif';
@@ -28,7 +30,9 @@ export function PortalTopBar({
   planName,
   billingStatus,
   nextBillingDate,
-  billingNote
+  billingNote,
+  savingsHighlight,
+  savingsSubnote
 }: Props) {
   const [clientId, setClientId] = useState(selectedClientId ?? memberships[0]?.clientId ?? "");
   const [status, setStatus] = useState("");
@@ -95,7 +99,7 @@ export function PortalTopBar({
           flexWrap: "wrap"
         }}
       >
-        <div className="portal-topbar-brand-row" style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+        <div className="portal-topbar-brand-row" style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap", flex: "1 1 620px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div
               style={{
@@ -132,11 +136,19 @@ export function PortalTopBar({
               <span>|</span>
               <span>Next cycle {nextBillingDate}</span>
             </div>
-            {billingNote ? (
-              <div style={{ display: "inline-flex", width: "fit-content", padding: "6px 10px", borderRadius: 999, background: "#edf4f6", border: "1px solid #d6e3e7", color: "#456674", fontSize: 12 }}>
-                {billingNote}
-              </div>
-            ) : null}
+            <div className="portal-topbar-pill-row" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {billingNote ? (
+                <div style={{ display: "inline-flex", width: "fit-content", padding: "6px 10px", borderRadius: 999, background: "#edf4f6", border: "1px solid #d6e3e7", color: "#456674", fontSize: 12 }}>
+                  {billingNote}
+                </div>
+              ) : null}
+              {savingsHighlight ? (
+                <div style={{ display: "inline-flex", width: "fit-content", padding: "6px 10px", borderRadius: 999, background: "#edf7f2", border: "1px solid #cfe2d8", color: "#356058", fontSize: 12, fontWeight: 600 }}>
+                  {savingsHighlight}
+                </div>
+              ) : null}
+            </div>
+            {savingsSubnote ? <div style={{ fontSize: 12, color: "#73868e" }}>{savingsSubnote}</div> : null}
           </div>
         </div>
 
@@ -252,7 +264,8 @@ export function PortalTopBar({
             display: none !important;
           }
 
-          .portal-topbar-meta {
+          .portal-topbar-meta,
+          .portal-topbar-pill-row {
             gap: 6px !important;
           }
 

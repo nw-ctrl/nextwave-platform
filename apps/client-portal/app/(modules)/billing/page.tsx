@@ -157,6 +157,10 @@ export default async function Page({
   const billingNote = lockedRateNote ?? (hasDiscount ? "Discount currently applied" : null);
   const cyclePrice = billing?.price ?? null;
   const baseCyclePrice = billing?.basePrice ?? null;
+  const monthlySavings = baseCyclePrice != null && cyclePrice != null && baseCyclePrice > cyclePrice ? baseCyclePrice - cyclePrice : null;
+  const cumulative12MonthSavings = monthlySavings != null ? monthlySavings * 12 : null;
+  const savingsHighlight = monthlySavings != null ? `${formatMoney(monthlySavings, billing?.currency ?? "PKR")} saved each cycle` : null;
+  const savingsSubnote = cumulative12MonthSavings != null ? `If you stay 12 months, total discount achieved ${formatMoney(cumulative12MonthSavings, billing?.currency ?? "PKR")}.` : null;
 
   return (
     <main
@@ -176,6 +180,8 @@ export default async function Page({
         billingStatus={billingStatus}
         nextBillingDate={formatDate(nextBillingDate)}
         billingNote={billingNote}
+        savingsHighlight={savingsHighlight}
+        savingsSubnote={savingsSubnote}
       />
 
       <div className="portal-page-wrap" style={{ maxWidth: 1240, margin: "0 auto", padding: "24px 20px 40px 20px", display: "grid", gap: 18 }}>
