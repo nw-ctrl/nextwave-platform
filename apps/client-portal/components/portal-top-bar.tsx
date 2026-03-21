@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 
@@ -18,6 +18,7 @@ type Props = {
   billingNote?: string | null;
   savingsHighlight?: string | null;
   savingsSubnote?: string | null;
+  nextCycleAmount?: string | null;
 };
 
 const headingFont = 'Avenir Next, Segoe UI, Helvetica Neue, Arial, sans-serif';
@@ -32,7 +33,8 @@ export function PortalTopBar({
   nextBillingDate,
   billingNote,
   savingsHighlight,
-  savingsSubnote
+  savingsSubnote,
+  nextCycleAmount
 }: Props) {
   const [clientId, setClientId] = useState(selectedClientId ?? memberships[0]?.clientId ?? "");
   const [status, setStatus] = useState("");
@@ -72,103 +74,45 @@ export function PortalTopBar({
   }
 
   return (
-    <header
-      className="portal-topbar"
-      style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 20,
-        width: "100%",
-        borderBottom: "1px solid rgba(58, 92, 123, 0.48)",
-        background: "rgba(14, 33, 54, 0.96)",
-        backdropFilter: "blur(10px)",
-        boxShadow: "0 10px 28px rgba(7, 15, 28, 0.24)",
-        fontFamily: bodyFont
-      }}
-    >
-      <div
-        className="portal-topbar-inner"
-        style={{
-          maxWidth: 1280,
-          margin: "0 auto",
-          padding: "12px 20px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: 16,
-          flexWrap: "wrap"
-        }}
-      >
-        <div className="portal-topbar-brand-row" style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap", flex: "1 1 700px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <div
-              style={{
-                width: 42,
-                height: 42,
-                borderRadius: 14,
-                display: "grid",
-                placeItems: "center",
-                background: "linear-gradient(180deg, #1dd5d9 0%, #1cb8c2 100%)",
-                color: "#08242d",
-                boxShadow: "0 12px 24px rgba(29, 213, 217, 0.24)"
-              }}
-            >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.85" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-                <path d="M9 9h6" />
-                <path d="M9 13h6" />
-                <path d="M9 17h4" />
-              </svg>
-            </div>
-            <div>
-              <div style={{ fontFamily: headingFont, fontSize: 22, color: "#f2fbfd", letterSpacing: "0.01em", fontWeight: 700 }}>MediVault Pro</div>
-              <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.12em", color: "#84a8bb", fontWeight: 600 }}>Clinic Portal</div>
-            </div>
+    <header className="portal-topbar">
+      <div className="portal-topbar-inner">
+        <div className="portal-topbar-brand">
+          <div className="portal-topbar-logo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+              <path d="M9 9h6" />
+              <path d="M9 13h6" />
+              <path d="M9 17h4" />
+            </svg>
           </div>
-
-          <div className="portal-topbar-divider" style={{ height: 28, width: 1, background: "rgba(73, 105, 136, 0.56)" }} />
-
-          <div style={{ display: "grid", gap: 6 }}>
-            <div style={{ fontSize: 18, lineHeight: 1.05, color: "#f3fbfd", fontFamily: headingFont, fontWeight: 700 }}>{clinicName}</div>
-            <div className="portal-topbar-meta" style={{ display: "flex", gap: 10, flexWrap: "wrap", fontSize: 12, color: "#9fb8c5" }}>
-              <span>{planName}</span>
-              <span>|</span>
-              <span>{billingStatus}</span>
-              <span>|</span>
-              <span>Next cycle {nextBillingDate}</span>
-            </div>
-            <div className="portal-topbar-pill-row" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              {billingNote ? (
-                <div style={{ display: "inline-flex", width: "fit-content", padding: "6px 10px", borderRadius: 999, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(88, 121, 152, 0.5)", color: "#d6edf2", fontSize: 12 }}>
-                  {billingNote}
-                </div>
-              ) : null}
-              {savingsHighlight ? (
-                <div style={{ display: "inline-flex", width: "fit-content", padding: "6px 10px", borderRadius: 999, background: "rgba(29,213,217,0.16)", border: "1px solid rgba(29,213,217,0.34)", color: "#87f2f4", fontSize: 12, fontWeight: 700 }}>
-                  {savingsHighlight}
-                </div>
-              ) : null}
-            </div>
-            {savingsSubnote ? <div style={{ fontSize: 12, color: "#86a6b7" }}>{savingsSubnote}</div> : null}
+          <div className="portal-topbar-intro">
+            <div className="portal-topbar-title">MediVault Pro</div>
+            <div className="portal-topbar-role">Clinic Portal</div>
           </div>
         </div>
 
-        <div className="portal-topbar-actions" style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+        <div className="portal-topbar-main">
+          <div className="portal-topbar-clinic">{clinicName}</div>
+          <div className="portal-topbar-plan">
+            <span>{planName}</span>
+            <span>•</span>
+            <span>{billingStatus}</span>
+          </div>
+          <div className="portal-topbar-cycle">
+            <span>{nextCycleAmount ?? "Next cycle TBD"}</span>
+            <span>•</span>
+            <span>{nextBillingDate ? `Renews ${nextBillingDate}` : "Next cycle date TBD"}</span>
+          </div>
+          {billingNote ? <div className="portal-topbar-pill">{billingNote}</div> : null}
+        </div>
+
+        <div className="portal-topbar-actions">
           {memberships.length > 1 ? (
             <>
               <select
                 value={clientId}
                 onChange={(event) => setClientId(event.target.value)}
-                className="portal-topbar-control portal-topbar-select"
-                style={{
-                  padding: "10px 12px",
-                  borderRadius: 12,
-                  border: "1px solid rgba(74, 107, 139, 0.58)",
-                  background: "rgba(255,255,255,0.08)",
-                  color: "#e8f7fb",
-                  fontWeight: 500,
-                  fontFamily: bodyFont
-                }}
+                className="portal-topbar-select"
               >
                 {memberships.map((item) => (
                   <option key={item.clientId} value={item.clientId}>
@@ -180,112 +124,240 @@ export function PortalTopBar({
                 type="button"
                 onClick={handleSelect}
                 disabled={pending || clientId === selectedClientId}
-                className="portal-topbar-control"
-                style={{
-                  padding: "10px 14px",
-                  borderRadius: 12,
-                  border: "1px solid rgba(74, 107, 139, 0.58)",
-                  background: "rgba(255,255,255,0.08)",
-                  color: "#e8f7fb",
-                  fontWeight: 500,
-                  cursor: pending ? "wait" : "pointer",
-                  fontFamily: bodyFont
-                }}
+                className="portal-topbar-button"
               >
-                Use Clinic
+                Switch Clinic
               </button>
             </>
           ) : null}
-
-          <a
-            href="/api/billing/manage"
-            className="portal-topbar-control portal-topbar-primary"
-            style={{
-              textDecoration: "none",
-              padding: "10px 14px",
-              borderRadius: 12,
-              background: "linear-gradient(180deg, #22d6dc 0%, #1ebec6 100%)",
-              border: "1px solid rgba(29,213,217,0.72)",
-              color: "#07212a",
-              fontWeight: 700,
-              boxShadow: "0 14px 28px rgba(29,213,217,0.16)"
-            }}
-          >
+          <a href="/api/billing/manage" className="portal-topbar-link">
             Manage Billing
           </a>
-
-          <button
-            type="button"
-            onClick={handleLogout}
-            disabled={pending}
-            className="portal-topbar-control"
-            style={{
-              padding: "10px 14px",
-              borderRadius: 12,
-              border: "1px solid rgba(74, 107, 139, 0.58)",
-              background: "rgba(255,255,255,0.08)",
-              color: "#d6edf2",
-              fontWeight: 500,
-              cursor: pending ? "wait" : "pointer",
-              fontFamily: bodyFont
-            }}
-          >
+          <button type="button" onClick={handleLogout} disabled={pending} className="portal-topbar-link ghost">
             Logout
           </button>
         </div>
       </div>
+
+      {(savingsHighlight || savingsSubnote) && (
+        <div className="portal-topbar-savings">
+          <div className="portal-topbar-savings-main">{savingsHighlight ?? "Founder pricing locked for every renewal"}</div>
+          {savingsSubnote ? <div className="portal-topbar-savings-sub">{savingsSubnote}</div> : null}
+        </div>
+      )}
+
       {status ? (
-        <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 20px 10px 20px", color: status.includes("Unable") || status.includes("failed") ? "#fecaca" : "#9fb8c5", fontSize: 13, fontWeight: 500 }}>
+        <div className="portal-topbar-status" role="status">
           {status}
         </div>
       ) : null}
 
       <style jsx>{`
-        @media (max-width: 920px) {
-          .portal-topbar-inner {
-            align-items: flex-start !important;
-          }
-
-          .portal-topbar-actions {
-            width: 100%;
-          }
+        .portal-topbar {
+          position: sticky;
+          top: 0;
+          z-index: 20;
+          width: 100%;
+          background: linear-gradient(120deg, rgba(4, 36, 26, 0.95), rgba(7, 21, 48, 0.9));
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          box-shadow: 0 12px 30px rgba(2, 4, 10, 0.6);
+          backdrop-filter: blur(18px);
         }
 
-        @media (max-width: 680px) {
+        .portal-topbar-inner {
+          max-width: 1280px;
+          margin: 0 auto;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+          flex-wrap: wrap;
+          padding: 12px 24px;
+          font-family: ;
+        }
+
+        .portal-topbar-brand {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          flex: 0 1 280px;
+        }
+
+        .portal-topbar-logo {
+          width: 46px;
+          height: 46px;
+          border-radius: 14px;
+          background: linear-gradient(180deg, #28ebd9 0%, #1db4b4 100%);
+          display: grid;
+          place-items: center;
+          color: #062229;
+          box-shadow: 0 18px 36px rgba(33, 205, 216, 0.35);
+        }
+
+        .portal-topbar-intro {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+
+        .portal-topbar-title {
+          font-family: ;
+          font-size: 18px;
+          font-weight: 700;
+          color: #f9fbff;
+        }
+
+        .portal-topbar-role {
+          font-size: 11px;
+          letter-spacing: 0.25em;
+          text-transform: uppercase;
+          color: rgba(255, 255, 255, 0.68);
+        }
+
+        .portal-topbar-main {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          flex: 1 1 340px;
+          min-width: 220px;
+        }
+
+        .portal-topbar-clinic {
+          font-size: 18px;
+          font-weight: 600;
+          font-family: ;
+          color: #f2fbff;
+        }
+
+        .portal-topbar-plan,
+        .portal-topbar-cycle {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 12px;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: rgba(255, 255, 255, 0.68);
+        }
+
+        .portal-topbar-cycle span:first-child {
+          letter-spacing: 0;
+          text-transform: none;
+          font-size: 13px;
+          color: rgba(255, 255, 255, 0.9);
+        }
+
+        .portal-topbar-pill {
+          display: inline-flex;
+          align-items: center;
+          padding: 4px 14px;
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          font-size: 11px;
+          letter-spacing: 0.08em;
+          color: #9bf1ff;
+        }
+
+        .portal-topbar-actions {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
+        }
+
+        .portal-topbar-select,
+        .portal-topbar-button,
+        .portal-topbar-link {
+          font-family: ;
+          font-size: 13px;
+        }
+
+        .portal-topbar-select {
+          padding: 10px 12px;
+          border-radius: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          background: rgba(5, 14, 22, 0.75);
+          color: #eff9ff;
+          min-width: 160px;
+        }
+
+        .portal-topbar-select:focus {
+          outline: 2px solid rgba(34, 214, 220, 0.9);
+          outline-offset: 2px;
+        }
+
+        .portal-topbar-button {
+          padding: 10px 16px;
+          border-radius: 14px;
+          border: none;
+          background: linear-gradient(180deg, #22d6dc 0%, #1ebec6 100%);
+          color: #042129;
+          font-weight: 700;
+          cursor: pointer;
+          box-shadow: 0 12px 28px rgba(29, 213, 217, 0.25);
+        }
+
+        .portal-topbar-link {
+          padding: 10px 14px;
+          border-radius: 12px;
+          background: rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          color: #e5f7ff;
+          text-decoration: none;
+          font-weight: 600;
+        }
+
+        .portal-topbar-link.ghost {
+          border-color: rgba(255, 255, 255, 0.1);
+          background: transparent;
+          color: rgba(255, 255, 255, 0.8);
+        }
+
+        .portal-topbar-savings {
+          max-width: 1280px;
+          margin: 0 auto;
+          padding: 6px 24px 14px 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          font-size: 12px;
+          color: rgba(255, 255, 255, 0.82);
+        }
+
+        .portal-topbar-savings-main {
+          font-weight: 600;
+        }
+
+        .portal-topbar-savings-sub {
+          font-size: 11px;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+          color: rgba(255, 255, 255, 0.6);
+        }
+
+        .portal-topbar-status {
+          max-width: 1280px;
+          margin: 0 auto 6px auto;
+          padding: 0 24px 8px 24px;
+          font-size: 12px;
+          color: rgba(255, 255, 255, 0.7);
+        }
+
+        @media (max-width: 900px) {
           .portal-topbar-inner {
-            padding: 12px 14px !important;
-            gap: 12px !important;
-          }
-
-          .portal-topbar-brand-row {
-            width: 100%;
-            gap: 12px !important;
-          }
-
-          .portal-topbar-divider {
-            display: none !important;
-          }
-
-          .portal-topbar-meta,
-          .portal-topbar-pill-row {
-            gap: 6px !important;
+            flex-direction: column;
+            align-items: flex-start;
           }
 
           .portal-topbar-actions {
-            display: grid !important;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px !important;
-          }
-
-          .portal-topbar-control {
             width: 100%;
-            text-align: center;
-            justify-content: center;
+            justify-content: flex-start;
           }
 
-          .portal-topbar-select,
-          .portal-topbar-primary {
-            grid-column: 1 / -1;
+          .portal-topbar-savings,
+          .portal-topbar-status {
+            padding: 6px 16px;
           }
         }
       `}</style>

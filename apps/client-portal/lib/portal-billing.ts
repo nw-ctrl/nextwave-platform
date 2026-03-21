@@ -315,15 +315,29 @@ export async function getClinicBillingSummary(clientId: string): Promise<ClinicB
   const subscription = await client.subscriptions.retrieve(
     summarySubscription.id,
     {
-      expand: ["discount.coupon", "items.data.price.product"]
+      expand: ["discount.coupon"]
     },
     requestOptions
   );
 
   const item = subscription.items.data[0];
   const price = item?.price ?? null;
-  const product = price && typeof price.product !== "string" ? price.product : null;
-  const productName = getProductName(product);
+  const linkedProductId = typeof price?.product === "string" ? price.product : price?.product?.id ?? null;
+
+  let productName: string | null = null;
+  if (price && typeof price.product !== "string" && price.product) {
+    productName = getProductName(price.product);
+  }
+
+  if (!productName && linkedProductId) {
+    try {
+      const fetchedProduct = await client.products.retrieve(linkedProductId, requestOptions);
+      productName = getProductName(fetchedProduct);
+    } catch {
+      productName = null;
+    }
+  }
+
   const inferred = inferPlanName({
     lookupKey: price?.lookup_key,
     nickname: price?.nickname,
@@ -331,15 +345,16 @@ export async function getClinicBillingSummary(clientId: string): Promise<ClinicB
     priceId: price?.id
   });
 
-  let upcomingInvoice: Stripe.UpcomingInvoice | null = null;
+  let upcomingInvoice: Stripe.Invoice | null = null;
   try {
-    upcomingInvoice = await client.invoices.retrieveUpcoming(
+    const upcoming = await client.invoices.retrieveUpcoming(
       {
         customer: customerId,
         subscription: subscription.id
       },
       requestOptions
     );
+    upcomingInvoice = (upcoming as unknown) as Stripe.Invoice;
   } catch {
     upcomingInvoice = null;
   }
@@ -377,7 +392,7 @@ export async function getClinicBillingSummary(clientId: string): Promise<ClinicB
     nextBillingDate: effectiveNextBillingDate,
     cancelAtPeriodEnd: subscription.cancel_at_period_end,
     priceId: price?.id ?? null,
-    productId: typeof price?.product === "string" ? price.product : product?.id ?? null,
+    productId: linkedProductId,
     productName,
     trialEndsAt: toIsoFromEpoch(subscription.trial_end),
     discount,
