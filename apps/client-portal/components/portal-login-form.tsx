@@ -67,6 +67,7 @@ export function PortalLoginForm() {
 
   return (
     <section
+      className="portal-login-shell"
       style={{
         width: "min(1160px, 100%)",
         minHeight: 760,
@@ -88,6 +89,7 @@ export function PortalLoginForm() {
       />
 
       <div
+        className="portal-login-nav"
         style={{
           position: "absolute",
           top: 0,
@@ -116,7 +118,7 @@ export function PortalLoginForm() {
           <div style={{ fontFamily: headingFont, fontSize: 24, letterSpacing: "0.04em", color: "#322f2a" }}>MEDIVAULT</div>
         </div>
 
-        <div style={{ display: "flex", gap: 32, fontSize: 14, ...mutedText }}>
+        <div className="portal-login-nav-links" style={{ display: "flex", gap: 32, fontSize: 14, ...mutedText }}>
           <span>Sanctuary</span>
           <span>Care Team</span>
           <span>Insights</span>
@@ -125,6 +127,7 @@ export function PortalLoginForm() {
       </div>
 
       <div
+        className="portal-login-grid"
         style={{
           position: "relative",
           minHeight: 760,
@@ -134,7 +137,7 @@ export function PortalLoginForm() {
           paddingTop: 88
         }}
       >
-        <div style={{ paddingLeft: 22, display: "grid", gap: 18 }}>
+        <div className="portal-login-ambient-left" style={{ paddingLeft: 22, display: "grid", gap: 18 }}>
           <div style={ambientCard}>
             <div style={{ width: 90, height: 90, margin: "8px auto 10px auto", borderRadius: "50%", background: "radial-gradient(circle, rgba(94,170,173,0.44) 0%, rgba(94,170,173,0.08) 44%, rgba(94,170,173,0.03) 72%, rgba(255,255,255,0) 78%)" }} />
             <div style={{ textAlign: "center", fontSize: 13, ...mutedText }}>Restore calm focus</div>
@@ -145,8 +148,9 @@ export function PortalLoginForm() {
           </div>
         </div>
 
-        <div style={{ display: "grid", placeItems: "center", padding: "0 24px" }}>
+        <div className="portal-login-center" style={{ display: "grid", placeItems: "center", padding: "0 24px" }}>
           <div
+            className="portal-login-card"
             style={{
               width: "min(430px, 100%)",
               padding: 34,
@@ -196,7 +200,7 @@ export function PortalLoginForm() {
               </button>
             </form>
 
-            <div style={{ marginTop: 16, display: "flex", justifyContent: "space-between", gap: 16, fontSize: 13, ...mutedText }}>
+            <div className="portal-login-foot" style={{ marginTop: 16, display: "flex", justifyContent: "space-between", gap: 16, fontSize: 13, ...mutedText }}>
               <span>Use secure authentication</span>
               <span>Forgot Password?</span>
             </div>
@@ -209,7 +213,7 @@ export function PortalLoginForm() {
           </div>
         </div>
 
-        <div style={{ paddingRight: 22, display: "grid", gap: 18 }}>
+        <div className="portal-login-ambient-right" style={{ paddingRight: 22, display: "grid", gap: 18 }}>
           <div style={ambientCard}>
             <div style={{ fontSize: 15, marginBottom: 10, ...mutedText }}>Neural Harmony</div>
             <div style={{ width: 96, height: 96, margin: "0 auto 10px auto", borderRadius: 24, background: "radial-gradient(circle, rgba(94,170,173,0.18), rgba(94,170,173,0.04))" }} />
@@ -222,6 +226,52 @@ export function PortalLoginForm() {
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        @media (max-width: 980px) {
+          .portal-login-grid {
+            grid-template-columns: 1fr !important;
+            padding: 112px 22px 28px 22px !important;
+            min-height: auto !important;
+          }
+
+          .portal-login-ambient-left,
+          .portal-login-ambient-right,
+          .portal-login-nav-links {
+            display: none !important;
+          }
+
+          .portal-login-center {
+            padding: 0 !important;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .portal-login-shell {
+            min-height: auto !important;
+            border-radius: 24px !important;
+          }
+
+          .portal-login-nav {
+            height: 74px !important;
+            padding: 0 18px !important;
+          }
+
+          .portal-login-grid {
+            padding: 92px 14px 18px 14px !important;
+          }
+
+          .portal-login-card {
+            padding: 24px !important;
+            border-radius: 24px !important;
+          }
+
+          .portal-login-foot {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+          }
+        }
+      `}</style>
     </section>
   );
 }

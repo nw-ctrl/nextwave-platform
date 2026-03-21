@@ -142,6 +142,7 @@ export default async function Page({
     billingError = error instanceof Error ? error.message : "Unable to load live billing details right now.";
   }
 
+  const invoices = billing?.invoices ?? [];
   const fallbackPlanName = getReadablePortalPlanName(membership.subscription?.plan);
   const planName = billing?.planName ?? fallbackPlanName;
   const billingStatus = humanizeStatus(billing?.status ?? membership.subscription?.status ?? "inactive");
@@ -172,7 +173,7 @@ export default async function Page({
         nextBillingDate={formatDate(nextBillingDate)}
       />
 
-      <div style={{ maxWidth: 1240, margin: "0 auto", padding: "24px 20px 40px 20px", display: "grid", gap: 18 }}>
+      <div className="portal-page-wrap" style={{ maxWidth: 1240, margin: "0 auto", padding: "24px 20px 40px 20px", display: "grid", gap: 18 }}>
         {checkoutSuccess ? (
           <div style={{ ...shellSurface, padding: "14px 16px", color: "#5e6f63", borderRadius: 18 }}>
             Payment completed successfully.
@@ -192,6 +193,7 @@ export default async function Page({
         ) : null}
 
         <section
+          className="portal-summary-grid"
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
@@ -226,24 +228,24 @@ export default async function Page({
           </article>
         </section>
 
-        <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.3fr) minmax(280px, 0.7fr)", gap: 18, alignItems: "start" }}>
+        <div className="portal-content-grid" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.3fr) minmax(280px, 0.7fr)", gap: 18, alignItems: "start" }}>
           <section style={{ display: "grid", gap: 18 }}>
             <article style={{ ...shellSurface, borderRadius: 28, overflow: "hidden" }}>
               <div style={{ padding: 22, borderBottom: "1px solid rgba(146, 140, 130, 0.12)", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
                 <div>
                   <h2 style={{ margin: 0, fontSize: 28, color: "#3e3832", fontFamily: headingFont, fontWeight: 400 }}>Billing History</h2>
                   <p style={{ margin: "6px 0 0 0", color: "rgba(92, 84, 74, 0.56)", fontSize: 14 }}>
-                    {billing?.invoices?.length ? "Recent posted invoices from Stripe." : "Invoices will appear here after Stripe posts them to the clinic account."}
+                    {invoices.length ? "Recent posted invoices from Stripe." : "Invoices will appear here after Stripe posts them to the clinic account."}
                   </p>
                 </div>
-                {billing?.invoices?.[0]?.hostedInvoiceUrl ? (
-                  <a href={billing.invoices[0].hostedInvoiceUrl} target="_blank" rel="noreferrer" style={{ color: "rgba(74, 67, 60, 0.7)", fontWeight: 500, textDecoration: "none" }}>
+                {invoices[0]?.hostedInvoiceUrl ? (
+                  <a href={invoices[0].hostedInvoiceUrl} target="_blank" rel="noreferrer" style={{ color: "rgba(74, 67, 60, 0.7)", fontWeight: 500, textDecoration: "none" }}>
                     Latest invoice
                   </a>
                 ) : null}
               </div>
 
-              <div style={{ overflowX: "auto" }}>
+              <div className="portal-history-table" style={{ overflowX: "auto" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 620 }}>
                   <thead>
                     <tr style={{ color: "rgba(92, 84, 74, 0.44)", fontSize: 12, textTransform: "uppercase", letterSpacing: "0.08em" }}>
@@ -254,8 +256,8 @@ export default async function Page({
                     </tr>
                   </thead>
                   <tbody>
-                    {billing?.invoices?.length ? (
-                      billing.invoices.map((invoice) => {
+                    {invoices.length ? (
+                      invoices.map((invoice) => {
                         const tone = statusTone(invoice.status);
                         return (
                           <tr key={invoice.id} style={{ borderTop: "1px solid rgba(146, 140, 130, 0.12)" }}>
@@ -280,10 +282,32 @@ export default async function Page({
                   </tbody>
                 </table>
               </div>
+
+              <div className="portal-history-mobile" style={{ display: "none", padding: 18 }}>
+                {invoices.length ? (
+                  invoices.map((invoice) => {
+                    const tone = statusTone(invoice.status);
+                    return (
+                      <article key={invoice.id} style={{ padding: 16, borderRadius: 20, background: "rgba(255,255,255,0.28)", border: "1px solid rgba(255,255,255,0.42)", display: "grid", gap: 10, marginBottom: 12 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
+                          <div style={{ color: "#4a433c", fontWeight: 500 }}>{formatDate(invoice.date)}</div>
+                          <span style={{ padding: "6px 10px", borderRadius: 999, border: `1px solid ${tone.border}`, background: tone.background, color: tone.color, fontSize: 12, fontWeight: 500 }}>
+                            {humanizeStatus(invoice.status)}
+                          </span>
+                        </div>
+                        <div style={{ color: "rgba(92, 84, 74, 0.72)" }}>{invoice.planName}</div>
+                        <div style={{ color: "#4a433c", fontWeight: 500 }}>{formatMoney(invoice.amount, invoice.currency)}</div>
+                      </article>
+                    );
+                  })
+                ) : (
+                  <div style={{ color: "rgba(92, 84, 74, 0.56)", textAlign: "center", padding: "10px 0 4px 0" }}>No invoice entries available yet.</div>
+                )}
+              </div>
             </article>
           </section>
 
-          <aside style={{ display: "grid", gap: 18 }}>
+          <aside className="portal-sidebar" style={{ display: "grid", gap: 18 }}>
             <section style={{ ...shellSurface, borderRadius: 28, padding: 22, display: "grid", gap: 14 }}>
               <div>
                 <div style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(92, 84, 74, 0.44)" }}>Plan Summary</div>
@@ -305,6 +329,12 @@ export default async function Page({
               </div>
             </section>
 
+            <section style={{ ...shellSurface, borderRadius: 28, padding: 22, display: "grid", gap: 12 }}>
+              <div style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(92, 84, 74, 0.44)" }}>What You Can Do Here</div>
+              <div style={{ color: "#4a433c", lineHeight: 1.6 }}>Update payment details, download invoices, and manage the next subscription cycle without contacting support.</div>
+              <div style={{ color: "rgba(92, 84, 74, 0.56)", fontSize: 14, lineHeight: 1.6 }}>For plan changes or failed payments, start with Manage Billing. That keeps the clinic subscription accurate while preserving your current access.</div>
+            </section>
+
             {!isActive ? (
               <section id="upgrade-options" style={{ ...shellSurface, borderRadius: 28, overflow: "hidden" }}>
                 <PricingSection />
@@ -321,6 +351,36 @@ export default async function Page({
           </aside>
         </div>
       </div>
+
+      <style>{`
+        @media (max-width: 980px) {
+          .portal-content-grid {
+            grid-template-columns: 1fr !important;
+          }
+
+          .portal-sidebar {
+            order: -1;
+          }
+        }
+
+        @media (max-width: 720px) {
+          .portal-page-wrap {
+            padding: 18px 14px 28px 14px !important;
+          }
+
+          .portal-summary-grid {
+            grid-template-columns: 1fr !important;
+          }
+
+          .portal-history-table {
+            display: none !important;
+          }
+
+          .portal-history-mobile {
+            display: block !important;
+          }
+        }
+      `}</style>
     </main>
   );
 }

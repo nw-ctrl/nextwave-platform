@@ -67,6 +67,7 @@ export function PortalTopBar({
 
   return (
     <header
+      className="portal-topbar"
       style={{
         position: "sticky",
         top: 0,
@@ -80,6 +81,7 @@ export function PortalTopBar({
       }}
     >
       <div
+        className="portal-topbar-inner"
         style={{
           maxWidth: 1240,
           margin: "0 auto",
@@ -91,7 +93,7 @@ export function PortalTopBar({
           flexWrap: "wrap"
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+        <div className="portal-topbar-brand-row" style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div
               style={{
@@ -118,11 +120,11 @@ export function PortalTopBar({
             </div>
           </div>
 
-          <div style={{ height: 28, width: 1, background: "rgba(120, 110, 100, 0.14)" }} />
+          <div className="portal-topbar-divider" style={{ height: 28, width: 1, background: "rgba(120, 110, 100, 0.14)" }} />
 
           <div style={{ display: "grid", gap: 3 }}>
             <div style={{ fontSize: 18, lineHeight: 1.05, color: "#3e3832", fontFamily: headingFont }}>{clinicName}</div>
-            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", fontSize: 12, color: "rgba(88, 79, 70, 0.52)" }}>
+            <div className="portal-topbar-meta" style={{ display: "flex", gap: 10, flexWrap: "wrap", fontSize: 12, color: "rgba(88, 79, 70, 0.52)" }}>
               <span>{planName}</span>
               <span>|</span>
               <span>{billingStatus}</span>
@@ -132,12 +134,13 @@ export function PortalTopBar({
           </div>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+        <div className="portal-topbar-actions" style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
           {memberships.length > 1 ? (
             <>
               <select
                 value={clientId}
                 onChange={(event) => setClientId(event.target.value)}
+                className="portal-topbar-control portal-topbar-select"
                 style={{
                   padding: "10px 12px",
                   borderRadius: 14,
@@ -159,6 +162,7 @@ export function PortalTopBar({
                 type="button"
                 onClick={handleSelect}
                 disabled={pending || clientId === selectedClientId}
+                className="portal-topbar-control"
                 style={{
                   padding: "10px 14px",
                   borderRadius: 14,
@@ -178,6 +182,7 @@ export function PortalTopBar({
 
           <a
             href="/api/billing/manage"
+            className="portal-topbar-control portal-topbar-primary"
             style={{
               textDecoration: "none",
               padding: "10px 14px",
@@ -197,6 +202,7 @@ export function PortalTopBar({
             type="button"
             onClick={handleLogout}
             disabled={pending}
+            className="portal-topbar-control"
             style={{
               padding: "10px 14px",
               borderRadius: 14,
@@ -218,6 +224,62 @@ export function PortalTopBar({
           {status}
         </div>
       ) : null}
+
+      <style jsx>{`
+        @media (max-width: 920px) {
+          .portal-topbar-inner {
+            align-items: flex-start !important;
+          }
+
+          .portal-topbar-actions {
+            width: 100%;
+          }
+        }
+
+        @media (max-width: 680px) {
+          .portal-topbar {
+            position: sticky;
+          }
+
+          .portal-topbar-inner {
+            padding: 12px 14px !important;
+            gap: 12px !important;
+          }
+
+          .portal-topbar-brand-row {
+            width: 100%;
+            gap: 12px !important;
+          }
+
+          .portal-topbar-divider {
+            display: none !important;
+          }
+
+          .portal-topbar-meta {
+            gap: 6px !important;
+          }
+
+          .portal-topbar-actions {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px !important;
+          }
+
+          .portal-topbar-control {
+            width: 100%;
+            text-align: center;
+            justify-content: center;
+          }
+
+          .portal-topbar-select {
+            grid-column: 1 / -1;
+          }
+
+          .portal-topbar-primary {
+            grid-column: 1 / -1;
+          }
+        }
+      `}</style>
     </header>
   );
 }
