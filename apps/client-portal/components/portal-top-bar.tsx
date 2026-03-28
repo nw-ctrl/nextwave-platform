@@ -86,8 +86,8 @@ export function PortalTopBar({
             </svg>
           </div>
           <div className="portal-topbar-intro">
-            <div className="portal-topbar-title">MediVault Pro</div>
-            <div className="portal-topbar-role">Clinic Portal</div>
+            <div className="portal-topbar-title">MediVault</div>
+            <div className="portal-topbar-role">Clinical Workspace</div>
           </div>
         </div>
 
@@ -99,9 +99,9 @@ export function PortalTopBar({
             <span>{billingStatus}</span>
           </div>
           <div className="portal-topbar-cycle">
-            <span>{nextCycleAmount ?? "Next cycle TBD"}</span>
+            <span>{nextCycleAmount ?? "Pricing available in your account"}</span>
             <span>•</span>
-            <span>{nextBillingDate ? `Renews ${nextBillingDate}` : "Next cycle date TBD"}</span>
+            <span>{nextBillingDate ? `Renews ${nextBillingDate}` : "Renewal date available in your account"}</span>
           </div>
           {billingNote ? <div className="portal-topbar-pill">{billingNote}</div> : null}
         </div>
@@ -131,7 +131,7 @@ export function PortalTopBar({
             </>
           ) : null}
           <a href="/api/billing/manage" className="portal-topbar-link">
-            Manage Billing
+            Billing
           </a>
           <button type="button" onClick={handleLogout} disabled={pending} className="portal-topbar-link ghost">
             Logout
@@ -141,7 +141,7 @@ export function PortalTopBar({
 
       {(savingsHighlight || savingsSubnote) && (
         <div className="portal-topbar-savings">
-          <div className="portal-topbar-savings-main">{savingsHighlight ?? "Founder pricing locked for every renewal"}</div>
+          <div className="portal-topbar-savings-main">{savingsHighlight ?? "Your current subscription details are active."}</div>
           {savingsSubnote ? <div className="portal-topbar-savings-sub">{savingsSubnote}</div> : null}
         </div>
       )}

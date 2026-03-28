@@ -11,6 +11,11 @@ type Props = {
 
 type Status = { state: "idle" | "pending" | "success" | "error"; message: string };
 
+function humanizeRole(role?: string | null) {
+  if (!role) return "Clinic user";
+  return role.charAt(0).toUpperCase() + role.slice(1);
+}
+
 export function BillingCheckoutCard({ clientId, role, clinicName }: Props) {
   const searchParams = useSearchParams();
   const [customerEmail, setCustomerEmail] = useState("");
@@ -19,11 +24,11 @@ export function BillingCheckoutCard({ clientId, role, clinicName }: Props) {
   useEffect(() => {
     const checkout = searchParams.get("checkout");
     if (checkout === "success") {
-      setStatus({ state: "success", message: "Payment setup completed. Your subscription is being updated." });
+      setStatus({ state: "success", message: "Your payment details were received successfully. Subscription updates may take a moment to appear." });
       return;
     }
     if (checkout === "cancel") {
-      setStatus({ state: "error", message: "Checkout was canceled before payment confirmation." });
+      setStatus({ state: "error", message: "Payment was not completed. No changes were made to your account." });
       return;
     }
     setStatus({ state: "idle", message: "" });
@@ -31,7 +36,7 @@ export function BillingCheckoutCard({ clientId, role, clinicName }: Props) {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setStatus({ state: "pending", message: "Preparing your secure checkout..." });
+    setStatus({ state: "pending", message: "Preparing secure payment..." });
 
     try {
       const response = await fetch("/api/billing/checkout", {
@@ -45,25 +50,24 @@ export function BillingCheckoutCard({ clientId, role, clinicName }: Props) {
 
       const result = await response.json();
       if (!response.ok || !result?.url) {
-        throw new Error(typeof result?.error === "string" ? result.error : "Unable to create checkout session");
+        throw new Error(typeof result?.error === "string" ? result.error : "Unable to continue to payment");
       }
 
       window.location.href = result.url;
     } catch (error) {
-      setStatus({ state: "error", message: error instanceof Error ? error.message : "Checkout failed" });
+      setStatus({ state: "error", message: error instanceof Error ? error.message : "Unable to continue to payment" });
     }
   }
 
   return (
     <section style={{ padding: 24, border: "1px solid #d0d7de", borderRadius: 16, maxWidth: 720, background: "#ffffff" }}>
-      <p style={{ margin: 0, fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "#6b7280" }}>Medivault Billing</p>
+      <p style={{ margin: 0, fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "#6b7280" }}>Subscription Setup</p>
       <h1 style={{ marginBottom: 8 }}>{clinicName}</h1>
       <p style={{ marginTop: 0, color: "#4b5563", lineHeight: 1.6 }}>
-        Start the monthly Medivault subscription for your clinic. This checkout is tied to your clinic account and billing profile.
+        Complete subscription setup for this clinic. Payment is applied to the current clinic account and billing record.
       </p>
       <div style={{ display: "grid", gap: 8, marginBottom: 16, color: "#111827" }}>
-        <div><strong>Plan</strong>: PKR 4000 / month</div>
-        <div><strong>Role</strong>: {role ?? "unknown"}</div>
+        <div><strong>Billing access</strong>: {humanizeRole(role)}</div>
       </div>
       <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12 }}>
         <label style={{ display: "grid", gap: 6 }}>
@@ -72,7 +76,7 @@ export function BillingCheckoutCard({ clientId, role, clinicName }: Props) {
             type="email"
             value={customerEmail}
             onChange={(event) => setCustomerEmail(event.target.value)}
-            placeholder="clinic-admin@example.com"
+            placeholder="accounts@clinic.com"
             style={{ padding: 10, border: "1px solid #d1d5db", borderRadius: 10 }}
           />
         </label>
@@ -88,7 +92,7 @@ export function BillingCheckoutCard({ clientId, role, clinicName }: Props) {
             cursor: "pointer"
           }}
         >
-          Continue to secure payment
+          Continue
         </button>
       </form>
       {status.state !== "idle" ? (

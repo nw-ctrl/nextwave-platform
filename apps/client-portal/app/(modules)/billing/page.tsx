@@ -10,24 +10,24 @@ const headingFont = 'Avenir Next, Segoe UI, Helvetica Neue, Arial, sans-serif';
 const bodyFont = 'Avenir Next, Segoe UI, Helvetica Neue, Arial, sans-serif';
 
 const workspaceActions = [
-  "Visits",
-  "Messages",
-  "Appointments",
-  "Reports",
-  "Billing",
-  "Settings"
+  "Account overview",
+  "Plan details",
+  "Invoices",
+  "Billing contact",
+  "Clinic access",
+  "Support"
 ];
 
 const futureSpotlight = [
-  "Telehealth join",
-  "Consent tracking",
-  "Lab requests",
-  "Priority queue"
+  "Expanded reporting",
+  "Operational insights",
+  "Team settings",
+  "Additional services"
 ];
 
 function formatMoney(amount: number | null, currency: string) {
   if (amount == null) {
-    return "TBD";
+    return "Available in your account";
   }
 
   try {
@@ -43,7 +43,7 @@ function formatMoney(amount: number | null, currency: string) {
 
 function formatDate(value?: string | null) {
   if (!value) {
-    return "TBD";
+    return "Available in your account";
   }
 
   try {
@@ -59,7 +59,7 @@ function formatDate(value?: string | null) {
 
 function humanizeStatus(status?: string | null) {
   if (!status) {
-    return "Unknown";
+    return "Not available";
   }
 
   return status
@@ -88,11 +88,11 @@ function statusTone(status?: string | null) {
 }
 
 const planFeatureNotes: Record<string, string[]> = {
-  basic: ["Platform access is active.", "Upgrade later when your clinic needs deeper records and workflow tools."],
-  standard: ["Best fit for routine clinic operations.", "Premium remains available if you want AI assistance and higher capacity."],
-  premium: ["Your clinic is on the highest MediVault tier.", "Use billing controls for payment method, invoices, and future cycle changes."],
-  custom: ["Your clinic is on a custom plan configuration.", "Use the billing portal for payment controls and contact NextWave for contract changes."],
-  unknown: ["Live plan data is being normalized.", "Your clinic access remains active while billing labels are cleaned up."]
+  basic: ["Your clinic is on the Basic plan.", "You can review or change your plan at any time from this workspace."],
+  standard: ["Your clinic is on the Standard plan.", "This plan supports routine day-to-day clinic operations."],
+  premium: ["Your clinic is on the Premium plan.", "This plan includes the broadest level of access currently available."],
+  custom: ["Your clinic is on a custom plan.", "For plan adjustments, contact NextWave support or use the billing workspace."],
+  unknown: ["Plan details are being refreshed.", "Your clinic access remains active while account information loads."]
 };
 
 const shellSurface = {
@@ -169,8 +169,8 @@ export default async function Page({
   const isActive = billing ? ["active", "trialing", "past_due", "unpaid", "incomplete"].includes(billing.status) : false;
   const slimNotes = planFeatureNotes[billing?.planKey ?? "unknown"];
   const hasDiscount = Boolean(billing?.discount) || (typeof billing?.basePrice === "number" && typeof billing?.price === "number" && billing.price < billing.basePrice);
-  const lockedRateNote = billing?.discount?.isLifetime ? (billing.discount.isFounderOffer ? "Founder rate locked for every renewal" : "Recurring Stripe discount remains attached") : null;
-  const billingNote = lockedRateNote ?? (hasDiscount ? "Discount currently applied" : null);
+  const lockedRateNote = billing?.discount?.isLifetime ? "Preferential pricing applied to this account" : null;
+  const billingNote = lockedRateNote ?? (hasDiscount ? "A pricing adjustment is currently applied" : null);
   const cyclePrice = billing?.price ?? null;
   const baseCyclePrice = billing?.basePrice ?? null;
   const monthlySavings = baseCyclePrice != null && cyclePrice != null && baseCyclePrice > cyclePrice ? baseCyclePrice - cyclePrice : null;
@@ -205,13 +205,13 @@ export default async function Page({
 
         {portalError ? (
           <div className="portal-alert error">
-            {portalMessage ?? "Unable to open the billing portal for this clinic right now."}
+{portalMessage ?? "Unable to open billing settings for this clinic right now."}
           </div>
         ) : null}
 
         {billingError ? (
           <div className="portal-alert warning">
-            Live billing sync is temporarily unavailable. The portal is still usable and your clinic access is intact.
+            Live billing information is temporarily unavailable. Your clinic account remains active.
             {billingError ? ` (${billingError})` : ""}
           </div>
         ) : null}
@@ -242,21 +242,21 @@ export default async function Page({
               {hasDiscount && baseCyclePrice != null && cyclePrice != null && baseCyclePrice > cyclePrice ? (
                 <div className="portal-card-strikethrough">
                   <span className="portal-card-previous">{formatMoney(baseCyclePrice, billing?.currency ?? "PKR")}</span>
-                  <span className="portal-card-discount">{billing?.discount?.label ?? "Discounted renewal"}</span>
+                  <span className="portal-card-discount">{billing?.discount?.label ?? "Adjusted pricing"}</span>
                 </div>
               ) : null}
             </div>
             <div className="portal-card-meta">
               <span>Renews {formatDate(nextBillingDate)}</span>
               {monthlySavings ? (
-                <span>You save {formatMoney(monthlySavings, billing?.currency ?? "PKR")} each cycle.</span>
+                <span>Current pricing reflects a lower amount than the standard rate.</span>
               ) : null}
             </div>
           </article>
 
           <article className="portal-card" style={{ ...shellSurface }}>
             <div className="portal-card-heading">
-              <span>{lockedRateNote ? "Founder Advantage" : "Plan Notes"}</span>
+              <span>{lockedRateNote ? "Account note" : "Plan notes"}</span>
             </div>
             <p className="portal-card-note">{lockedRateNote ?? slimNotes[1]}</p>
             {savingsHighlight ? (
@@ -273,14 +273,14 @@ export default async function Page({
             <div>
               <h2>Billing History</h2>
               <p>
-                {invoices.length
-                  ? "Recent posted invoices from Stripe."
-                  : "Invoices will appear here after Stripe posts them to the clinic account."}
+{invoices.length
+                  ? "Recent invoices for this clinic account."
+                  : "Invoices will appear here once they are available for this clinic account."}
               </p>
             </div>
             {invoices[0]?.hostedInvoiceUrl ? (
               <a href={invoices[0].hostedInvoiceUrl} target="_blank" rel="noreferrer">
-                Latest invoice
+                View latest invoice
               </a>
             ) : null}
           </div>
@@ -353,8 +353,8 @@ export default async function Page({
         <section className="portal-info-grid">
           <div className="portal-info-column" style={{ ...shellSurface }}>
             <div className="portal-info-head">
-              <span>Clinic operations</span>
-              <p>These tools are ready whenever your team needs them.</p>
+              <span>Account summary</span>
+              <p>Key billing-related areas for this clinic account.</p>
             </div>
             <div className="portal-info-actions">
               {workspaceActions.map((label) => (
@@ -366,8 +366,8 @@ export default async function Page({
           </div>
           <div className="portal-info-column" style={{ ...shellSurface }}>
             <div className="portal-info-head">
-              <span>Future modules</span>
-              <p>Slide new capabilities into this workspace as your clinic grows.</p>
+              <span>Additional services</span>
+              <p>Further account services can be introduced here as the portal expands.</p>
             </div>
             <div className="portal-feature-list">
               {futureSpotlight.map((feature) => (
@@ -378,8 +378,8 @@ export default async function Page({
               ))}
             </div>
             <div className="portal-info-late-note">
-              <span>Next cycle amount {nextCycleLabel}</span>
-              <a href="/api/billing/manage">Manage billing & upgrades</a>
+              <span>Next amount: {nextCycleLabel}</span>
+              <a href="/api/billing/manage">Open billing settings</a>
             </div>
           </div>
         </section>
@@ -391,10 +391,10 @@ export default async function Page({
             </div>
             <div style={{ fontSize: 14, color: "#e7f6fb", lineHeight: 1.6 }}>
               {billing?.discount
-                ? `${billing.discount.label}${billing.discount.isLifetime ? " is attached to the subscription in Stripe and should continue on future renewals." : " is currently applied to this subscription."}`
-                : "For plan changes or failed payments, start with Manage Billing. That keeps the clinic subscription accurate while preserving your current access."}
+                ? `${billing.discount.label}${billing.discount.isLifetime ? " is attached to this account and should continue on future renewals." : " is currently applied to this account."}`
+                : "For plan changes or payment updates, use the billing settings area for this clinic account."}
             </div>
-            <a href="/api/billing/manage">Review change options</a>
+            <a href="/api/billing/manage">Open billing settings</a>
           </section>
         ) : (
           <section className="portal-pricing-wrapper">
