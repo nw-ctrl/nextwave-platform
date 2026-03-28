@@ -51,7 +51,7 @@ export function PortalLoginForm() {
         throw new Error(typeof result?.error === "string" ? result.error : "Unable to sign in");
       }
 
-      window.location.href = result?.membershipCount > 1 ? "/" : "/billing";
+      window.location.href = "/";
     } catch (error) {
       setStatus({ state: "error", message: error instanceof Error ? error.message : "Sign-in failed" });
     }
