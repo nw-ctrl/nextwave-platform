@@ -238,7 +238,7 @@ function deriveDiscount(input: {
   const baseUnitAmount = typeof input.price?.unit_amount === "number" ? input.price.unit_amount : null;
   if (upcomingInvoice && typeof baseUnitAmount === "number" && upcomingInvoice.total < baseUnitAmount) {
     return {
-      label: isFounderOffer ? "Founder pricing applied" : "Discount applied",
+      label: "Pricing adjustment applied",
       amountOff: (baseUnitAmount - upcomingInvoice.total) / 100,
       percentOff: null,
       duration: null,
