@@ -23,6 +23,7 @@ export type PortalSession = {
     email: string;
     fullName: string | null;
     accountStatus: string;
+    role: string;
   };
   memberships: PortalMembership[];
   selectedClientId: string | null;
@@ -133,13 +134,18 @@ export async function getPortalSession(): Promise<PortalSession | null> {
   const resolvedSelectedClientId = memberships.some((item) => item.clientId === selectedClientId)
     ? selectedClientId
     : memberships[0]?.clientId ?? null;
+  const resolvedRole =
+    memberships.find((item) => item.clientId === resolvedSelectedClientId)?.role ??
+    memberships[0]?.role ??
+    "doctor";
 
   return {
     user: {
       id: user.id,
       email: user.email,
       fullName: user.full_name,
-      accountStatus: user.account_status
+      accountStatus: user.account_status,
+      role: resolvedRole
     },
     memberships,
     selectedClientId: resolvedSelectedClientId

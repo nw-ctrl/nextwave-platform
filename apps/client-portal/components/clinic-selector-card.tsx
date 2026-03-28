@@ -43,51 +43,130 @@ export function ClinicSelectorCard({ memberships, selectedClientId }: Props) {
     window.location.href = "/";
   }
 
+  const isError = status.includes("Unable") || status.includes("failed");
+
   return (
-    <section style={{ maxWidth: 720, padding: 24, border: "1px solid #d0d7de", borderRadius: 18, background: "#ffffff" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
+    <section className="selector-card">
+      <div className="selector-header">
         <div>
-          <p style={{ margin: 0, fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "#6b7280" }}>Clinic Context</p>
-          <h2 style={{ marginBottom: 8 }}>Choose your clinic</h2>
+          <p className="selector-eyebrow">Clinic Context</p>
+          <h2>Choose your clinic</h2>
         </div>
-        <button
-          type="button"
-          onClick={handleLogout}
-          style={{ padding: "10px 14px", borderRadius: 999, border: "1px solid #d1d5db", background: "#fff", cursor: "pointer" }}
-        >
+        <button type="button" onClick={handleLogout} className="selector-logout">
           Sign out
         </button>
       </div>
-      <p style={{ marginTop: 0, color: "#4b5563" }}>Your portal session can switch between clinics you are assigned to.</p>
-      <div style={{ display: "grid", gap: 12 }}>
-        <select
-          value={clientId}
-          onChange={(event) => setClientId(event.target.value)}
-          style={{ padding: 10, border: "1px solid #d1d5db", borderRadius: 10 }}
-        >
+      <p className="selector-copy">Your portal session can switch between clinics you are assigned to.</p>
+      <div className="selector-form">
+        <select value={clientId} onChange={(event) => setClientId(event.target.value)} className="selector-select">
           {memberships.map((item) => (
             <option key={item.clientId} value={item.clientId}>
               {item.clinicName} ({item.role})
             </option>
           ))}
         </select>
-        <button
-          type="button"
-          onClick={handleSelect}
-          style={{
-            padding: "12px 16px",
-            borderRadius: 999,
-            border: "none",
-            background: "#111827",
-            color: "white",
-            fontWeight: 600,
-            cursor: "pointer"
-          }}
-        >
+        <button type="button" onClick={handleSelect} className="selector-submit">
           Use this clinic
         </button>
-        {status ? <p style={{ margin: 0, color: status.includes("Unable") || status.includes("failed") ? "#b91c1c" : "#4b5563" }}>{status}</p> : null}
+        {status ? <p className={`selector-status ${isError ? "error" : ""}`}>{status}</p> : null}
       </div>
+      <style jsx>{`
+        .selector-card {
+          max-width: 720px;
+          width: 100%;
+          box-sizing: border-box;
+          padding: clamp(18px, 3vw, 24px);
+          border: 1px solid #d0d7de;
+          border-radius: 20px;
+          background: #ffffff;
+        }
+
+        .selector-header {
+          display: flex;
+          justify-content: space-between;
+          gap: 12px;
+          align-items: center;
+        }
+
+        .selector-eyebrow {
+          margin: 0;
+          font-size: 12px;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: #6b7280;
+        }
+
+        .selector-header h2 {
+          margin: 8px 0 0;
+        }
+
+        .selector-copy {
+          margin-top: 12px;
+          color: #4b5563;
+          line-height: 1.6;
+        }
+
+        .selector-form {
+          display: grid;
+          gap: 12px;
+        }
+
+        .selector-select,
+        .selector-submit,
+        .selector-logout {
+          min-height: 44px;
+          font-size: 16px;
+        }
+
+        .selector-select {
+          width: 100%;
+          box-sizing: border-box;
+          padding: 12px 14px;
+          border: 1px solid #d1d5db;
+          border-radius: 12px;
+          background: #fff;
+        }
+
+        .selector-submit {
+          width: 100%;
+          padding: 12px 16px;
+          border-radius: 999px;
+          border: none;
+          background: #111827;
+          color: white;
+          font-weight: 600;
+          cursor: pointer;
+        }
+
+        .selector-logout {
+          padding: 10px 14px;
+          border-radius: 999px;
+          border: 1px solid #d1d5db;
+          background: #fff;
+          cursor: pointer;
+          white-space: nowrap;
+        }
+
+        .selector-status {
+          margin: 0;
+          color: #4b5563;
+        }
+
+        .selector-status.error {
+          color: #b91c1c;
+        }
+
+        @media (max-width: 640px) {
+          .selector-header {
+            flex-direction: column;
+            align-items: stretch;
+          }
+
+          .selector-logout {
+            width: 100%;
+          }
+        }
+      `}</style>
     </section>
   );
 }

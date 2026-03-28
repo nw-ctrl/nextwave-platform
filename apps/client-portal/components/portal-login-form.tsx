@@ -62,9 +62,9 @@ export function PortalLoginForm() {
       <div className="portal-login-grid">
         <div className="portal-login-panel">
           <div className="portal-login-header">
-            <div className="portal-login-stage">Concierge Clinic Access</div>
+            <div className="portal-login-stage">Secure Clinical Access</div>
             <h1>MediVault Portal</h1>
-            <p>Enter your clinic credentials to open the billing, membership, and workspace control center.</p>
+            <p>Enter your clinic credentials to access the portal workspace, billing controls, and account context.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="portal-login-form">
@@ -105,11 +105,10 @@ export function PortalLoginForm() {
         <div className="portal-login-art">
           <div className="portal-login-art-overlay" />
           <div className="portal-login-art-copy">
-            <div className="portal-login-art-label">Luxury medical SaaS</div>
-            <h2>Calm control for modern clinics</h2>
+            <div className="portal-login-art-label">Clinical operations platform</div>
+            <h2>Secure access for modern clinics</h2>
             <p>
-              The portal blends operational clarity with a boutique wellness feel so your clinic feels trusted from the very
-              first click.
+              The login experience is designed to feel clear, stable, and professional across desktop and mobile browsers.
             </p>
             <div className="portal-login-art-tags">
               {navItems.map((label) => (
@@ -123,7 +122,7 @@ export function PortalLoginForm() {
       <style jsx>{`
         .portal-login-shell {
           width: min(1280px, 100%);
-          min-height: 720px;
+          min-height: min(720px, 100dvh - 32px);
           margin: 0 auto;
           border-radius: 32px;
           background: radial-gradient(circle at 22% 20%, rgba(63, 166, 190, 0.25), transparent 45%),
@@ -137,15 +136,15 @@ export function PortalLoginForm() {
 
         .portal-login-grid {
           display: grid;
-          grid-template-columns: minmax(320px, 0.95fr) minmax(420px, 1.05fr);
+          grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
           gap: 30px;
-          padding: 58px;
+          padding: clamp(18px, 4vw, 58px);
           position: relative;
           z-index: 1;
         }
 
         .portal-login-panel {
-          padding: 52px 48px;
+          padding: clamp(24px, 4vw, 52px) clamp(20px, 4vw, 48px);
           border-radius: 32px;
           background: rgba(7, 18, 32, 0.94);
           border: 1px solid rgba(255, 255, 255, 0.12);
@@ -174,7 +173,7 @@ export function PortalLoginForm() {
           margin: 0;
           font-size: 15px;
           color: rgba(255, 255, 255, 0.7);
-          max-width: 360px;
+          max-width: 40ch;
           line-height: 1.6;
         }
 
@@ -245,7 +244,7 @@ export function PortalLoginForm() {
         .portal-login-art-copy {
           position: relative;
           z-index: 1;
-          padding: 48px;
+          padding: clamp(24px, 4vw, 48px);
           display: flex;
           flex-direction: column;
           gap: 18px;
@@ -273,7 +272,7 @@ export function PortalLoginForm() {
           font-size: 15px;
           color: rgba(255, 255, 255, 0.72);
           line-height: 1.6;
-          max-width: 360px;
+          max-width: 40ch;
         }
 
         .portal-login-art-tags {
@@ -294,6 +293,10 @@ export function PortalLoginForm() {
         }
 
         @media (max-width: 960px) {
+          .portal-login-shell {
+            min-height: auto;
+          }
+
           .portal-login-grid {
             grid-template-columns: 1fr;
             padding: 42px;
@@ -310,20 +313,53 @@ export function PortalLoginForm() {
 
         @media (max-width: 640px) {
           .portal-login-shell {
+            width: 100%;
+            min-height: auto;
+            border-radius: 20px;
+          }
+
+          .portal-login-header h1 {
+            font-size: 30px;
+          }
+
+          .portal-login-header p,
+          .portal-login-art p {
+            font-size: 14px;
+          }
+
+          .portal-login-submit {
+            width: 100%;
+            min-height: 48px;
+          }
+
+          .portal-login-art-tags span {
+            letter-spacing: 0.12em;
+            font-size: 10px;
+          }
+
+          .portal-login-shell {
             min-height: auto;
             border-radius: 24px;
           }
 
           .portal-login-grid {
-            padding: 28px;
+            gap: 16px;
+            padding: 18px;
           }
 
           .portal-login-panel {
-            padding: 32px 24px;
+            padding: 24px 18px;
+            border-radius: 22px;
+          }
+
+          .portal-login-art {
+            border-radius: 22px;
+            min-height: 280px;
           }
 
           .portal-login-art-copy {
-            padding: 28px;
+            padding: 22px 18px 24px;
+            justify-content: flex-end;
           }
         }
       `}</style>

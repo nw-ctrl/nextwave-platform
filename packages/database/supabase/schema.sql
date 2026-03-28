@@ -17,6 +17,7 @@ create table if not exists users (
 );
 
 alter table users add column if not exists account_status text not null default 'active';
+alter table users add column if not exists role text not null default 'doctor';
 
 create table if not exists clients (
   id uuid primary key default gen_random_uuid(),

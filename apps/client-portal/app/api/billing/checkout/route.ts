@@ -1,5 +1,6 @@
 import { createClinicPortalCheckoutSession } from "../../../../lib/billing";
 import { requirePortalContext } from "../../../../lib/auth";
+import { isAdmin } from "../../../../lib/role-helper";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -10,6 +11,9 @@ export async function POST(request: Request) {
     console.log("[Checkout API] Received body:", body);
 
     const portalContext = await requirePortalContext({ allowedRoles: ["admin", "manager"], moduleKey: "billing" });
+    if (!isAdmin({ role: portalContext.membership.role }) && portalContext.membership.role !== "manager") {
+      throw new Error("Unauthorized");
+    }
     
     if (body.clientId && body.clientId !== portalContext.clientId) {
       return NextResponse.json({ error: "Clinic context mismatch" }, { status: 403 });

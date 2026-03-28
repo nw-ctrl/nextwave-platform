@@ -173,7 +173,8 @@ export function PortalTopBar({
           gap: 16px;
           flex-wrap: wrap;
           padding: 12px 24px;
-          font-family: ;
+          box-sizing: border-box;
+          font-family: Aptos, Avenir Next, Segoe UI, sans-serif;
         }
 
         .portal-topbar-brand {
@@ -201,7 +202,7 @@ export function PortalTopBar({
         }
 
         .portal-topbar-title {
-          font-family: ;
+          font-family: Avenir Next, Segoe UI Variable, Segoe UI, sans-serif;
           font-size: 18px;
           font-weight: 700;
           color: #f9fbff;
@@ -225,7 +226,7 @@ export function PortalTopBar({
         .portal-topbar-clinic {
           font-size: 18px;
           font-weight: 600;
-          font-family: ;
+          font-family: Avenir Next, Segoe UI Variable, Segoe UI, sans-serif;
           color: #f2fbff;
         }
 
@@ -264,12 +265,13 @@ export function PortalTopBar({
           align-items: center;
           gap: 8px;
           flex-wrap: wrap;
+          justify-content: flex-end;
         }
 
         .portal-topbar-select,
         .portal-topbar-button,
         .portal-topbar-link {
-          font-family: ;
+          font-family: Aptos, Avenir Next, Segoe UI, sans-serif;
           font-size: 13px;
         }
 
@@ -280,6 +282,7 @@ export function PortalTopBar({
           background: rgba(5, 14, 22, 0.75);
           color: #eff9ff;
           min-width: 160px;
+          flex: 1 1 180px;
         }
 
         .portal-topbar-select:focus {
@@ -345,6 +348,16 @@ export function PortalTopBar({
         }
 
         @media (max-width: 900px) {
+          .portal-topbar-main {
+            width: 100%;
+          }
+
+          .portal-topbar-select,
+          .portal-topbar-button,
+          .portal-topbar-link {
+            min-height: 44px;
+          }
+
           .portal-topbar-inner {
             flex-direction: column;
             align-items: flex-start;
@@ -353,6 +366,50 @@ export function PortalTopBar({
           .portal-topbar-actions {
             width: 100%;
             justify-content: flex-start;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .portal-topbar-inner {
+            padding: 12px 14px;
+            gap: 12px;
+          }
+
+          .portal-topbar-brand {
+            flex: 1 1 auto;
+          }
+
+          .portal-topbar-main {
+            min-width: 0;
+          }
+
+          .portal-topbar-clinic {
+            font-size: 16px;
+          }
+
+          .portal-topbar-plan,
+          .portal-topbar-cycle {
+            flex-wrap: wrap;
+            gap: 4px;
+          }
+
+          .portal-topbar-actions {
+            display: grid;
+            grid-template-columns: 1fr;
+          }
+
+          .portal-topbar-select,
+          .portal-topbar-button,
+          .portal-topbar-link {
+            width: 100%;
+            box-sizing: border-box;
+            justify-content: center;
+            text-align: center;
+          }
+
+          .portal-topbar-savings,
+          .portal-topbar-status {
+            padding: 6px 14px 12px;
           }
 
           .portal-topbar-savings,
