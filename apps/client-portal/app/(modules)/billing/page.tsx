@@ -96,9 +96,9 @@ const planFeatureNotes: Record<string, string[]> = {
 };
 
 const shellSurface = {
-  background: "linear-gradient(180deg, rgba(21, 43, 69, 0.96) 0%, rgba(14, 31, 51, 0.96) 100%)",
-  border: "1px solid rgba(60, 94, 125, 0.44)",
-  boxShadow: "0 18px 38px rgba(8, 17, 30, 0.24)"
+  background: "#ffffff",
+  border: "1px solid #dbe3ea",
+  boxShadow: "0 10px 24px rgba(15, 23, 42, 0.06)"
 };
 
 export default async function Page({
@@ -174,13 +174,13 @@ export default async function Page({
   const cyclePrice = billing?.price ?? null;
   const baseCyclePrice = billing?.basePrice ?? null;
   const monthlySavings = baseCyclePrice != null && cyclePrice != null && baseCyclePrice > cyclePrice ? baseCyclePrice - cyclePrice : null;
-  const nextCycleLabel = cyclePrice != null ? formatMoney(cyclePrice, billing?.currency ?? "PKR") : "TBD";
+  const nextCycleLabel = formatMoney(cyclePrice, billing?.currency ?? "PKR");
   const paidCycles = invoices.filter((invoice) => invoice.status === "paid").length;
   const cumulativeSavingsToDate = monthlySavings != null ? monthlySavings * paidCycles : null;
   const cumulative12MonthSavings = monthlySavings != null ? monthlySavings * 12 : null;
   const savingsHighlight = cumulativeSavingsToDate != null && cumulativeSavingsToDate > 0 ? `${formatMoney(cumulativeSavingsToDate, billing?.currency ?? "PKR")} saved to date` : null;
   const savingsSubnote = monthlySavings != null
-    ? `At your current founder rate, 12 months reaches ${formatMoney(cumulative12MonthSavings, billing?.currency ?? "PKR")} in total savings.`
+    ? `Compared with the standard rate, this account is currently billed at a lower amount.`
     : null;
 
   return (
@@ -356,11 +356,12 @@ export default async function Page({
               <span>Account summary</span>
               <p>Key billing-related areas for this clinic account.</p>
             </div>
-            <div className="portal-info-actions">
+            <div className="portal-feature-list">
               {workspaceActions.map((label) => (
-                <button key={label} type="button" className="portal-info-chip">
-                  {label}
-                </button>
+                <div key={label} className="portal-feature-item">
+                  <span className="portal-feature-dot" />
+                  <span>{label}</span>
+                </div>
               ))}
             </div>
           </div>
@@ -406,12 +407,9 @@ export default async function Page({
       <style>{`
         .portal-page {
           min-height: 100vh;
-          background:
-            radial-gradient(circle at 12% 10%, rgba(34, 214, 220, 0.1), transparent 18%),
-            radial-gradient(circle at 86% 12%, rgba(79, 146, 209, 0.18), transparent 18%),
-            linear-gradient(180deg, #11253e 0%, #0d1f34 54%, #102641 100%);
+          background: linear-gradient(180deg, #edf2f6 0%, #e4ebf0 100%);
           font-family: ${bodyFont};
-          color: #e7f6fb;
+          color: #0f172a;
         }
 
         .portal-content-wrap {
@@ -427,23 +425,23 @@ export default async function Page({
           border-radius: 18px;
           padding: 14px 18px;
           font-size: 14px;
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid #dbe3ea;
+          background: #ffffff;
         }
 
         .portal-alert.success {
           border-color: rgba(29, 213, 217, 0.6);
-          color: #cceefe;
+          color: #0f766e;
         }
 
         .portal-alert.warning {
           border-color: rgba(251, 191, 36, 0.6);
-          color: #fff7d6;
+          color: #92400e;
         }
 
         .portal-alert.error {
           border-color: rgba(251, 113, 133, 0.6);
-          color: #ffe2e5;
+          color: #b91c1c;
         }
 
         .portal-summary-grid {
@@ -465,7 +463,7 @@ export default async function Page({
           font-size: 12px;
           letter-spacing: 0.2em;
           text-transform: uppercase;
-          color: rgba(255, 255, 255, 0.72);
+          color: #64748b;
         }
 
         .portal-plan-chip {
@@ -485,7 +483,7 @@ export default async function Page({
 
         .portal-card-sub {
           margin: 0;
-          color: rgba(255, 255, 255, 0.68);
+          color: #475569;
           line-height: 1.6;
           font-size: 14px;
         }
@@ -497,17 +495,19 @@ export default async function Page({
         }
 
         .portal-cycle-price {
-          font-size: 36px;
+          font-size: clamp(28px, 4vw, 36px);
           font-weight: 700;
           font-family: ${headingFont};
+          overflow-wrap: anywhere;
         }
 
         .portal-card-strikethrough {
           display: flex;
           align-items: center;
           gap: 10px;
+          flex-wrap: wrap;
           font-size: 13px;
-          color: rgba(255, 255, 255, 0.75);
+          color: #475569;
         }
 
         .portal-card-previous {
@@ -520,7 +520,7 @@ export default async function Page({
           border-radius: 999px;
           background: rgba(29, 213, 217, 0.18);
           border: 1px solid rgba(29, 213, 217, 0.3);
-          color: #87f2f4;
+          color: #0f766e;
         }
 
         .portal-card-meta {
@@ -528,12 +528,13 @@ export default async function Page({
           flex-direction: column;
           gap: 4px;
           font-size: 13px;
-          color: rgba(255, 255, 255, 0.65);
+          color: #64748b;
+          overflow-wrap: anywhere;
         }
 
         .portal-card-note {
           margin: 0;
-          color: rgba(255, 255, 255, 0.78);
+          color: #334155;
           line-height: 1.6;
         }
 
@@ -543,14 +544,14 @@ export default async function Page({
           flex-direction: column;
           gap: 4px;
           font-size: 13px;
-          color: rgba(255, 255, 255, 0.88);
+          color: #334155;
         }
 
         .portal-card-note-sub {
           font-size: 11px;
           letter-spacing: 0.1em;
           text-transform: uppercase;
-          color: rgba(255, 255, 255, 0.6);
+          color: #64748b;
         }
 
         .portal-history-card {
@@ -573,12 +574,12 @@ export default async function Page({
 
         .portal-history-header p {
           margin: 4px 0 0;
-          color: rgba(255, 255, 255, 0.72);
+          color: #64748b;
           font-size: 13px;
         }
 
         .portal-history-header a {
-          color: #87f2f4;
+          color: #0f766e;
           font-weight: 600;
           text-decoration: none;
           font-size: 13px;
@@ -595,7 +596,7 @@ export default async function Page({
           padding: 12px 18px;
           text-align: left;
           font-size: 13px;
-          color: rgba(255, 255, 255, 0.75);
+          color: #475569;
           border-top: 1px solid rgba(255, 255, 255, 0.06);
         }
 
@@ -619,8 +620,8 @@ export default async function Page({
         .portal-history-mobile article {
           padding: 14px 16px;
           border-radius: 18px;
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
           display: flex;
           flex-direction: column;
           gap: 6px;
@@ -635,7 +636,7 @@ export default async function Page({
 
         .portal-history-empty {
           text-align: center;
-          color: rgba(255, 255, 255, 0.7);
+          color: #64748b;
           font-size: 13px;
         }
 
@@ -654,12 +655,12 @@ export default async function Page({
           font-size: 12px;
           letter-spacing: 0.15em;
           text-transform: uppercase;
-          color: rgba(255, 255, 255, 0.7);
+          color: #64748b;
         }
 
         .portal-info-head p {
           margin: 0;
-          color: rgba(255, 255, 255, 0.72);
+          color: #64748b;
           font-size: 14px;
           line-height: 1.5;
         }
@@ -676,7 +677,7 @@ export default async function Page({
           border-radius: 12px;
           border: 1px solid rgba(255, 255, 255, 0.2);
           background: rgba(255, 255, 255, 0.05);
-          color: #e7f6fb;
+          color: #0f172a;
           font-size: 13px;
           cursor: pointer;
         }
@@ -692,7 +693,8 @@ export default async function Page({
           display: flex;
           align-items: center;
           gap: 10px;
-          color: rgba(255, 255, 255, 0.78);
+          flex-wrap: wrap;
+          color: #334155;
           font-size: 14px;
         }
 
@@ -709,11 +711,11 @@ export default async function Page({
           flex-direction: column;
           gap: 6px;
           font-size: 13px;
-          color: rgba(255, 255, 255, 0.7);
+          color: #64748b;
         }
 
         .portal-info-late-note a {
-          color: #87f2f4;
+          color: #0f766e;
           text-decoration: none;
           font-weight: 600;
         }
@@ -727,7 +729,7 @@ export default async function Page({
         }
 
         .portal-upgrade-note a {
-          color: #87f2f4;
+          color: #0f766e;
           font-weight: 600;
           text-decoration: none;
         }

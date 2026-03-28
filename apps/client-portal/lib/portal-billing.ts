@@ -182,7 +182,7 @@ function inferPlanName(input: {
     return { planKey: "custom" as const, planName: input.nickname.trim() };
   }
 
-  return { planKey: "unknown" as const, planName: "Subscription" };
+  return { planKey: "unknown" as const, planName: "Clinic Subscription" };
 }
 
 function deriveInvoicePlanName(invoice: Stripe.Invoice, fallback: string) {
@@ -263,7 +263,11 @@ export function getReadablePortalPlanName(plan?: string | null) {
     return normalized === "custom" ? "Custom Plan" : `${titleCase(normalized)} Plan`;
   }
 
-  return "Subscription";
+  if (plan?.startsWith("price_")) {
+    return "Clinic Subscription";
+  }
+
+  return "Clinic Subscription";
 }
 
 export async function getClinicBillingSummary(clientId: string): Promise<ClinicBillingSummary | null> {
