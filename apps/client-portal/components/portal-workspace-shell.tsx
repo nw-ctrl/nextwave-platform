@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -172,38 +172,40 @@ export function PortalWorkspaceShell({
         onToggleTheme={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
       />
 
-      <Sidebar collapsible="icon" variant="inset" className="border-sidebar-border">
-        <SidebarHeader className="gap-3 p-3">
-          <div className="flex items-center gap-3 rounded-2xl border border-sidebar-border/70 bg-sidebar-accent/60 p-3 shadow-sm">
-            <div className="flex size-11 items-center justify-center rounded-2xl bg-sidebar-primary text-sidebar-primary-foreground shadow-sm">
-              <span className="text-sm font-semibold tracking-wide">MV</span>
+      <Sidebar collapsible="icon" variant="inset" className="sidebar-glass border-none">
+        <SidebarHeader className="gap-3 p-4">
+          <div className="flex items-center gap-3 rounded-2xl bg-primary/5 p-3 shadow-[0_4px_12px_rgba(0,0,0,0.02)] transition-all hover:bg-primary/10">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-md">
+              <span className="text-xs font-bold tracking-tight">MF</span>
             </div>
             <div className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
-              <p className="truncate text-sm font-semibold text-sidebar-foreground">MediFlow</p>
-              <p className="truncate text-xs text-muted-foreground">Clinical Operations</p>
+              <p className="truncate text-sm font-bold tracking-tight text-foreground">MediFlow</p>
+              <p className="truncate text-[10px] font-medium uppercase tracking-wider text-muted-foreground opacity-60">Operations</p>
             </div>
           </div>
         </SidebarHeader>
 
         <SidebarSeparator />
 
-        <SidebarContent>
+        <SidebarContent className="px-2">
           <SidebarGroup>
-            <SidebarGroupLabel>Workspace</SidebarGroupLabel>
+            <SidebarGroupLabel className="px-4 text-[10px] font-bold uppercase tracking-[0.1em] text-muted-foreground opacity-50">Workspace</SidebarGroupLabel>
             <SidebarGroupContent>
-              <SidebarMenu>
+              <SidebarMenu className="gap-1">
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   const active = pathname === item.href || (item.href !== "/" && pathname.startsWith(`${item.href}/`));
 
                   return (
                     <SidebarMenuItem key={item.key}>
-                      <SidebarMenuButton asChild isActive={active} tooltip={item.label} size="lg">
+                      <SidebarMenuButton asChild isActive={active} tooltip={item.label} size="lg" className="rounded-xl px-4 hover:bg-primary/5 active:scale-[0.98] transition-all">
                         <Link href={item.href}>
-                          <Icon className="size-4" />
+                          <Icon className={`size-4 ${active ? 'text-primary' : 'text-muted-foreground'}`} />
                           <div className="flex min-w-0 flex-col group-data-[collapsible=icon]:hidden">
-                            <span className="truncate">{item.label}</span>
-                            <span className="truncate text-xs text-muted-foreground">{item.description}</span>
+                            <span className={`truncate text-sm ${active ? 'font-semibold text-foreground' : 'font-medium text-muted-foreground'}`}>
+                              {item.label}
+                            </span>
+                            <span className="truncate text-[10px] opacity-60">{item.description}</span>
                           </div>
                         </Link>
                       </SidebarMenuButton>
@@ -239,103 +241,106 @@ export function PortalWorkspaceShell({
         <SidebarRail />
       </Sidebar>
 
-      <SidebarInset className="bg-transparent">
+      <SidebarInset className="bg-transparent backdrop-blur-sm">
         <div className="flex min-h-svh flex-col">
-          <header className="sticky top-0 z-20 border-b border-border/60 bg-background/92 backdrop-blur-xl">
-            <div className="flex flex-col gap-4 px-4 py-4 md:px-6 lg:px-8">
-              <div className="flex flex-wrap items-center gap-3">
-                <SidebarTrigger className="rounded-xl border border-border/70 bg-background shadow-sm" />
+          <header className="sticky top-0 z-20 bg-background/40 backdrop-blur-3xl px-4 py-4 md:px-8">
+            <div className="mx-auto flex w-full max-w-7xl items-center gap-4">
+              <SidebarTrigger className="rounded-xl border-none bg-white/50 dark:bg-black/20 shadow-sm transition-all hover:bg-white/80" />
+              <div className="flex flex-1 items-center gap-3">
                 <Button
                   type="button"
                   variant="outline"
-                  className="h-10 flex-1 justify-between rounded-2xl border-border/70 bg-card/80 px-4 text-left text-muted-foreground shadow-sm sm:max-w-sm"
+                  className="h-11 flex-1 justify-between rounded-2xl border-none bg-white/40 dark:bg-black/20 px-4 text-left text-muted-foreground shadow-sm transition-all hover:bg-white/60 sm:max-w-sm"
                   onClick={() => setCommandOpen(true)}
                 >
-                  <span className="flex items-center gap-2 text-sm">
-                    <Search className="size-4 text-primary" />
-                    Quick actions
+                  <span className="flex items-center gap-2 text-sm font-medium">
+                    <Search className="size-4 text-primary mb-0.5" />
+                    Search everything...
                   </span>
-                  <span className="hidden items-center gap-1 rounded-md bg-muted px-2 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground sm:inline-flex">
-                    <Command className="size-3" />K
+                  <span className="hidden items-center gap-1 rounded-lg bg-black/5 dark:bg-white/5 px-2 py-1 text-[10px] font-bold uppercase tracking-widest opacity-40 sm:inline-flex">
+                    <Command className="size-2.5" />K
                   </span>
                 </Button>
-                <Select value={selectedClientId ?? memberships[0]?.clientId} onValueChange={handleSelectClinic} disabled={clinicPending}>
-                  <SelectTrigger className="h-10 min-w-[170px] rounded-2xl bg-card/80 px-3 shadow-sm md:min-w-[190px]">
-                    <SelectValue placeholder="Clinic" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {memberships.map((membership) => (
-                      <SelectItem key={membership.clientId} value={membership.clientId}>
-                        {membership.clinicName}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="h-10 gap-3 rounded-2xl border-border/70 bg-card/80 px-3 shadow-sm">
-                      <Avatar className="size-8">
-                        <AvatarFallback>{initials(user.fullName ?? user.email)}</AvatarFallback>
-                      </Avatar>
-                      <span className="hidden text-sm font-medium text-foreground lg:inline">Settings</span>
-                      <ChevronsUpDown className="size-4 text-muted-foreground" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-64 rounded-2xl">
-                    <DropdownMenuLabel>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-sm font-medium text-foreground">{user.fullName ?? user.email}</span>
-                        <span className="text-xs text-muted-foreground">{currentMembership.clinicName}</span>
-                      </div>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link href="/settings">
-                        <Settings2 className="mr-2 size-4 text-muted-foreground" />
-                        Workspace settings
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleOpenBillingSettings}>
-                      <ArrowUpRight className="mr-2 size-4 text-muted-foreground" />
-                      Billing settings
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => setTheme("light")}>
-                      <SunMedium className="mr-2 size-4 text-muted-foreground" />
-                      Light theme
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setTheme("dark")}>
-                      <MoonStar className="mr-2 size-4 text-muted-foreground" />
-                      Dark theme
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout}>
-                      <LogOut className="mr-2 size-4 text-muted-foreground" />
-                      Sign out
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-
-              <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-                <div className="space-y-1.5">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant="secondary" className="rounded-full bg-primary/10 px-3 py-1 text-primary">{currentMembership.clinicName}</Badge>
-                    <Badge variant="outline" className="rounded-full px-3 py-1 capitalize">{roleLabel}</Badge>
-                    {statusLabel ? <Badge variant="outline" className="rounded-full px-3 py-1 capitalize">{statusLabel}</Badge> : null}
-                    {planName ? <Badge variant="outline" className="rounded-full px-3 py-1">{planName}</Badge> : null}
-                  </div>
-                  <div>
-                    <h1 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">{pageTitle}</h1>
-                    <p className="mt-1 max-w-3xl text-sm leading-6 text-muted-foreground">{pageDescription}</p>
-                  </div>
+                <div className="flex items-center gap-2 ml-auto">
+                    <Select value={selectedClientId ?? memberships[0]?.clientId} onValueChange={handleSelectClinic} disabled={clinicPending}>
+                      <SelectTrigger className="h-11 min-w-[170px] rounded-2xl border-none bg-white/40 dark:bg-black/20 px-4 shadow-sm transition-all hover:bg-white/60 md:min-w-[200px]">
+                        <SelectValue placeholder="Select Clinic" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-2xl border-none glass overflow-hidden">
+                        {memberships.map((membership) => (
+                          <SelectItem key={membership.clientId} value={membership.clientId} className="rounded-xl mx-1 my-0.5 focus:bg-primary/5">
+                            {membership.clinicName}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="h-11 rounded-2xl border-none bg-white/40 dark:bg-black/20 px-3 pr-4 shadow-sm hover:bg-white/60">
+                          <Avatar className="size-8 shadow-sm">
+                            <AvatarFallback className="bg-primary/10 text-[10px] font-bold text-primary">{initials(user.fullName ?? user.email)}</AvatarFallback>
+                          </Avatar>
+                          <ChevronsUpDown className="size-3.5 ml-2 text-muted-foreground opacity-50" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-64 rounded-[24px] border-none glass p-2 mt-2">
+                        <DropdownMenuLabel className="p-3">
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-sm font-bold text-foreground">{user.fullName ?? user.email}</span>
+                            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground opacity-60">
+                              {currentMembership.clinicName}
+                            </span>
+                          </div>
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator className="bg-muted-foreground/10 mx-2" />
+                        <DropdownMenuItem asChild className="rounded-xl h-11 px-3">
+                          <Link href="/settings">
+                            <Settings2 className="mr-2 size-4 opacity-70" />
+                            Settings
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleOpenBillingSettings} className="rounded-xl h-11 px-3">
+                          <ArrowUpRight className="mr-2 size-4 opacity-70" />
+                          Billing
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator className="bg-muted-foreground/10 mx-2" />
+                        <div className="flex p-1 gap-1">
+                            <Button variant="ghost" size="sm" className="flex-1 rounded-xl h-9 hover:bg-primary/5" onClick={() => setTheme("light")}>
+                                <SunMedium className="size-4 mr-2" /> Light
+                            </Button>
+                            <Button variant="ghost" size="sm" className="flex-1 rounded-xl h-9 hover:bg-primary/5" onClick={() => setTheme("dark")}>
+                                <MoonStar className="size-4 mr-2" /> Dark
+                            </Button>
+                        </div>
+                        <DropdownMenuSeparator className="bg-muted-foreground/10 mx-2" />
+                        <DropdownMenuItem onClick={handleLogout} className="rounded-xl h-11 px-3 text-destructive focus:text-destructive focus:bg-destructive/5">
+                          <LogOut className="mr-2 size-4" />
+                          Sign out
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
               </div>
             </div>
           </header>
 
-          <div className="flex-1 px-4 py-6 md:px-6 lg:px-8">
-            <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">{children}</div>
+          <div className="flex-1 px-4 py-8 md:px-8">
+            <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
+                <div className="space-y-1 ml-1">
+                    <div className="flex items-center gap-2 mb-2">
+                        <Badge variant="secondary" className="rounded-full bg-primary/10 px-3 border-none py-0.5 text-[10px] font-bold tracking-tight text-primary uppercase">
+                            {currentMembership.clinicName}
+                        </Badge>
+                        <Badge variant="outline" className="rounded-full px-3 py-0.5 border-muted-foreground/20 text-[10px] font-bold tracking-tight uppercase opacity-60">
+                            {roleLabel}
+                        </Badge>
+                    </div>
+                    <h1 className="text-4xl font-bold tracking-tight text-foreground">{pageTitle}</h1>
+                    <p className="text-sm text-muted-foreground max-w-2xl opacity-70">{pageDescription}</p>
+                </div>
+                {children}
+            </div>
           </div>
         </div>
       </SidebarInset>

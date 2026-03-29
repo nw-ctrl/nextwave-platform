@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { FileText, Printer } from "lucide-react";
+import { FileText, Printer, ArrowUpRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import { PortalLoginForm } from "@/components/portal-login-form";
 import { PortalWorkspaceShell } from "@/components/portal-workspace-shell";
 import { getPortalSession } from "@/lib/auth";
@@ -45,65 +46,105 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
       planName={planLabel}
       statusLabel={statusLabel}
     >
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
-        <Card className="rounded-[32px] border-border/70 shadow-sm">
-          <CardHeader className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <div className="grid gap-8 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
+        <Card className="glass border-none rounded-[32px] overflow-hidden">
+          <CardHeader className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between p-8 pb-4">
             <div>
-              <CardDescription>Patient profile</CardDescription>
-              <CardTitle className="text-3xl">{patient.full_name}</CardTitle>
+              <CardDescription className="text-[10px] font-bold uppercase tracking-widest opacity-50 mb-1.5 ml-0.5">Clinical Profile</CardDescription>
+              <CardTitle className="text-4xl font-bold tracking-tight">{patient.full_name}</CardTitle>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Button asChild variant="outline" className="gap-2"><Link href={`/templates?patientId=${patient.id}`}><FileText className="size-4" />Templates</Link></Button>
+              <Button asChild variant="outline" className="rounded-2xl h-11 border-none bg-primary/10 text-primary hover:bg-primary/20 transition-all font-semibold px-5">
+                <Link href={`/templates?patientId=${patient.id}`}>
+                    <FileText className="size-4 mr-2" />
+                    Apply Template
+                </Link>
+              </Button>
             </div>
           </CardHeader>
-          <CardContent className="grid gap-4 md:grid-cols-2">
-            <div className="rounded-[24px] border border-border/70 bg-muted/25 p-4"><p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Patient code</p><p className="mt-2 text-sm font-medium text-foreground">{patient.patient_code ?? "Not assigned"}</p></div>
-            <div className="rounded-[24px] border border-border/70 bg-muted/25 p-4"><p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Phone</p><p className="mt-2 text-sm font-medium text-foreground">{patient.phone_number || "Not recorded"}</p></div>
-            <div className="rounded-[24px] border border-border/70 bg-muted/25 p-4"><p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Demographics</p><p className="mt-2 text-sm font-medium capitalize text-foreground">{[patient.sex, patient.age != null ? `${patient.age} years` : null, patient.age_months ? `${patient.age_months} months` : null].filter(Boolean).join(" • ") || "Not recorded"}</p></div>
-            <div className="rounded-[24px] border border-border/70 bg-muted/25 p-4"><p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Consent</p><p className="mt-2 text-sm font-medium text-foreground">{patient.digital_consent_granted ? "Recorded" : "Not recorded"}</p></div>
+          <CardContent className="grid gap-6 md:grid-cols-2 p-8 pt-6">
+            <div className="rounded-[24px] bg-black/5 dark:bg-white/5 p-5 transition-all hover:bg-black/10">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-50 mb-2">Patient code</p>
+                <div className="flex items-center gap-2">
+                    <Badge variant="secondary" className="bg-primary/10 text-primary border-none rounded-lg px-2 font-mono text-sm tracking-widest">{patient.patient_code ?? "N/A"}</Badge>
+                </div>
+            </div>
+            <div className="rounded-[24px] bg-black/5 dark:bg-white/5 p-5 transition-all hover:bg-black/10">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-50 mb-2">Primary Phone</p>
+                <p className="text-sm font-semibold tracking-tight">{patient.phone_number || "No number recorded"}</p>
+            </div>
+            <div className="rounded-[24px] bg-black/5 dark:bg-white/5 p-5 transition-all hover:bg-black/10">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-50 mb-2">Vitals / Demographics</p>
+                <p className="text-sm font-semibold tracking-tight capitalize">
+                    {[patient.sex, patient.age != null ? `${patient.age}Y` : null, patient.age_months ? `${patient.age_months}M` : null].filter(Boolean).join(" • ") || "Not recorded"}
+                </p>
+            </div>
+            <div className="rounded-[24px] bg-black/5 dark:bg-white/5 p-5 transition-all hover:bg-black/10">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-50 mb-2">Data Consent</p>
+                <div className="flex items-center gap-2">
+                    <div className={cn("size-2 rounded-full", patient.digital_consent_granted ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "bg-orange-500")} />
+                    <p className="text-sm font-semibold">{patient.digital_consent_granted ? "Digital Consent Secured" : "Pending Signature"}</p>
+                </div>
+            </div>
           </CardContent>
         </Card>
 
-        <Card className="rounded-[32px] border-border/70 shadow-sm">
-          <CardHeader>
-            <CardDescription>History</CardDescription>
-            <CardTitle className="text-2xl">Visit count</CardTitle>
+        <Card className="glass border-none rounded-[32px] overflow-hidden flex flex-col">
+          <CardHeader className="p-8 pb-4">
+            <CardDescription className="text-[10px] font-bold uppercase tracking-widest opacity-50 mb-1.5 ml-0.5">Activity</CardDescription>
+            <CardTitle className="text-2xl font-bold tracking-tight">Visit History</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-semibold text-foreground">{visits.length}</div>
-            <p className="mt-2 text-sm text-muted-foreground">Open a visit below to review diagnosis and print the prescription view.</p>
+          <CardContent className="p-8 pt-4 flex-1 flex flex-col justify-center items-center text-center">
+            <div className="text-7xl font-light tracking-tighter text-primary/80 mb-2">{visits.length}</div>
+            <p className="text-xs font-medium text-muted-foreground opacity-70">Recorded interactions</p>
           </CardContent>
         </Card>
       </div>
 
-      <Card className="rounded-[32px] border-border/70 shadow-sm">
-        <CardHeader>
-          <CardDescription>Clinical history</CardDescription>
-          <CardTitle className="text-2xl">Visits and diagnoses</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between px-2">
+            <div>
+                <h3 className="text-xl font-bold tracking-tight">Clinical Log</h3>
+                <p className="text-xs text-muted-foreground opacity-60">Complete audit trail of diagnoses and prescriptions.</p>
+            </div>
+        </div>
+        
+        <div className="grid gap-4">
           {visits.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-border/70 bg-muted/25 px-4 py-8 text-sm text-muted-foreground">No visits recorded yet.</div>
+            <Card className="glass border-none rounded-[32px] p-12 text-center italic opacity-40">
+              No clinical history found for this patient yet.
+            </Card>
           ) : (
             visits.map((visit) => (
-              <div key={visit.id} className="rounded-[24px] border border-border/70 p-4">
-                <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className="text-base font-semibold text-foreground">{visit.assessment || "Clinical visit"}</p>
-                      {visit.visit_date ? <Badge variant="outline" className="rounded-full">{visit.visit_date}</Badge> : null}
+              <Card key={visit.id} className="glass border-none rounded-[28px] overflow-hidden group hover:scale-[1.005] transition-all">
+                <CardContent className="p-6">
+                    <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+                        <div className="space-y-3 flex-1">
+                            <div className="flex items-center gap-3">
+                                <Badge className="rounded-full px-3 py-1 bg-primary text-primary-foreground shadow-sm">{visit.visit_date || 'Clinic Visit'}</Badge>
+                                <h4 className="text-lg font-bold tracking-tight text-foreground">{visit.assessment || "Routine Checkup"}</h4>
+                            </div>
+                            {visit.plan ? (
+                                <div className="rounded-2xl bg-black/5 dark:bg-white/5 p-4 text-sm leading-6 text-muted-foreground border-l-2 border-primary/30">
+                                    <p className="whitespace-pre-wrap">{visit.plan}</p>
+                                </div>
+                            ) : null}
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Button asChild variant="ghost" className="rounded-xl h-11 px-5 hover:bg-primary/5">
+                                <Link href={`/patients/${patient.id}/visits/${visit.id}/print`}>
+                                    <Printer className="size-4 mr-2" />
+                                    Print Prescription
+                                </Link>
+                            </Button>
+                        </div>
                     </div>
-                    {visit.plan ? <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-muted-foreground">{visit.plan}</p> : null}
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    <Button asChild variant="outline" className="gap-2"><Link href={`/patients/${patient.id}/visits/${visit.id}/print`}><Printer className="size-4" />Print</Link></Button>
-                  </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             ))
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </PortalWorkspaceShell>
   );
 }

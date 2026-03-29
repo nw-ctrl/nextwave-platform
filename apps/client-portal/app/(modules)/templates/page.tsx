@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PortalLoginForm } from "@/components/portal-login-form";
 import { PortalWorkspaceShell } from "@/components/portal-workspace-shell";
@@ -35,33 +36,62 @@ export default async function Page({ searchParams }: { searchParams?: Promise<Re
       planName={planLabel}
       statusLabel={statusLabel}
     >
-      <Card className="rounded-[32px] border-border/70 shadow-sm">
-        <CardHeader>
-          <CardDescription>Template library</CardDescription>
-          <CardTitle className="text-2xl">Prescription and diagnosis templates</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-4 xl:grid-cols-2">
-          {templates.map((template) => (
-            <div key={template.id} className="rounded-[28px] border border-border/70 bg-muted/25 p-5">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h2 className="text-lg font-semibold text-foreground">{template.name}</h2>
-                    <Badge variant="outline" className="rounded-full">{template.source === "clinic" ? "Clinic" : "Built-in"}</Badge>
-                  </div>
-                  <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-muted-foreground">{template.diagnosis || "No diagnosis text"}</p>
-                </div>
-                <div className="flex size-10 items-center justify-center rounded-2xl bg-primary/10 text-primary"><FileText className="size-5" /></div>
-              </div>
-              <div className="mt-4 rounded-2xl border border-border/70 bg-background/70 p-4">
-                <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Prescription</p>
-                <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-foreground">{template.prescription || "No prescription text"}</p>
-                {template.notes ? <><p className="mt-4 text-xs uppercase tracking-[0.18em] text-muted-foreground">Notes</p><p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-foreground">{template.notes}</p></> : null}
-              </div>
+      <div className="grid gap-8">
+        <div className="flex items-center justify-between px-2">
+            <div>
+                <h3 className="text-xl font-bold tracking-tight">Clinical Library</h3>
+                <p className="text-xs text-muted-foreground opacity-60">Manage your pre-set diagnoses and treatment plans.</p>
             </div>
-          ))}
-        </CardContent>
-      </Card>
+            <Button className="rounded-2xl h-11 px-6 shadow-sm">
+                New Template
+            </Button>
+        </div>
+
+        <div className="grid gap-6 xl:grid-cols-2">
+          {templates.length === 0 ? (
+            <Card className="glass border-none rounded-[32px] p-20 text-center italic opacity-40 col-span-full">
+              No templates found for this clinic.
+            </Card>
+          ) : (
+            templates.map((template) => (
+              <Card key={template.id} className="glass border-none rounded-[32px] overflow-hidden group hover:scale-[1.005] transition-all">
+                <CardHeader className="p-8 pb-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="space-y-4 flex-1">
+                      <div className="flex items-center gap-3">
+                        <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-inner">
+                            <FileText className="size-5" />
+                        </div>
+                        <h4 className="text-xl font-bold tracking-tight">{template.name}</h4>
+                        <Badge variant="secondary" className="rounded-full bg-primary/5 text-[10px] font-bold text-primary border-none px-3 uppercase tracking-wider">
+                            {template.source === "clinic" ? "Custom" : "Built-in"}
+                        </Badge>
+                      </div>
+                      <div className="rounded-2xl bg-black/5 dark:bg-white/5 p-4 text-sm leading-6 text-muted-foreground border-l-2 border-primary/30">
+                        <p className="whitespace-pre-wrap">{template.diagnosis || "No diagnosis assigned"}</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-8 pt-4 space-y-4">
+                  <div className="rounded-[24px] border border-white/20 bg-white/40 dark:bg-black/10 p-5 shadow-sm">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-50 mb-3">Prescription Content</p>
+                    <p className="text-sm font-medium leading-relaxed text-foreground whitespace-pre-wrap italic">
+                        {template.prescription || "Empty prescription body"}
+                    </p>
+                  </div>
+                  {template.notes ? (
+                    <div className="px-5">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-30 mb-1">Internal Notes</p>
+                      <p className="text-xs text-muted-foreground opacity-60 leading-relaxed font-medium">{template.notes}</p>
+                    </div>
+                  ) : null}
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </div>
+      </div>
     </PortalWorkspaceShell>
   );
 }

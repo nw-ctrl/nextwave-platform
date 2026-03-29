@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Search, UserPlus, UsersRound, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,53 +37,65 @@ export default async function PatientsPage({ searchParams }: { searchParams?: Pr
       planName={planLabel}
       statusLabel={statusLabel}
     >
-      <Card className="rounded-[32px] border-border/70 shadow-sm">
-        <CardHeader className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div>
-            <CardDescription>Patient search</CardDescription>
-            <CardTitle className="text-2xl">Patient register (Read-Only)</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <form className="flex flex-col gap-3 md:flex-row">
-            <div className="relative flex-1">
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input name="q" defaultValue={query} placeholder="Search by patient name, phone, ID, or code" className="pl-9" />
+      <div className="grid gap-8">
+        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between px-2">
+            <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground opacity-40" />
+                <form action="/patients" method="GET" className="w-full">
+                    <Input 
+                        name="q"
+                        defaultValue={query}
+                        placeholder="Search patients by name or code..." 
+                        className="h-12 w-full rounded-2xl border-none bg-white/40 dark:bg-black/20 pl-12 shadow-sm transition-all focus-visible:bg-white/60"
+                    />
+                </form>
             </div>
-            <Button type="submit">Search</Button>
-          </form>
-        </CardContent>
-      </Card>
+            <div className="flex items-center gap-3">
+                 <Button className="rounded-2xl h-12 px-6 shadow-md shadow-primary/10">
+                    <UserPlus className="size-4 mr-2" />
+                    New Patient
+                </Button>
+            </div>
+        </div>
 
-      <Card className="rounded-[32px] border-border/70 shadow-sm">
-        <CardHeader>
-          <CardDescription>Results</CardDescription>
-          <CardTitle className="text-2xl">{patients.length} patient records</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
+        <div className="grid gap-4">
           {patients.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-border/70 bg-muted/25 px-4 py-8 text-sm text-muted-foreground">
-              No patient records found in the Android sync DB.
-            </div>
+            <Card className="glass border-none rounded-[32px] p-20 text-center italic opacity-40">
+              No clinical records found for this workspace.
+            </Card>
           ) : (
             patients.map((patient) => (
-              <Link key={patient.id} href={`/patients/${patient.id}`} className="flex flex-col gap-3 rounded-[24px] border border-border/70 px-4 py-4 transition-colors hover:border-primary/40 hover:bg-primary/[0.03] md:flex-row md:items-center md:justify-between">
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="truncate text-base font-semibold text-foreground">{patient.full_name}</p>
-                    {patient.patient_code ? <Badge variant="outline" className="rounded-full">{patient.patient_code}</Badge> : null}
-                  </div>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {[patient.sex, patient.age != null ? `${patient.age}y` : null, patient.phone_number, patient.cnic].filter(Boolean).join(" • ") || "No extra demographic details"}
-                  </p>
-                </div>
-                <div className="text-sm text-primary">Open record</div>
+              <Link key={patient.id} href={`/patients/${patient.id}`}>
+                <Card className="glass border-none rounded-[28px] overflow-hidden group hover:scale-[1.005] transition-all">
+                    <CardContent className="p-5">
+                        <div className="flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-4 min-w-0">
+                                <div className="flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-inner min-w-[3rem]">
+                                    <UsersRound className="size-6" />
+                                </div>
+                                <div className="min-w-0">
+                                    <h4 className="text-lg font-bold tracking-tight truncate group-hover:text-primary transition-colors">{patient.full_name}</h4>
+                                    <div className="flex flex-wrap items-center gap-3 mt-1 opacity-70">
+                                        <span className="text-xs font-mono tracking-wider">{patient.patient_code || "N/A"}</span>
+                                        <span className="text-[10px] opacity-40">•</span>
+                                        <span className="text-xs font-medium capitalize">{[patient.sex, patient.age != null ? `${patient.age}Y` : null].filter(Boolean).join(" • ")}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <Badge variant="outline" className="rounded-full px-3 border-none bg-black/5 dark:bg-white/5 text-[10px] font-bold tracking-tighter uppercase opacity-60">
+                                    {patient.is_deleted ? "Archived" : "Active"}
+                                </Badge>
+                                <ChevronRight className="size-5 text-muted-foreground opacity-20 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
               </Link>
             ))
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </PortalWorkspaceShell>
   );
 }
-
