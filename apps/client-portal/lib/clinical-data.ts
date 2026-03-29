@@ -139,10 +139,20 @@ export async function listClinicDoctors(clientId: string) {
   const clinicProfileId = await resolveClinicProfileId(clientId);
   if (!clinicProfileId) return [];
   const supabase = getSupabase();
-  const { data, error } = await supabase
-    .from("doctor_profiles")
-    .select("id, full_name, pmdc_no, qualification")
+  
+  const { data: members } = await supabase
+    .from("clinic_members")
+    .select("user_id")
     .eq("clinic_id", clinicProfileId)
+    .in("role", ["Doctor", "Admin"]);
+
+  if (!members || members.length === 0) return [];
+  const userIds = members.map(m => m.user_id);
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id, full_name, pmdc_no, qualification")
+    .in("id", userIds)
     .order("full_name", { ascending: true });
 
   if (error) throw new Error(error.message);
@@ -150,13 +160,10 @@ export async function listClinicDoctors(clientId: string) {
 }
 
 export async function getDoctorProfile(clientId: string, doctorId: string) {
-  const clinicProfileId = await resolveClinicProfileId(clientId);
-  if (!clinicProfileId) return null;
   const supabase = getSupabase();
   const { data, error } = await supabase
-    .from("doctor_profiles")
+    .from("profiles")
     .select("*")
-    .eq("clinic_id", clinicProfileId)
     .eq("id", doctorId)
     .maybeSingle<DoctorProfileRecord>();
 
