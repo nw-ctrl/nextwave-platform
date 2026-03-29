@@ -1,5 +1,5 @@
-﻿import Link from "next/link";
-import { ArrowRight, FileText, Plus, Printer } from "lucide-react";
+import Link from "next/link";
+import { FileText, Printer } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -53,7 +53,6 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
               <CardTitle className="text-3xl">{patient.full_name}</CardTitle>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Button asChild className="gap-2"><Link href={`/patients/${patient.id}/visits/new`}><Plus className="size-4" />Add diagnosis</Link></Button>
               <Button asChild variant="outline" className="gap-2"><Link href={`/templates?patientId=${patient.id}`}><FileText className="size-4" />Templates</Link></Button>
             </div>
           </CardHeader>
@@ -98,7 +97,6 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <Button asChild variant="outline" className="gap-2"><Link href={`/patients/${patient.id}/visits/${visit.id}/print`}><Printer className="size-4" />Print</Link></Button>
-                    <Button asChild variant="ghost" className="gap-2"><Link href={`/patients/${patient.id}/visits/new`}><ArrowRight className="size-4" />New follow-up</Link></Button>
                   </div>
                 </div>
               </div>

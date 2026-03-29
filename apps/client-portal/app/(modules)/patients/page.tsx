@@ -1,5 +1,5 @@
-﻿import Link from "next/link";
-import { Search, UserRoundPlus } from "lucide-react";
+import Link from "next/link";
+import { Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,7 +33,7 @@ export default async function PatientsPage({ searchParams }: { searchParams?: Pr
       selectedClientId={session.selectedClientId}
       currentMembership={membership}
       pageTitle="Patients"
-      pageDescription="Search and open patient records across the selected clinic."
+      pageDescription="Search and open read-only patient records securely synced from the selected clinic."
       planName={planLabel}
       statusLabel={statusLabel}
     >
@@ -41,11 +41,8 @@ export default async function PatientsPage({ searchParams }: { searchParams?: Pr
         <CardHeader className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
             <CardDescription>Patient search</CardDescription>
-            <CardTitle className="text-2xl">Patient register</CardTitle>
+            <CardTitle className="text-2xl">Patient register (Read-Only)</CardTitle>
           </div>
-          <Button asChild className="gap-2">
-            <Link href="/patients/new"><UserRoundPlus className="size-4" />New patient</Link>
-          </Button>
         </CardHeader>
         <CardContent>
           <form className="flex flex-col gap-3 md:flex-row">
@@ -66,7 +63,7 @@ export default async function PatientsPage({ searchParams }: { searchParams?: Pr
         <CardContent className="space-y-3">
           {patients.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-border/70 bg-muted/25 px-4 py-8 text-sm text-muted-foreground">
-              No patient records found.
+              No patient records found in the Android sync DB.
             </div>
           ) : (
             patients.map((patient) => (

@@ -1,5 +1,5 @@
-﻿import Link from "next/link";
-import { ArrowRight, FileText } from "lucide-react";
+import Link from "next/link";
+import { FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PortalLoginForm } from "@/components/portal-login-form";
@@ -58,11 +58,6 @@ export default async function Page({ searchParams }: { searchParams?: Promise<Re
                 <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-foreground">{template.prescription || "No prescription text"}</p>
                 {template.notes ? <><p className="mt-4 text-xs uppercase tracking-[0.18em] text-muted-foreground">Notes</p><p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-foreground">{template.notes}</p></> : null}
               </div>
-              {patientId ? (
-                <Link href={`/patients/${patientId}/visits/new?template=${encodeURIComponent(template.name)}`} className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-primary">
-                  Use for this patient <ArrowRight className="size-4" />
-                </Link>
-              ) : null}
             </div>
           ))}
         </CardContent>
