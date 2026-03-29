@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { ArrowRight, ClipboardList, FileText, Plus, UserRoundSearch } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -71,23 +71,17 @@ export default async function ClinicPortalHome() {
       planName={planLabel}
       statusLabel={statusLabel}
     >
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card className="rounded-[28px] border-border/70 shadow-sm">
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card className="glass rounded-[28px] border-none shadow-sm">
           <CardHeader>
-            <CardDescription>Total patients</CardDescription>
-            <CardTitle className="text-3xl">{summary.patientCount}</CardTitle>
+            <CardDescription className="text-[10px] font-bold uppercase tracking-widest opacity-50">Total patients</CardDescription>
+            <CardTitle className="text-4xl font-bold tracking-tight">{summary.patientCount}</CardTitle>
           </CardHeader>
         </Card>
-        <Card className="rounded-[28px] border-border/70 shadow-sm">
+        <Card className="glass rounded-[28px] border-none shadow-sm">
           <CardHeader>
-            <CardDescription>Total visits</CardDescription>
-            <CardTitle className="text-3xl">{summary.visitCount}</CardTitle>
-          </CardHeader>
-        </Card>
-        <Card className="rounded-[28px] border-border/70 shadow-sm">
-          <CardHeader>
-            <CardDescription>Current clinic</CardDescription>
-            <CardTitle className="text-2xl">{membership.clinicName}</CardTitle>
+            <CardDescription className="text-[10px] font-bold uppercase tracking-widest opacity-50">Total visits</CardDescription>
+            <CardTitle className="text-4xl font-bold tracking-tight">{summary.visitCount}</CardTitle>
           </CardHeader>
         </Card>
       </div>
