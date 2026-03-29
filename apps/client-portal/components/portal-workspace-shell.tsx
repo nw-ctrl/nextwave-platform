@@ -11,6 +11,7 @@ import {
   LogOut,
   MoonStar,
   Search,
+  Settings2,
   SunMedium,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -182,20 +183,9 @@ export function PortalWorkspaceShell({
               <p className="truncate text-xs text-muted-foreground">GP Clinical Portal</p>
             </div>
           </div>
-          <Button
-            type="button"
-            variant="outline"
-            className="h-10 w-full overflow-hidden justify-between rounded-2xl border-dashed bg-background/80 text-muted-foreground group-data-[collapsible=icon]:hidden"
-            onClick={() => setCommandOpen(true)}
-          >
-            <span className="flex items-center gap-2">
-              <Search className="size-4 text-primary" />
-              Search
-            </span>
-            <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-              <Command className="size-3" />K
-            </span>
-          </Button>
+          <div className="rounded-2xl border border-dashed border-sidebar-border/70 bg-background/70 px-3 py-2 text-xs leading-5 text-muted-foreground group-data-[collapsible=icon]:hidden">
+            Use the header search or press <span className="font-medium text-sidebar-foreground">Ctrl+K</span> for quick actions.
+          </div>
         </SidebarHeader>
 
         <SidebarSeparator />
@@ -288,26 +278,46 @@ export function PortalWorkspaceShell({
                 ) : null}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="h-11 rounded-2xl border-border/70 bg-card/80 px-3 shadow-sm">
-                      <SunMedium className="size-4 dark:hidden" />
-                      <MoonStar className="hidden size-4 dark:block" />
-                      <span className="hidden sm:inline">Theme</span>
+                    <Button variant="outline" className="h-11 gap-3 rounded-2xl border-border/70 bg-card/80 px-3 shadow-sm">
+                      <Avatar className="size-8">
+                        <AvatarFallback>{initials(user.fullName ?? user.email)}</AvatarFallback>
+                      </Avatar>
+                      <span className="hidden min-w-0 text-left sm:flex sm:flex-col">
+                        <span className="truncate text-sm font-medium text-foreground">{user.fullName ?? user.email}</span>
+                        <span className="truncate text-xs text-muted-foreground">Workspace settings</span>
+                      </span>
                       <ChevronsUpDown className="size-4 text-muted-foreground" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-52 rounded-2xl">
-                    <DropdownMenuLabel>Appearance</DropdownMenuLabel>
-                    <DropdownMenuItem onClick={() => setTheme("light")}>Light</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setTheme("dark")}>Dark</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setTheme("system")}>System</DropdownMenuItem>
+                  <DropdownMenuContent align="end" className="w-64 rounded-2xl">
+                    <DropdownMenuLabel>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-sm font-medium text-foreground">{user.fullName ?? user.email}</span>
+                        <span className="text-xs text-muted-foreground">{currentMembership.clinicName}</span>
+                      </div>
+                    </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleOpenBillingSettings}>
+                      <Settings2 className="mr-2 size-4 text-muted-foreground" />
                       Billing settings
                       <ArrowUpRight className="ml-auto size-4 text-muted-foreground" />
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setTheme("light")}>
+                      <SunMedium className="mr-2 size-4 text-muted-foreground" />
+                      Light theme
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setTheme("dark")}>
+                      <MoonStar className="mr-2 size-4 text-muted-foreground" />
+                      Dark theme
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setTheme("system")}>
+                      <ChevronsUpDown className="mr-2 size-4 text-muted-foreground" />
+                      System theme
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleLogout}>
+                      <LogOut className="mr-2 size-4 text-muted-foreground" />
                       Sign out
-                      <LogOut className="ml-auto size-4 text-muted-foreground" />
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
