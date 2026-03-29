@@ -24,6 +24,17 @@ export default async function PrintVisitPage({ params }: { params: Promise<{ pat
 
   const doctor = await getDoctorProfile(membership.clientId, visit.doctor_id);
 
+  const formatDrName = (name: string) => {
+    if (!name) return "Doctor";
+    const trimmed = name.trim();
+    if (trimmed.toLowerCase().startsWith("dr.") || trimmed.toLowerCase().startsWith("dr ")) {
+      return trimmed;
+    }
+    return `Dr. ${trimmed}`;
+  };
+
+  const doctorDisplayName = formatDrName(doctor?.full_name || "");
+
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col gap-6 px-6 py-8 print:px-0 print:py-0">
       <div className="print:hidden"><PrintVisitActions /></div>
@@ -32,7 +43,7 @@ export default async function PrintVisitPage({ params }: { params: Promise<{ pat
         <div className="bg-primary/5 p-8 border-b border-border/40 print:bg-white print:p-0 print:border-0">
              <div className="flex justify-between items-start gap-8">
                 <div>
-                   <h1 className="text-3xl font-bold tracking-tight text-primary print:text-black">Dr. {doctor?.full_name || "Doctor"}</h1>
+                   <h1 className="text-3xl font-bold tracking-tight text-primary print:text-black">{doctorDisplayName}</h1>
                    <p className="text-sm font-semibold opacity-70">{doctor?.qualification || "General Physician"}</p>
                    <p className="text-xs uppercase tracking-widest opacity-50 font-bold mt-1">PMDC: {doctor?.pmdc_no || "N/A"}</p>
                 </div>
@@ -103,7 +114,7 @@ export default async function PrintVisitPage({ params }: { params: Promise<{ pat
           <div className="mt-12 flex justify-end">
                 <div className="text-center w-48 pt-4 border-t border-border/40 print:border-black/10">
                     <p className="text-[10px] font-bold uppercase opacity-40">Digital Signature</p>
-                    <p className="text-sm font-bold mt-1">Dr. {doctor?.full_name}</p>
+                    <p className="text-sm font-bold mt-1">{doctorDisplayName}</p>
                 </div>
           </div>
         </CardContent>

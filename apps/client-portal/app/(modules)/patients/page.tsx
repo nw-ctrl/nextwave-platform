@@ -30,7 +30,16 @@ export default async function PatientsPage({ searchParams }: { searchParams?: Pr
     listClinicDoctors(membership.clientId)
   ]);
 
-  const doctorMap = Object.fromEntries(doctors.map(d => [d.id, d.full_name]));
+  const formatDrName = (name: string) => {
+    if (!name) return "Unknown Doctor";
+    const trimmed = name.trim();
+    if (trimmed.toLowerCase().startsWith("dr.") || trimmed.toLowerCase().startsWith("dr ")) {
+      return trimmed;
+    }
+    return `Dr. ${trimmed}`;
+  };
+
+  const doctorMap = Object.fromEntries(doctors.map(d => [d.id, formatDrName(d.full_name)]));
 
   return (
     <PortalWorkspaceShell
@@ -107,7 +116,7 @@ export default async function PatientsPage({ searchParams }: { searchParams?: Pr
                                     )
                                 ) : (
                                     <Badge variant="outline" className="rounded-full px-3 border-none bg-black/5 dark:bg-white/5 text-[10px] font-bold tracking-tighter uppercase opacity-60">
-                                        Dr. {doctorName}
+                                        {doctorName}
                                     </Badge>
                                 )}
                                 <Badge variant="outline" className="rounded-full px-3 border-none bg-black/5 dark:bg-white/5 text-[10px] font-bold tracking-tighter uppercase opacity-60">
