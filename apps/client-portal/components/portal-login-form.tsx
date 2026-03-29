@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { CSSProperties, FormEvent, useState } from "react";
 
@@ -14,21 +14,19 @@ const fieldStyle: CSSProperties = {
   width: "100%",
   padding: "14px 16px",
   borderRadius: 14,
-  border: "1px solid rgba(128, 167, 191, 0.7)",
-  background: "rgba(255,255,255,0.9)",
-  color: "#0d2432",
+  border: "1px solid #cbd5e1",
+  background: "#ffffff",
+  color: "#0f172a",
   fontSize: 15,
   outline: "none",
   boxSizing: "border-box",
   fontFamily: bodyFont,
-  transition: "border 0.2s ease"
+  transition: "border 0.2s ease, box-shadow 0.2s ease"
 };
 
 const mutedText: CSSProperties = {
-  color: "#9fb8c5"
+  color: "#64748b"
 };
-
-const navItems = ["Clinic Portal", "Billing", "Security", "Support"] as const;
 
 export function PortalLoginForm() {
   const [email, setEmail] = useState("");
@@ -59,122 +57,126 @@ export function PortalLoginForm() {
 
   return (
     <section className="portal-login-shell">
-      <div className="portal-login-grid">
-        <div className="portal-login-panel">
-          <div className="portal-login-header">
-            <div className="portal-login-stage">Secure Clinical Access</div>
-            <h1>MediVault Portal</h1>
-            <p>Enter your clinic credentials to access the portal workspace, billing controls, and account context.</p>
+      <div className="portal-login-panel">
+        <div className="portal-login-header">
+          <div className="portal-login-stage">Secure Clinical Access</div>
+          <h1>MediFlow Portal</h1>
+          <p>Sign in to access your clinic workspace, account settings, and subscription controls.</p>
+        </div>
+
+        <div className="portal-login-summary">
+          <div className="portal-login-summary-item">
+            <span>Clinical workspace</span>
+            <strong>Role-aware access</strong>
           </div>
-
-          <form onSubmit={handleSubmit} className="portal-login-form">
-            <input
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              autoComplete="email"
-              required
-              placeholder="Email"
-              style={fieldStyle}
-            />
-            <input
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              autoComplete="current-password"
-              required
-              placeholder="Password"
-              style={fieldStyle}
-            />
-            <button type="submit" disabled={status.state === "pending"} className="portal-login-submit">
-              {status.state === "pending" ? "Signing in..." : "Sign In"}
-            </button>
-          </form>
-
-          {status.state === "error" ? (
-            <div className="portal-login-status" role="alert">
-              {status.message}
-            </div>
-          ) : null}
-
-          <div className="portal-login-footer">
-            <span style={mutedText}>All interactions are protected with 256-bit encryption.</span>
+          <div className="portal-login-summary-item">
+            <span>Portal posture</span>
+            <strong>Clear and secure</strong>
           </div>
         </div>
 
-        <div className="portal-login-art">
-          <div className="portal-login-art-overlay" />
-          <div className="portal-login-art-copy">
-            <div className="portal-login-art-label">Clinical operations platform</div>
-            <h2>Secure access for modern clinics</h2>
-            <p>
-              The login experience is designed to feel clear, stable, and professional across desktop and mobile browsers.
-            </p>
-            <div className="portal-login-art-tags">
-              {navItems.map((label) => (
-                <span key={label}>{label}</span>
-              ))}
-            </div>
+        <form onSubmit={handleSubmit} className="portal-login-form">
+          <input
+            type="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            autoComplete="email"
+            required
+            placeholder="Email"
+            style={fieldStyle}
+          />
+          <input
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            autoComplete="current-password"
+            required
+            placeholder="Password"
+            style={fieldStyle}
+          />
+          <button type="submit" disabled={status.state === "pending"} className="portal-login-submit">
+            {status.state === "pending" ? "Signing in..." : "Sign In"}
+          </button>
+        </form>
+
+        {status.state === "error" ? (
+          <div className="portal-login-status" role="alert">
+            {status.message}
           </div>
+        ) : null}
+
+        <div className="portal-login-footer">
+          <span style={mutedText}>All portal access is protected with encrypted transport and session controls.</span>
         </div>
       </div>
 
       <style jsx>{`
         .portal-login-shell {
-          width: min(1280px, 100%);
-          min-height: min(720px, 100dvh - 32px);
+          width: min(520px, 100%);
           margin: 0 auto;
-          border-radius: 32px;
-          background: radial-gradient(circle at 22% 20%, rgba(63, 166, 190, 0.25), transparent 45%),
-            linear-gradient(135deg, #081523 0%, #050b18 68%, #01040c 100%);
-          box-shadow: 0 35px 90px rgba(3, 11, 25, 0.9);
-          position: relative;
-          overflow: hidden;
+          padding: 20px;
           font-family: Avenir Next, Segoe UI, Helvetica Neue, Arial, sans-serif;
-          color: #edf7ff;
-        }
-
-        .portal-login-grid {
-          display: grid;
-          grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-          gap: 30px;
-          padding: clamp(18px, 4vw, 58px);
-          position: relative;
-          z-index: 1;
         }
 
         .portal-login-panel {
-          padding: clamp(24px, 4vw, 52px) clamp(20px, 4vw, 48px);
-          border-radius: 32px;
-          background: rgba(7, 18, 32, 0.94);
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          box-shadow: 0 24px 52px rgba(0, 0, 0, 0.45);
-          backdrop-filter: blur(24px);
+          padding: clamp(24px, 4vw, 36px);
+          border-radius: 28px;
+          background: rgba(255, 255, 255, 0.92);
+          border: 1px solid rgba(203, 213, 225, 0.8);
+          box-shadow: 0 24px 50px rgba(15, 23, 42, 0.08);
           display: grid;
-          gap: 20px;
+          gap: 18px;
         }
 
         .portal-login-stage {
           font-size: 12px;
           letter-spacing: 0.16em;
           text-transform: uppercase;
-          color: rgba(132, 185, 209, 0.9);
+          color: #0f766e;
         }
 
         .portal-login-header h1 {
           margin: 4px 0 0;
-          font-size: 36px;
+          font-size: 34px;
           letter-spacing: -0.02em;
           font-family: Avenir Next, Segoe UI, Helvetica Neue, Arial, sans-serif;
           font-weight: 700;
+          color: #0f172a;
         }
 
         .portal-login-header p {
           margin: 0;
           font-size: 15px;
-          color: rgba(255, 255, 255, 0.7);
+          color: #475569;
           max-width: 40ch;
           line-height: 1.6;
+        }
+
+        .portal-login-summary {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 12px;
+        }
+
+        .portal-login-summary-item {
+          padding: 14px 16px;
+          border-radius: 18px;
+          border: 1px solid #e2e8f0;
+          background: #f8fafc;
+          display: grid;
+          gap: 4px;
+        }
+
+        .portal-login-summary-item span {
+          font-size: 11px;
+          text-transform: uppercase;
+          letter-spacing: 0.14em;
+          color: #64748b;
+        }
+
+        .portal-login-summary-item strong {
+          font-size: 14px;
+          color: #0f172a;
         }
 
         .portal-login-form {
@@ -187,13 +189,13 @@ export function PortalLoginForm() {
           padding: 14px 16px;
           border: none;
           border-radius: 16px;
-          background: linear-gradient(180deg, #22d6dc 0%, #16a1b2 100%);
+          background: linear-gradient(180deg, #0ea5e9 0%, #0284c7 100%);
           color: #fff;
           font-weight: 700;
           font-size: 16px;
           font-family: Avenir Next, Segoe UI, Helvetica Neue, Arial, sans-serif;
           cursor: pointer;
-          box-shadow: 0 14px 32px rgba(18, 158, 170, 0.45);
+          box-shadow: 0 14px 30px rgba(2, 132, 199, 0.22);
           transition: transform 0.25s ease;
         }
 
@@ -219,103 +221,19 @@ export function PortalLoginForm() {
 
         .portal-login-footer {
           font-size: 12px;
-          color: rgba(255, 255, 255, 0.6);
-        }
-
-        .portal-login-art {
-          position: relative;
-          border-radius: 32px;
-          overflow: hidden;
-          background: linear-gradient(180deg, rgba(6, 18, 30, 0.96) 0%, rgba(4, 7, 12, 0.95) 70%),
-            url("/assets/c0a8cb5d-f251-4fde-aa65-dc24b739b71a.png");
-          background-size: cover;
-          background-position: center;
-          min-height: 100%;
-        }
-
-        .portal-login-art-overlay {
-          position: absolute;
-          inset: 0;
-          background: radial-gradient(circle at 35% 25%, rgba(40, 170, 199, 0.35), transparent 60%),
-            radial-gradient(circle at 75% 15%, rgba(111, 236, 203, 0.25), transparent 40%),
-            linear-gradient(150deg, rgba(5, 12, 25, 0.85), rgba(1, 3, 8, 0.95));
-        }
-
-        .portal-login-art-copy {
-          position: relative;
-          z-index: 1;
-          padding: clamp(24px, 4vw, 48px);
-          display: flex;
-          flex-direction: column;
-          gap: 18px;
-          min-height: 100%;
-          justify-content: center;
-        }
-
-        .portal-login-art-label {
-          font-size: 12px;
-          letter-spacing: 0.22em;
-          text-transform: uppercase;
-          color: rgba(196, 229, 240, 0.85);
-        }
-
-        .portal-login-art h2 {
-          margin: 0;
-          font-size: 32px;
-          line-height: 1.2;
-          font-family: Avenir Next, Segoe UI, Helvetica Neue, Arial, sans-serif;
-          color: #f9fbff;
-        }
-
-        .portal-login-art p {
-          margin: 0;
-          font-size: 15px;
-          color: rgba(255, 255, 255, 0.72);
-          line-height: 1.6;
-          max-width: 40ch;
-        }
-
-        .portal-login-art-tags {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 10px;
-        }
-
-        .portal-login-art-tags span {
-          font-size: 11px;
-          letter-spacing: 0.2em;
-          text-transform: uppercase;
-          padding: 6px 14px;
-          border-radius: 999px;
-          border: 1px solid rgba(255, 255, 255, 0.35);
-          background: rgba(255, 255, 255, 0.04);
-          color: rgba(255, 255, 255, 0.85);
+          color: #64748b;
         }
 
         @media (max-width: 960px) {
-          .portal-login-shell {
-            min-height: auto;
-          }
-
-          .portal-login-grid {
-            grid-template-columns: 1fr;
-            padding: 42px;
-          }
-
-          .portal-login-art-copy {
-            padding: 32px;
-          }
-
           .portal-login-panel {
-            padding: 42px;
+            padding: 28px 24px;
           }
         }
 
         @media (max-width: 640px) {
           .portal-login-shell {
             width: 100%;
-            min-height: auto;
-            border-radius: 20px;
+            padding: 12px;
           }
 
           .portal-login-header h1 {
@@ -323,7 +241,7 @@ export function PortalLoginForm() {
           }
 
           .portal-login-header p,
-          .portal-login-art p {
+          .portal-login-summary-item strong {
             font-size: 14px;
           }
 
@@ -332,34 +250,13 @@ export function PortalLoginForm() {
             min-height: 48px;
           }
 
-          .portal-login-art-tags span {
-            letter-spacing: 0.12em;
-            font-size: 10px;
-          }
-
-          .portal-login-shell {
-            min-height: auto;
-            border-radius: 24px;
-          }
-
-          .portal-login-grid {
-            gap: 16px;
-            padding: 18px;
-          }
-
           .portal-login-panel {
             padding: 24px 18px;
             border-radius: 22px;
           }
 
-          .portal-login-art {
-            border-radius: 22px;
-            min-height: 280px;
-          }
-
-          .portal-login-art-copy {
-            padding: 22px 18px 24px;
-            justify-content: flex-end;
+          .portal-login-summary {
+            grid-template-columns: 1fr;
           }
         }
       `}</style>

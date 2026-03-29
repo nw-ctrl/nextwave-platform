@@ -264,8 +264,8 @@ export function PortalWorkspaceShell({
                 </Button>
                 {memberships.length > 1 ? (
                   <Select value={selectedClientId ?? memberships[0]?.clientId} onValueChange={handleSelectClinic} disabled={clinicPending}>
-                    <SelectTrigger className="h-11 min-w-[220px] rounded-2xl bg-card/80 px-4 shadow-sm">
-                      <SelectValue placeholder="Select clinic" />
+                    <SelectTrigger className="h-11 min-w-[190px] rounded-2xl bg-card/80 px-4 shadow-sm md:min-w-[210px]">
+                      <SelectValue placeholder="Clinic" />
                     </SelectTrigger>
                     <SelectContent>
                       {memberships.map((membership) => (
@@ -282,10 +282,7 @@ export function PortalWorkspaceShell({
                       <Avatar className="size-8">
                         <AvatarFallback>{initials(user.fullName ?? user.email)}</AvatarFallback>
                       </Avatar>
-                      <span className="hidden min-w-0 text-left sm:flex sm:flex-col">
-                        <span className="truncate text-sm font-medium text-foreground">{user.fullName ?? user.email}</span>
-                        <span className="truncate text-xs text-muted-foreground">Workspace settings</span>
-                      </span>
+                      <span className="hidden text-sm font-medium text-foreground lg:inline">Settings</span>
                       <ChevronsUpDown className="size-4 text-muted-foreground" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -328,22 +325,18 @@ export function PortalWorkspaceShell({
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge variant="secondary" className="rounded-full bg-primary/10 px-3 py-1 text-primary">{currentMembership.clinicName}</Badge>
                     <Badge variant="outline" className="rounded-full px-3 py-1 capitalize">{roleLabel}</Badge>
-                    {statusLabel ? <Badge variant="outline" className="rounded-full px-3 py-1 capitalize">{statusLabel}</Badge> : null}
                   </div>
                   <div>
                     <h1 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">{pageTitle}</h1>
                     <p className="mt-1 max-w-3xl text-sm leading-6 text-muted-foreground md:text-base">{pageDescription}</p>
                   </div>
                 </div>
-                <div className="grid gap-3 sm:grid-cols-2 xl:min-w-[360px]">
-                  <div className="rounded-2xl border border-border/70 bg-card/80 px-4 py-3 shadow-sm">
-                    <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Current plan</p>
-                    <p className="mt-1 text-sm font-semibold text-foreground">{planName ?? "Clinic access"}</p>
-                  </div>
-                  <div className="rounded-2xl border border-border/70 bg-card/80 px-4 py-3 shadow-sm">
-                    <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Clinic context</p>
-                    <p className="mt-1 text-sm font-semibold text-foreground">{memberships.length} available {memberships.length === 1 ? "account" : "accounts"}</p>
-                  </div>
+                <div className="flex flex-wrap items-center gap-2 lg:max-w-[340px] lg:justify-end">
+                  {statusLabel ? <Badge variant="outline" className="rounded-full px-3 py-1 capitalize">{statusLabel}</Badge> : null}
+                  {planName ? <Badge variant="outline" className="rounded-full px-3 py-1">{planName}</Badge> : null}
+                  {memberships.length > 1 ? (
+                    <Badge variant="outline" className="rounded-full px-3 py-1">{memberships.length} accounts</Badge>
+                  ) : null}
                 </div>
               </div>
             </div>
