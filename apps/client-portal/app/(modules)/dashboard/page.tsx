@@ -3,6 +3,9 @@ import { requirePortalContext } from "@/lib/auth";
 import { getClinicalWorkspaceSummary } from "@/lib/clinical-data";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ArrowUpRight } from "lucide-react";
+import { PortalWorkspaceShell } from "@/components/portal-workspace-shell";
+import { getReadablePortalPlanName } from "@/lib/portal-billing";
 
 export const dynamic = "force-dynamic";
 
@@ -16,41 +19,41 @@ export default async function DashboardPage() {
 
   const { membership, clientId, session } = ctx;
   const summary = await getClinicalWorkspaceSummary(clientId);
+  const planLabel = getReadablePortalPlanName(membership.subscription?.plan);
+  const statusLabel = membership.subscription?.status ?? "inactive";
 
   return (
-    <div className="flex flex-col space-y-6">
-      <div className="flex justify-between items-start">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground mt-2">
-            Welcome back to {membership.clinicName}, {session.user.fullName ?? session.user.email}.
-          </p>
-        </div>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+    <PortalWorkspaceShell
+      user={session.user}
+      memberships={session.memberships}
+      selectedClientId={clientId}
+      currentMembership={membership}
+      pageTitle="Clinical Overview"
+      pageDescription={`Welcome back to ${membership.clinicName}. Here is your clinic's activity at a glance.`}
+      planName={planLabel}
+      statusLabel={statusLabel}
+    >
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="glass rounded-[32px] border-none">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Your Role</CardTitle>
+            <CardTitle className="text-sm font-medium opacity-70">Current Role</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold capitalize">{membership.role}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Modules: {membership.modules.length > 0 ? membership.modules.join(", ") : "All"}
+            <div className="text-3xl font-bold tracking-tight capitalize">{membership.role}</div>
+            <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground mt-1.5 opacity-60">
+              {membership.modules.length > 0 ? membership.modules.join(", ") : "Full Access"}
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="glass rounded-[32px] border-none">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Subscription</CardTitle>
+            <CardTitle className="text-sm font-medium opacity-70">Workspace Plan</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold capitalize">
-              {membership.subscription?.plan ?? "Basic"} Plan
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Status: <Badge variant="outline">{membership.subscription?.status ?? "active"}</Badge>
+            <div className="text-3xl font-bold tracking-tight capitalize">{membership.subscription?.plan ?? "Basic"}</div>
+            <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground mt-1.5 opacity-60">
+              Subscription: {membership.subscription?.status ?? "Active"}
             </p>
           </CardContent>
         </Card>
@@ -124,6 +127,6 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </PortalWorkspaceShell>
   );
 }

@@ -55,20 +55,20 @@ export async function getClinicalWorkspaceSummary(clientId: string) {
   const supabase = getSupabase();
 
   const [{ count: patientCount }, { count: visitCount }, { data: latestPatients }, { data: latestVisits }] = await Promise.all([
-    supabase.from("patients").select("id", { count: "exact", head: true }).eq("clinic_id", clinicProfileId).eq("is_deleted", false),
-    supabase.from("visits").select("id", { count: "exact", head: true }).eq("clinic_id", clinicProfileId).eq("is_deleted", false),
+    supabase.from("patients").select("id", { count: "exact", head: true }).eq("clinic_id", clinicProfileId).neq("is_deleted", true),
+    supabase.from("visits").select("id", { count: "exact", head: true }).eq("clinic_id", clinicProfileId).neq("is_deleted", true),
     supabase
       .from("patients")
       .select("id, full_name, patient_code, updated_at")
       .eq("clinic_id", clinicProfileId)
-      .eq("is_deleted", false)
+      .neq("is_deleted", true)
       .order("updated_at", { ascending: false })
       .limit(5),
     supabase
       .from("visits")
       .select("id, patient_id, assessment, visit_date")
       .eq("clinic_id", clinicProfileId)
-      .eq("is_deleted", false)
+      .neq("is_deleted", true)
       .order("visit_date", { ascending: false })
       .limit(5),
   ]);
@@ -89,7 +89,7 @@ export async function listPatients(clientId: string, query?: string) {
     .from("patients")
     .select("id, clinic_id, doctor_id, patient_code, full_name, phone_number, cnic, sex, age, age_months, digital_consent_granted, created_at, updated_at, is_deleted")
     .eq("clinic_id", clinicProfileId)
-    .eq("is_deleted", false)
+    .neq("is_deleted", true)
     .order("full_name", { ascending: true });
 
   const trimmed = query?.trim();
@@ -115,7 +115,7 @@ export async function getPatientById(clientId: string, patientId: string) {
     .select("id, clinic_id, doctor_id, patient_code, full_name, phone_number, cnic, sex, age, age_months, digital_consent_granted, created_at, updated_at, is_deleted")
     .eq("clinic_id", clinicProfileId)
     .eq("id", patientId)
-    .eq("is_deleted", false)
+    .neq("is_deleted", true)
     .maybeSingle<PatientRecord>();
 
   if (error) {
@@ -134,7 +134,7 @@ export async function listVisitsForPatient(clientId: string, patientId: string) 
     .select("id, patient_id, clinic_id, doctor_id, subjective, bp, temp, weight, assessment, plan, visit_date, revisit_date, updated_at, is_deleted, report_path")
     .eq("clinic_id", clinicProfileId)
     .eq("patient_id", patientId)
-    .eq("is_deleted", false)
+    .neq("is_deleted", true)
     .order("visit_date", { ascending: false })
     .returns<VisitRecord[]>();
 
@@ -155,7 +155,7 @@ export async function getVisitById(clientId: string, patientId: string, visitId:
     .eq("clinic_id", clinicProfileId)
     .eq("patient_id", patientId)
     .eq("id", visitId)
-    .eq("is_deleted", false)
+    .neq("is_deleted", true)
     .maybeSingle<VisitRecord>();
 
   if (error) {
