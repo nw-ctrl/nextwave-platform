@@ -336,14 +336,6 @@ export function PortalWorkspaceShell({
           <div className="flex-1 px-4 py-8 md:px-8">
             <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
                 <div className="space-y-1 ml-1">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Badge variant="secondary" className="rounded-full bg-primary/10 px-3 border-none py-0.5 text-[10px] font-bold tracking-tight text-primary uppercase">
-                            {currentMembership.clinicName}
-                        </Badge>
-                        <Badge variant="outline" className="rounded-full px-3 py-0.5 border-muted-foreground/20 text-[10px] font-bold tracking-tight uppercase opacity-60">
-                            {roleLabel}
-                        </Badge>
-                    </div>
                     <h1 className="text-4xl font-bold tracking-tight text-foreground">{pageTitle}</h1>
                     <p className="text-sm text-muted-foreground max-w-2xl opacity-70">{pageDescription}</p>
                 </div>

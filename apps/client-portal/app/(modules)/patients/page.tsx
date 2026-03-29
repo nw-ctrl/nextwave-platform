@@ -95,11 +95,21 @@ export default async function PatientsPage({ searchParams }: { searchParams?: Pr
                                 </div>
                             </div>
                             <div className="flex items-center gap-4">
-                                {!isOwner && membership.role === 'doctor' ? (
-                                    <Badge className="rounded-full px-3 py-1 bg-black/5 dark:bg-white/10 text-[10px] uppercase font-bold text-muted-foreground border-none">
-                                        Read-only
+                                {membership.role === 'doctor' ? (
+                                    isOwner ? (
+                                        <Badge className="rounded-full px-3 py-1 bg-emerald-500/10 text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400 border-none">
+                                            Your Record
+                                        </Badge>
+                                    ) : (
+                                        <Badge className="rounded-full px-3 py-1 bg-black/5 dark:bg-white/10 text-[10px] uppercase font-bold text-muted-foreground border-none">
+                                            Read-only ({doctorName})
+                                        </Badge>
+                                    )
+                                ) : (
+                                    <Badge variant="outline" className="rounded-full px-3 border-none bg-black/5 dark:bg-white/5 text-[10px] font-bold tracking-tighter uppercase opacity-60">
+                                        Dr. {doctorName}
                                     </Badge>
-                                ) : null}
+                                )}
                                 <Badge variant="outline" className="rounded-full px-3 border-none bg-black/5 dark:bg-white/5 text-[10px] font-bold tracking-tighter uppercase opacity-60">
                                     {patient.is_deleted ? "Archived" : "Active"}
                                 </Badge>
