@@ -11,28 +11,32 @@ export async function GET() {
   const { data: profileRef } = await supabase
     .from("clinic_profiles")
     .select("*")
-    .eq("client_id", clientId);
+    .eq("client_id", clientId)
+    .maybeSingle();
 
-  const { data: clientData } = await supabase
-    .from("clients")
-    .select("*")
-    .eq("id", clientId);
+  const clinicProfileId = profileRef?.id;
+  let countResult = null;
+  let patientsResult = null;
 
-  const { data: allProfiles } = await supabase
-    .from("clinic_profiles")
-    .select("*")
-    .limit(10);
-
-  const { data: allPatients } = await supabase
-    .from("patients")
-    .select("clinic_id, full_name")
-    .limit(10);
+  if (clinicProfileId) {
+     countResult = await supabase
+      .from("patients")
+      .select("id", { count: "exact", head: true })
+      .eq("clinic_id", clinicProfileId);
+      
+     patientsResult = await supabase
+      .from("patients")
+      .select("*")
+      .eq("clinic_id", clinicProfileId)
+      .limit(10);
+  }
 
   return Response.json({
     clientId,
-    boundProfile: profileRef,
-    clientSource: clientData,
-    debugAllProfiles: allProfiles,
-    debugAllPatients: allPatients
+    clinicProfileId,
+    resolvedProfile: profileRef,
+    countResult,
+    patientsResult,
+    debugAllPatients: (await supabase.from("patients").select("id, clinic_id, full_name, is_deleted").limit(10)).data
   });
 }
