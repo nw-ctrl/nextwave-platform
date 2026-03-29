@@ -1,19 +1,12 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Building2, CreditCard, LogOut, MoonStar, SunMedium } from "lucide-react";
+import { Building2, CreditCard, LogOut, MoonStar, Search, SunMedium, X } from "lucide-react";
 import type { PortalMembership } from "@/lib/auth";
 import type { PortalNavItem } from "@/lib/portal-navigation";
-import {
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-  CommandShortcut,
-} from "@/components/ui/command";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 type PortalCommandMenuProps = {
   open: boolean;
@@ -25,6 +18,15 @@ type PortalCommandMenuProps = {
   onLogout: () => Promise<void>;
   onOpenBillingSettings: () => void;
   onToggleTheme: () => void;
+};
+
+type CommandEntry = {
+  id: string;
+  title: string;
+  description: string;
+  group: string;
+  meta?: string;
+  run: () => void | Promise<void>;
 };
 
 export function PortalCommandMenu({
@@ -39,87 +41,143 @@ export function PortalCommandMenu({
   onToggleTheme,
 }: PortalCommandMenuProps) {
   const router = useRouter();
+  const [query, setQuery] = useState("");
 
-  function handleNavigate(href: string) {
-    onOpenChange(false);
-    router.push(href);
-  }
+  useEffect(() => {
+    if (!open) {
+      setQuery("");
+    }
+  }, [open]);
 
-  async function handleClinic(clientId: string) {
-    onOpenChange(false);
-    await onSelectClinic(clientId);
-  }
+  const entries = useMemo<CommandEntry[]>(() => {
+    const navigation = navItems.map((item) => ({
+      id: `nav-${item.key}`,
+      title: item.label,
+      description: item.description,
+      group: "Navigate",
+      meta: item.href === "/" ? "GH" : item.href === "/dashboard" ? "GD" : "GB",
+      run: () => {
+        onOpenChange(false);
+        router.push(item.href);
+      },
+    }));
 
-  async function handleLogoutAction() {
-    onOpenChange(false);
-    await onLogout();
-  }
+    const actions: CommandEntry[] = [
+      {
+        id: "action-billing-settings",
+        title: "Open billing settings",
+        description: "Manage plan and invoice settings for this clinic account.",
+        group: "Actions",
+        run: () => {
+          onOpenChange(false);
+          onOpenBillingSettings();
+        },
+      },
+      {
+        id: "action-theme",
+        title: "Toggle appearance",
+        description: "Switch between light and dark workspace themes.",
+        group: "Actions",
+        meta: "Ctrl+J",
+        run: () => {
+          onOpenChange(false);
+          onToggleTheme();
+        },
+      },
+      {
+        id: "action-signout",
+        title: "Sign out",
+        description: "End the current portal session.",
+        group: "Actions",
+        run: async () => {
+          onOpenChange(false);
+          await onLogout();
+        },
+      },
+    ];
+
+    const clinics = memberships.length > 1
+      ? memberships.map((membership) => ({
+          id: `clinic-${membership.clientId}`,
+          title: membership.clinicName,
+          description: `Switch to ${membership.clinicName}.`,
+          group: "Clinics",
+          meta: membership.clientId === selectedClientId ? "Current" : membership.role,
+          run: async () => {
+            onOpenChange(false);
+            await onSelectClinic(membership.clientId);
+          },
+        }))
+      : [];
+
+    return [...navigation, ...actions, ...clinics];
+  }, [navItems, memberships, selectedClientId, onOpenChange, router, onOpenBillingSettings, onToggleTheme, onLogout, onSelectClinic]);
+
+  const filteredEntries = entries.filter((entry) => {
+    const haystack = `${entry.title} ${entry.description} ${entry.group} ${entry.meta ?? ""}`.toLowerCase();
+    return haystack.includes(query.toLowerCase());
+  });
+
+  const grouped = filteredEntries.reduce<Record<string, CommandEntry[]>>((acc, entry) => {
+    (acc[entry.group] ||= []).push(entry);
+    return acc;
+  }, {});
+
+  if (!open) return null;
 
   return (
-    <CommandDialog
-      open={open}
-      onOpenChange={onOpenChange}
-      title="Workspace Command Menu"
-      description="Search navigation, clinics, and actions."
-      className="max-w-2xl border-border/60 bg-background/95 shadow-2xl backdrop-blur"
-    >
-      <CommandInput placeholder="Search patients, clinics, billing, and commands..." />
-      <CommandList>
-        <CommandEmpty>No matching workspace action.</CommandEmpty>
-        <CommandGroup heading="Navigate">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <CommandItem key={item.key} value={`${item.label} ${item.description}`} onSelect={() => handleNavigate(item.href)}>
-                <Icon className="size-4 text-primary" />
-                <div className="flex flex-col">
-                  <span>{item.label}</span>
-                  <span className="text-xs text-muted-foreground">{item.description}</span>
+    <div className="fixed inset-0 z-50 flex items-start justify-center bg-slate-950/35 px-4 pt-[12vh] backdrop-blur-sm" onClick={() => onOpenChange(false)}>
+      <div className="w-full max-w-2xl overflow-hidden rounded-[28px] border border-border/70 bg-background shadow-2xl" onClick={(event) => event.stopPropagation()}>
+        <div className="flex items-center gap-3 border-b border-border/70 px-4 py-4 sm:px-5">
+          <Search className="size-4 text-primary" />
+          <input
+            autoFocus
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search patients, clinics, billing, and commands..."
+            className="h-10 flex-1 border-0 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+          />
+          <Button type="button" variant="ghost" size="icon-sm" className="rounded-xl" onClick={() => onOpenChange(false)}>
+            <X className="size-4" />
+          </Button>
+        </div>
+
+        <div className="max-h-[60vh] overflow-y-auto px-3 py-3 sm:px-4">
+          {filteredEntries.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-border/80 bg-muted/30 px-4 py-10 text-center text-sm text-muted-foreground">
+              No matching workspace action.
+            </div>
+          ) : (
+            Object.entries(grouped).map(([group, items]) => (
+              <div key={group} className="mb-4 last:mb-0">
+                <div className="px-2 pb-2 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">{group}</div>
+                <div className="space-y-2">
+                  {items.map((entry) => {
+                    const icon = group === "Navigate" ? <Search className="size-4 text-primary" /> : group === "Actions" ? <CreditCard className="size-4 text-primary" /> : <Building2 className="size-4 text-primary" />;
+                    return (
+                      <button
+                        key={entry.id}
+                        type="button"
+                        onClick={() => void entry.run()}
+                        className="flex w-full items-start gap-3 rounded-2xl border border-border/70 bg-card px-4 py-3 text-left transition-colors hover:border-primary/40 hover:bg-primary/[0.03]"
+                      >
+                        <div className="mt-0.5">{entry.id === "action-theme" ? <><MoonStar className="size-4 text-primary dark:hidden" /><SunMedium className="hidden size-4 text-primary dark:block" /></> : entry.id === "action-signout" ? <LogOut className="size-4 text-primary" /> : icon}</div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-sm font-medium text-foreground">{entry.title}</span>
+                            {entry.meta ? <Badge variant="outline" className="rounded-full px-2 py-0 text-[10px]">{entry.meta}</Badge> : null}
+                          </div>
+                          <p className="mt-1 text-sm leading-6 text-muted-foreground">{entry.description}</p>
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
-                <CommandShortcut>{item.href === "/" ? "GH" : item.href === "/dashboard" ? "GD" : "GB"}</CommandShortcut>
-              </CommandItem>
-            );
-          })}
-        </CommandGroup>
-        <CommandSeparator />
-        <CommandGroup heading="Actions">
-          <CommandItem value="Open billing settings manage account invoices" onSelect={onOpenBillingSettings}>
-            <CreditCard className="size-4 text-primary" />
-            <span>Open billing settings</span>
-          </CommandItem>
-          <CommandItem value="Toggle theme light dark mode" onSelect={onToggleTheme}>
-            <MoonStar className="size-4 text-primary dark:hidden" />
-            <SunMedium className="hidden size-4 text-primary dark:block" />
-            <span>Toggle appearance</span>
-            <CommandShortcut>?J</CommandShortcut>
-          </CommandItem>
-          <CommandItem value="Sign out logout" onSelect={handleLogoutAction}>
-            <LogOut className="size-4 text-primary" />
-            <span>Sign out</span>
-          </CommandItem>
-        </CommandGroup>
-        {memberships.length > 1 ? (
-          <>
-            <CommandSeparator />
-            <CommandGroup heading="Switch clinic">
-              {memberships.map((membership) => (
-                <CommandItem
-                  key={membership.clientId}
-                  value={`${membership.clinicName} ${membership.role}`}
-                  onSelect={() => handleClinic(membership.clientId)}
-                >
-                  <Building2 className="size-4 text-primary" />
-                  <div className="flex flex-col">
-                    <span>{membership.clinicName}</span>
-                    <span className="text-xs capitalize text-muted-foreground">{membership.role}</span>
-                  </div>
-                  {membership.clientId === selectedClientId ? <CommandShortcut>Current</CommandShortcut> : null}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </>
-        ) : null}
-      </CommandList>
-    </CommandDialog>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

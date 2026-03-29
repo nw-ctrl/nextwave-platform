@@ -185,12 +185,12 @@ export function PortalWorkspaceShell({
           <Button
             type="button"
             variant="outline"
-            className="h-10 justify-between rounded-2xl border-dashed bg-background/80 text-muted-foreground group-data-[collapsible=icon]:hidden"
+            className="h-10 w-full overflow-hidden justify-between rounded-2xl border-dashed bg-background/80 text-muted-foreground group-data-[collapsible=icon]:hidden"
             onClick={() => setCommandOpen(true)}
           >
             <span className="flex items-center gap-2">
               <Search className="size-4 text-primary" />
-              Search patients or commands
+              Search
             </span>
             <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
               <Command className="size-3" />K
@@ -266,7 +266,7 @@ export function PortalWorkspaceShell({
                 >
                   <span className="flex items-center gap-2 text-sm">
                     <Search className="size-4 text-primary" />
-                    Search patients, clinics, or commands
+                    Search patients or commands
                   </span>
                   <span className="hidden items-center gap-1 rounded-md bg-muted px-2 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground sm:inline-flex">
                     <Command className="size-3" />K
