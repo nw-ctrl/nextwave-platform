@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { PrintVisitActions } from "@/components/print-visit-actions";
 import { getPortalSession } from "@/lib/auth";
-import { getPatientById, getVisitById, getDoctorProfile } from "@/lib/clinical-data";
+import { getPatientById, getVisitById, getDoctorProfile, getClinicBranding, getClinicProfile } from "@/lib/clinical-data";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +23,8 @@ export default async function PrintVisitPage({ params }: { params: Promise<{ pat
   }
 
   const doctor = await getDoctorProfile(membership.clientId, visit.doctor_id);
+  const branding = await getClinicBranding(membership.clientId);
+  const clinic = await getClinicProfile(membership.clientId);
 
   const formatDrName = (name: string) => {
     if (!name) return "Doctor";
@@ -43,9 +45,13 @@ export default async function PrintVisitPage({ params }: { params: Promise<{ pat
         <div className="bg-primary/5 p-8 border-b border-border/40 print:bg-white print:p-0 print:border-0 min-h-[140px] flex items-center">
              <div className="flex w-full justify-between items-start gap-8">
                 <div className="flex-1">
-                   {doctor?.header_path ? (
+                   {doctor?.header_path || branding?.logo_url ? (
                         <div className="h-28 flex items-center mb-4">
-                            <img src={doctor.header_path} alt="Letterhead" className="max-h-full max-w-full object-contain" />
+                            <img 
+                                src={doctor?.header_path || branding?.logo_url || ""} 
+                                alt="Letterhead" 
+                                className="max-h-full max-w-full object-contain" 
+                            />
                         </div>
                    ) : (
                        <h1 className="text-3xl font-bold tracking-tight text-primary print:text-black mb-1">{doctorDisplayName}</h1>
@@ -60,7 +66,9 @@ export default async function PrintVisitPage({ params }: { params: Promise<{ pat
                 </div>
                 <div className="text-right">
                    <h2 className="text-xl font-bold tracking-tight">{membership.clinicName}</h2>
-                   <p className="text-xs text-muted-foreground opacity-70">Electronic Health Record</p>
+                   <p className="text-xs text-muted-foreground opacity-70">
+                       {clinic?.address?.city ? `${clinic.address.city}, ${clinic.address.country || 'PK'}` : "Electronic Health Record"}
+                   </p>
                 </div>
              </div>
         </div>

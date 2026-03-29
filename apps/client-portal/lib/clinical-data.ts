@@ -247,6 +247,31 @@ export async function getVisitById(clientId: string, patientId: string, visitId:
   return data;
 }
 
+export async function getClinicProfile(clientId: string) {
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("clinic_profiles")
+    .select("*")
+    .eq("client_id", clientId)
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function getClinicBranding(clientId: string) {
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("tenant_branding")
+    .select("*")
+    .eq("client_id", clientId)
+    .maybeSingle();
+
+  return data;
+}
+
 export async function resolveClinicProfileId(clientId: string) {
   const supabase = getSupabase();
   const { data, error } = await supabase
