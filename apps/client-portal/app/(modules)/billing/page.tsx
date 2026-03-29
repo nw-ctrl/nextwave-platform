@@ -1,31 +1,25 @@
-import { PortalLoginForm } from "../../../components/portal-login-form";
-import { PortalTopBar } from "../../../components/portal-top-bar";
-import { getPortalSession } from "../../../lib/auth";
-import { getClinicBillingSummary, getReadablePortalPlanName } from "../../../lib/portal-billing";
-import { PricingSection } from "../../../components/pricing-section";
+import { ArrowUpRight, ReceiptText } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { PortalLoginForm } from "@/components/portal-login-form";
+import { PortalWorkspaceShell } from "@/components/portal-workspace-shell";
+import { PricingSection } from "@/components/pricing-section";
+import { getPortalSession } from "@/lib/auth";
+import { getClinicBillingSummary, getReadablePortalPlanName } from "@/lib/portal-billing";
 
 export const dynamic = "force-dynamic";
 
-const headingFont = 'Avenir Next, Segoe UI, Helvetica Neue, Arial, sans-serif';
-const bodyFont = 'Avenir Next, Segoe UI, Helvetica Neue, Arial, sans-serif';
-
-const accountChecklist = [
-  "Plan status",
-  "Renewal date",
-  "Invoice history",
-  "Billing settings"
-];
+const accountChecklist = ["Plan status", "Renewal date", "Invoice history", "Billing settings"];
 
 function formatMoney(amount: number | null, currency: string) {
-  if (amount == null) {
-    return "Available in your account";
-  }
+  if (amount == null) return "Available in your account";
 
   try {
     return new Intl.NumberFormat("en-AU", {
       style: "currency",
       currency,
-      maximumFractionDigits: amount % 1 === 0 ? 0 : 2
+      maximumFractionDigits: amount % 1 === 0 ? 0 : 2,
     }).format(amount);
   } catch {
     return `${currency} ${amount.toLocaleString()}`;
@@ -33,15 +27,13 @@ function formatMoney(amount: number | null, currency: string) {
 }
 
 function formatDate(value?: string | null) {
-  if (!value) {
-    return "Available in your account";
-  }
+  if (!value) return "Available in your account";
 
   try {
     return new Intl.DateTimeFormat("en-AU", {
       day: "numeric",
       month: "short",
-      year: "numeric"
+      year: "numeric",
     }).format(new Date(value));
   } catch {
     return value;
@@ -49,9 +41,7 @@ function formatDate(value?: string | null) {
 }
 
 function humanizeStatus(status?: string | null) {
-  if (!status) {
-    return "Not available";
-  }
+  if (!status) return "Not available";
 
   return status
     .split("_")
@@ -63,18 +53,18 @@ function statusTone(status?: string | null) {
   switch (status) {
     case "active":
     case "paid":
-      return { background: "#ecfdf5", color: "#166534", border: "#bbf7d0" };
+      return "border-emerald-200 bg-emerald-50 text-emerald-700";
     case "trialing":
-      return { background: "#eff6ff", color: "#1d4ed8", border: "#bfdbfe" };
+      return "border-sky-200 bg-sky-50 text-sky-700";
     case "past_due":
     case "open":
-      return { background: "#fff7ed", color: "#9a3412", border: "#fed7aa" };
+      return "border-amber-200 bg-amber-50 text-amber-700";
     case "canceled":
     case "unpaid":
     case "void":
-      return { background: "#fef2f2", color: "#b91c1c", border: "#fecaca" };
+      return "border-rose-200 bg-rose-50 text-rose-700";
     default:
-      return { background: "#f8fafc", color: "#334155", border: "#e2e8f0" };
+      return "border-border bg-muted text-muted-foreground";
   }
 }
 
@@ -83,35 +73,16 @@ const planFeatureNotes: Record<string, string[]> = {
   standard: ["Your clinic is on the Standard plan.", "This plan supports routine day-to-day clinic operations."],
   premium: ["Your clinic is on the Premium plan.", "This plan includes the broadest level of access currently available."],
   custom: ["Your clinic is on a custom plan.", "For plan adjustments, use billing settings or contact support."],
-  unknown: ["Plan details are being refreshed.", "Your account remains active while billing information loads."]
+  unknown: ["Plan details are being refreshed.", "Your account remains active while billing information loads."],
 };
 
-const shellSurface = {
-  background: "#ffffff",
-  border: "1px solid #dbe3ea",
-  boxShadow: "0 10px 24px rgba(15, 23, 42, 0.06)"
-};
-
-export default async function Page({
-  searchParams
-}: {
-  searchParams?: Promise<Record<string, string | string[] | undefined>>;
-}) {
+export default async function Page({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
   const resolvedSearchParams = (await searchParams) ?? {};
   const session = await getPortalSession();
 
   if (!session) {
     return (
-      <main
-        style={{
-          padding: 24,
-          fontFamily: bodyFont,
-          minHeight: "100vh",
-          display: "grid",
-          placeItems: "center",
-          background: "linear-gradient(180deg, #f6f8fb 0%, #eef2f6 100%)"
-        }}
-      >
+      <main className="grid min-h-screen place-items-center px-6 py-10">
         <PortalLoginForm />
       </main>
     );
@@ -119,9 +90,13 @@ export default async function Page({
 
   if (session.memberships.length === 0) {
     return (
-      <main style={{ padding: 24, fontFamily: bodyFont }}>
-        <h1>Billing</h1>
-        <p>Your account does not have a clinic membership yet.</p>
+      <main className="mx-auto flex min-h-screen w-full max-w-2xl items-center px-6 py-10">
+        <Card className="w-full rounded-[28px] border-border/70 shadow-sm">
+          <CardHeader>
+            <CardTitle>Billing</CardTitle>
+            <CardDescription>Your account does not have a clinic membership yet.</CardDescription>
+          </CardHeader>
+        </Card>
       </main>
     );
   }
@@ -132,9 +107,13 @@ export default async function Page({
 
   if (!roleAllowed || !moduleAllowed) {
     return (
-      <main style={{ padding: 24, fontFamily: bodyFont, minHeight: "100vh", background: "linear-gradient(180deg, #f6f8fb 0%, #eef2f6 100%)" }}>
-        <h1>Billing</h1>
-        <p>Your account does not currently have permission to manage clinic billing.</p>
+      <main className="mx-auto flex min-h-screen w-full max-w-2xl items-center px-6 py-10">
+        <Card className="w-full rounded-[28px] border-border/70 shadow-sm">
+          <CardHeader>
+            <CardTitle>Billing</CardTitle>
+            <CardDescription>Your account does not currently have permission to manage clinic billing.</CardDescription>
+          </CardHeader>
+        </Card>
       </main>
     );
   }
@@ -153,7 +132,6 @@ export default async function Page({
   const planName = billing?.planName ?? fallbackPlanName;
   const billingStatus = humanizeStatus(billing?.status ?? membership.subscription?.status ?? "inactive");
   const nextBillingDate = billing?.nextBillingDate ?? membership.subscription?.currentPeriodEnd ?? null;
-  const planTone = statusTone(billing?.status ?? membership.subscription?.status ?? "inactive");
   const checkoutSuccess = resolvedSearchParams.checkout === "success";
   const portalError = resolvedSearchParams.portal === "error";
   const portalMessage = typeof resolvedSearchParams.message === "string" ? resolvedSearchParams.message : null;
@@ -168,210 +146,173 @@ export default async function Page({
   const nextCycleLabel = formatMoney(cyclePrice, currency);
 
   return (
-    <main className="portal-page">
-      <PortalTopBar
-        memberships={session.memberships}
-        selectedClientId={session.selectedClientId}
-        clinicName={membership.clinicName}
-        planName={planName}
-        billingStatus={billingStatus}
-        nextBillingDate={formatDate(nextBillingDate)}
-        billingNote={accountNote}
-        savingsHighlight={monthlySavings ? `${formatMoney(monthlySavings, currency)} below the standard rate` : null}
-        savingsSubnote={monthlySavings ? "Current account pricing is lower than the standard subscription amount." : null}
-        nextCycleAmount={nextCycleLabel}
-      />
+    <PortalWorkspaceShell
+      user={session.user}
+      memberships={session.memberships}
+      selectedClientId={session.selectedClientId}
+      currentMembership={membership}
+      pageTitle="Subscription and billing"
+      pageDescription="A clearer billing workspace with stronger hierarchy for plan status, renewal timing, invoices, and account actions."
+      planName={planName}
+      statusLabel={billingStatus}
+    >
+      {checkoutSuccess ? (
+        <Card className="rounded-[24px] border-emerald-200 bg-emerald-50/80 shadow-sm">
+          <CardContent className="p-4 text-sm font-medium text-emerald-700">Payment completed successfully.</CardContent>
+        </Card>
+      ) : null}
 
-      <div className="portal-content-wrap">
-        {checkoutSuccess ? <div className="portal-alert success">Payment completed successfully.</div> : null}
+      {portalError ? (
+        <Card className="rounded-[24px] border-rose-200 bg-rose-50/80 shadow-sm">
+          <CardContent className="p-4 text-sm font-medium text-rose-700">{portalMessage ?? "Unable to open billing settings for this clinic right now."}</CardContent>
+        </Card>
+      ) : null}
 
-        {portalError ? <div className="portal-alert error">{portalMessage ?? "Unable to open billing settings for this clinic right now."}</div> : null}
-
-        {billingError ? (
-          <div className="portal-alert warning">
+      {billingError ? (
+        <Card className="rounded-[24px] border-amber-200 bg-amber-50/80 shadow-sm">
+          <CardContent className="p-4 text-sm font-medium text-amber-700">
             Live billing information is temporarily unavailable. Your clinic account remains active.
             {billingError ? ` (${billingError})` : ""}
-          </div>
-        ) : null}
+          </CardContent>
+        </Card>
+      ) : null}
 
-        <section className="portal-summary-grid">
-          <article className="portal-card" style={{ ...shellSurface }}>
-            <div className="portal-card-heading">
-              <span>Current plan</span>
-              <span className="portal-plan-chip" style={{ background: planTone.background, color: planTone.color, borderColor: planTone.border }}>
-                {billingStatus}
-              </span>
+      <div className="grid gap-6 xl:grid-cols-3">
+        <Card className="rounded-[32px] border-border/70 shadow-sm">
+          <CardHeader>
+            <div className="flex items-center justify-between gap-3">
+              <CardDescription>Current plan</CardDescription>
+              <Badge variant="outline" className={`rounded-full capitalize ${statusTone(billing?.status ?? membership.subscription?.status ?? "inactive")}`}>{billingStatus}</Badge>
             </div>
-            <div>
-              <div className="portal-card-title">{planName}</div>
-              <p className="portal-card-sub">{slimNotes[0]}</p>
-            </div>
-          </article>
+            <CardTitle className="text-3xl">{planName}</CardTitle>
+            <CardDescription className="text-sm leading-7">{slimNotes[0]}</CardDescription>
+          </CardHeader>
+        </Card>
 
-          <article className="portal-card" style={{ ...shellSurface }}>
-            <div className="portal-card-heading">
-              <span>Next billing cycle</span>
-            </div>
-            <div className="portal-card-value">
-              <span className="portal-cycle-price">{nextCycleLabel}</span>
-              {hasDiscount && baseCyclePrice != null && cyclePrice != null && baseCyclePrice > cyclePrice ? (
-                <div className="portal-card-strikethrough">
-                  <span className="portal-card-previous">{formatMoney(baseCyclePrice, currency)}</span>
-                  <span className="portal-card-discount">Adjusted pricing</span>
-                </div>
-              ) : null}
-            </div>
-            <div className="portal-card-meta">
-              <span>Renews {formatDate(nextBillingDate)}</span>
-              {monthlySavings ? <span>Current pricing is below the standard amount for this plan.</span> : null}
-            </div>
-          </article>
+        <Card className="rounded-[32px] border-border/70 shadow-sm">
+          <CardHeader>
+            <CardDescription>Next billing cycle</CardDescription>
+            <CardTitle className="break-words text-3xl">{nextCycleLabel}</CardTitle>
+            <CardDescription className="text-sm leading-7">Renews {formatDate(nextBillingDate)}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm text-muted-foreground">
+            {hasDiscount && baseCyclePrice != null && cyclePrice != null && baseCyclePrice > cyclePrice ? (
+              <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                <span className="line-through decoration-muted-foreground/60">{formatMoney(baseCyclePrice, currency)}</span>
+                <Badge variant="secondary" className="rounded-full">Adjusted pricing</Badge>
+              </div>
+            ) : null}
+            {monthlySavings ? <p>Current pricing is below the standard amount for this plan.</p> : null}
+          </CardContent>
+        </Card>
 
-          <article className="portal-card" style={{ ...shellSurface }}>
-            <div className="portal-card-heading">
-              <span>Account note</span>
-            </div>
-            <p className="portal-card-note">{accountNote ?? slimNotes[1]}</p>
-            <div className="portal-checklist">
+        <Card className="rounded-[32px] border-border/70 shadow-sm">
+          <CardHeader>
+            <CardDescription>Account note</CardDescription>
+            <CardTitle className="text-2xl">Billing summary</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm leading-7 text-muted-foreground">{accountNote ?? slimNotes[1]}</p>
+            <div className="grid gap-2">
               {accountChecklist.map((item) => (
-                <div key={item} className="portal-checklist-item">
-                  <span className="portal-checklist-dot" />
+                <div key={item} className="flex items-center gap-3 rounded-2xl border border-border/70 bg-muted/30 px-4 py-3 text-sm text-foreground">
+                  <span className="size-2 rounded-full bg-primary" />
                   <span>{item}</span>
                 </div>
               ))}
             </div>
-          </article>
-        </section>
-
-        <section className="portal-history-card" style={{ ...shellSurface }}>
-          <div className="portal-history-header">
-            <div>
-              <h2>Billing history</h2>
-              <p>{invoices.length ? "Recent invoices for this clinic account." : "Invoices will appear here once they are available for this clinic account."}</p>
-            </div>
-            <div className="portal-history-actions">
-              <a href="/api/billing/manage">Open billing settings</a>
-              {invoices[0]?.hostedInvoiceUrl ? (
-                <a href={invoices[0].hostedInvoiceUrl} target="_blank" rel="noreferrer">
-                  View latest invoice
-                </a>
-              ) : null}
-            </div>
-          </div>
-          <div className="portal-history-table">
-            <table>
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Plan</th>
-                  <th>Amount</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {invoices.length ? (
-                  invoices.map((invoice) => {
-                    const tone = statusTone(invoice.status);
-                    return (
-                      <tr key={invoice.id}>
-                        <td>{formatDate(invoice.date)}</td>
-                        <td>{invoice.planName}</td>
-                        <td>{formatMoney(invoice.amount, invoice.currency)}</td>
-                        <td>
-                          <span className="portal-history-badge" style={{ borderColor: tone.border, background: tone.background, color: tone.color }}>
-                            {humanizeStatus(invoice.status)}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })
-                ) : (
-                  <tr>
-                    <td colSpan={4}>No invoice entries available yet.</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-          <div className="portal-history-mobile">
-            {invoices.length ? (
-              invoices.map((invoice) => {
-                const tone = statusTone(invoice.status);
-                return (
-                  <article key={invoice.id}>
-                    <div className="portal-history-mobile-row">
-                      <span>{formatDate(invoice.date)}</span>
-                      <span className="portal-history-badge" style={{ borderColor: tone.border, background: tone.background, color: tone.color }}>
-                        {humanizeStatus(invoice.status)}
-                      </span>
-                    </div>
-                    <div className="portal-history-mobile-copy">
-                      <div>{invoice.planName}</div>
-                      <div>{formatMoney(invoice.amount, invoice.currency)}</div>
-                    </div>
-                  </article>
-                );
-              })
-            ) : (
-              <div className="portal-history-empty">No invoice entries available yet.</div>
-            )}
-          </div>
-        </section>
-
-        {isActive ? null : (
-          <section className="portal-pricing-wrapper">
-            <PricingSection />
-          </section>
-        )}
+          </CardContent>
+        </Card>
       </div>
 
-      <style>{`
-        .portal-page { min-height: 100vh; background: linear-gradient(180deg, #f7f9fb 0%, #eef2f6 100%); font-family: ${bodyFont}; color: #0f172a; }
-        .portal-content-wrap { max-width: 1240px; margin: 0 auto; padding: 24px 20px 40px; display: flex; flex-direction: column; gap: 18px; }
-        .portal-alert { border-radius: 18px; padding: 14px 18px; font-size: 14px; border: 1px solid #dbe3ea; background: #ffffff; color: #334155; }
-        .portal-alert.success { border-color: #99f6e4; color: #0f766e; }
-        .portal-alert.warning { border-color: #fde68a; color: #92400e; }
-        .portal-alert.error { border-color: #fecaca; color: #b91c1c; }
-        .portal-summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
-        .portal-card { display: flex; flex-direction: column; gap: 12px; padding: 22px; border-radius: 24px; }
-        .portal-card-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: #64748b; }
-        .portal-plan-chip { padding: 5px 14px; border-radius: 999px; border: 1px solid; font-size: 11px; letter-spacing: 0.08em; }
-        .portal-card-title { font-size: 24px; font-weight: 700; font-family: ${headingFont}; margin: 0; color: #0f172a; overflow-wrap: anywhere; }
-        .portal-card-sub { margin: 0; color: #475569; line-height: 1.6; font-size: 14px; }
-        .portal-card-value { display: flex; flex-direction: column; gap: 12px; }
-        .portal-cycle-price { font-size: clamp(28px, 4vw, 36px); font-weight: 700; font-family: ${headingFont}; color: #0f172a; overflow-wrap: anywhere; }
-        .portal-card-strikethrough { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; color: #475569; }
-        .portal-card-previous { text-decoration: line-through; opacity: 0.75; overflow-wrap: anywhere; }
-        .portal-card-discount { padding: 4px 10px; border-radius: 999px; background: #ecfeff; border: 1px solid #bae6fd; color: #0f766e; }
-        .portal-card-meta { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #64748b; overflow-wrap: anywhere; }
-        .portal-card-note { margin: 0; color: #334155; line-height: 1.6; }
-        .portal-checklist { display: grid; gap: 10px; margin-top: 4px; }
-        .portal-checklist-item { display: flex; align-items: center; gap: 10px; color: #334155; font-size: 14px; }
-        .portal-checklist-dot { width: 8px; height: 8px; border-radius: 999px; background: #0f766e; flex: 0 0 auto; }
-        .portal-history-card { padding: 26px; border-radius: 26px; }
-        .portal-history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; gap: 12px; }
-        .portal-history-header h2 { margin: 0; font-size: 22px; color: #0f172a; }
-        .portal-history-header p { margin: 4px 0 0; color: #64748b; font-size: 13px; }
-        .portal-history-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-        .portal-history-actions a { color: #0f766e; font-weight: 600; text-decoration: none; font-size: 13px; }
-        .portal-history-table { overflow-x: auto; }
-        .portal-history-table table { width: 100%; border-collapse: collapse; min-width: 540px; }
-        .portal-history-table th, .portal-history-table td { padding: 12px 18px; text-align: left; font-size: 13px; color: #475569; border-top: 1px solid #e2e8f0; }
-        .portal-history-table th { color: #64748b; text-transform: uppercase; letter-spacing: 0.08em; font-size: 11px; }
-        .portal-history-badge { display: inline-flex; align-items: center; justify-content: center; padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; border: 1px solid; }
-        .portal-history-mobile { display: none; margin-top: 16px; gap: 12px; flex-direction: column; }
-        .portal-history-mobile article { padding: 14px 16px; border-radius: 18px; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 8px; }
-        .portal-history-mobile-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-        .portal-history-mobile-copy { color: #334155; display: grid; gap: 4px; overflow-wrap: anywhere; }
-        .portal-history-empty { text-align: center; color: #64748b; font-size: 13px; }
-        .portal-pricing-wrapper { border-radius: 28px; overflow: hidden; margin-top: 10px; }
-        @media (max-width: 760px) {
-          .portal-content-wrap { padding: 18px 14px 32px; }
-          .portal-history-header { flex-direction: column; align-items: flex-start; }
-          .portal-history-table { display: none; }
-          .portal-history-mobile { display: flex; }
-        }
-      `}</style>
-    </main>
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]">
+        <Card className="rounded-[32px] border-border/70 shadow-sm">
+          <CardHeader className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div>
+              <CardDescription>Billing history</CardDescription>
+              <CardTitle className="text-2xl">Recent invoices</CardTitle>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button asChild variant="outline" className="rounded-full">
+                <a href="/api/billing/manage">Open billing settings</a>
+              </Button>
+              {invoices[0]?.hostedInvoiceUrl ? (
+                <Button asChild className="rounded-full">
+                  <a href={invoices[0].hostedInvoiceUrl} target="_blank" rel="noreferrer">
+                    View latest invoice
+                    <ArrowUpRight className="size-4" />
+                  </a>
+                </Button>
+              ) : null}
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {invoices.length ? (
+              <div className="overflow-hidden rounded-[24px] border border-border/70">
+                <div className="hidden grid-cols-[1.1fr_1fr_0.9fr_0.9fr] gap-4 border-b border-border/70 bg-muted/40 px-5 py-3 text-[11px] uppercase tracking-[0.18em] text-muted-foreground md:grid">
+                  <span>Date</span>
+                  <span>Plan</span>
+                  <span>Amount</span>
+                  <span>Status</span>
+                </div>
+                <div className="divide-y divide-border/70">
+                  {invoices.map((invoice) => (
+                    <div key={invoice.id} className="grid gap-3 px-5 py-4 text-sm md:grid-cols-[1.1fr_1fr_0.9fr_0.9fr] md:items-center">
+                      <div>
+                        <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground md:hidden">Date</p>
+                        <p className="text-foreground">{formatDate(invoice.date)}</p>
+                      </div>
+                      <div>
+                        <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground md:hidden">Plan</p>
+                        <p className="text-foreground">{invoice.planName}</p>
+                      </div>
+                      <div>
+                        <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground md:hidden">Amount</p>
+                        <p className="text-foreground">{formatMoney(invoice.amount, invoice.currency)}</p>
+                      </div>
+                      <div>
+                        <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground md:hidden">Status</p>
+                        <Badge variant="outline" className={`rounded-full capitalize ${statusTone(invoice.status)}`}>{humanizeStatus(invoice.status)}</Badge>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-[28px] border border-dashed border-border/80 bg-muted/30 px-6 py-10 text-center text-sm text-muted-foreground">No invoice entries available yet.</div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-[32px] border-border/70 shadow-sm">
+          <CardHeader>
+            <CardDescription>Account guidance</CardDescription>
+            <CardTitle className="text-2xl">Current billing posture</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-sm leading-7 text-muted-foreground">
+            <div className="flex items-start gap-3 rounded-[24px] border border-border/70 bg-muted/30 p-4">
+              <ReceiptText className="mt-0.5 size-5 text-primary" />
+              <p>{monthlySavings ? `Current pricing is ${formatMoney(monthlySavings, currency)} below the standard plan amount.` : "Your current billing amount is shown exactly as charged for this clinic account."}</p>
+            </div>
+            <div className="rounded-[24px] border border-border/70 bg-muted/30 p-4">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Renewal</p>
+              <p className="mt-2 text-base font-semibold text-foreground">{formatDate(nextBillingDate)}</p>
+            </div>
+            {hasDiscount && baseCyclePrice != null && cyclePrice != null && baseCyclePrice > cyclePrice ? (
+              <div className="rounded-[24px] border border-border/70 bg-muted/30 p-4">
+                <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Standard rate</p>
+                <p className="mt-2 text-base font-semibold text-foreground line-through decoration-muted-foreground/60">{formatMoney(baseCyclePrice, currency)}</p>
+              </div>
+            ) : null}
+          </CardContent>
+        </Card>
+      </div>
+
+      {isActive ? null : (
+        <div className="overflow-hidden rounded-[32px] border border-border/70 bg-card/95 shadow-sm">
+          <PricingSection />
+        </div>
+      )}
+    </PortalWorkspaceShell>
   );
 }

@@ -1,41 +1,74 @@
-import Link from "next/link";
-import { PortalLoginForm } from "../../../components/portal-login-form";
-import { getPortalSession } from "../../../lib/auth";
+import { BarChart3, Gauge, Users } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { PortalLoginForm } from "@/components/portal-login-form";
+import { PortalWorkspaceShell } from "@/components/portal-workspace-shell";
+import { getPortalSession } from "@/lib/auth";
+import { getReadablePortalPlanName } from "@/lib/portal-billing";
 
 export const dynamic = "force-dynamic";
-
-const headingFont = 'Avenir Next, Segoe UI Variable, Segoe UI, sans-serif';
-const bodyFont = 'Aptos, Avenir Next, Segoe UI, sans-serif';
-const pageTitle = "Usage";
-const pageIntro = "Usage surfaces are now framed like a modern analytics workspace, ready for live patient and visit metrics.";
-const pageBody = "Usage dashboards benefit from focused KPIs, simplified chart regions, and faster scan paths for clinic staff.";
-const altHref = "/templates";
-const altLabel = "Templates";
 
 export default async function Page() {
   const session = await getPortalSession();
 
   if (!session) {
-    return <main style={{ padding: 24, minHeight: "100vh", display: "grid", placeItems: "center" }}><PortalLoginForm /></main>;
+    return <main className="grid min-h-screen place-items-center px-6 py-10"><PortalLoginForm /></main>;
   }
 
+  const membership = session.memberships.find((item) => item.clientId === session.selectedClientId) ?? session.memberships[0];
+  const planLabel = getReadablePortalPlanName(membership.subscription?.plan);
+  const statusLabel = membership.subscription?.status ?? "inactive";
+
   return (
-    <main className="page-shell">
-      <section className="card hero-card"><span className="eyebrow">Workspace module</span><h1>{pageTitle}</h1><p>{pageIntro}</p></section>
-      <section className="grid">
-        <article className="card"><span className="eyebrow">Why this matters</span><h2>{pageTitle}</h2><p>{pageBody}</p></article>
-        <article className="card"><span className="eyebrow">Navigation</span><div className="actions"><Link href="/">Portal home</Link><Link href="/dashboard">Dashboard</Link><Link href={altHref}>{altLabel}</Link></div></article>
-      </section>
-      <style>{styles}</style>
-    </main>
+    <PortalWorkspaceShell
+      user={session.user}
+      memberships={session.memberships}
+      selectedClientId={session.selectedClientId}
+      currentMembership={membership}
+      pageTitle="Usage and insight"
+      pageDescription="A modern analytics shell prepared for future patient, visit, and operational reporting in browser."
+      planName={planLabel}
+      statusLabel={statusLabel}
+    >
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.55fr)]">
+        <Card className="rounded-[32px] border-border/70 shadow-sm">
+          <CardHeader>
+            <Badge variant="outline" className="w-fit rounded-full px-3 py-1">Workspace module</Badge>
+            <CardTitle className="text-3xl">Usage analytics</CardTitle>
+            <CardDescription className="max-w-2xl text-sm leading-7">
+              Usage dashboards benefit from focused KPIs, simplified chart regions, and faster scan paths for clinic staff.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-3">
+            <div className="rounded-[28px] border border-border/70 bg-muted/30 p-5">
+              <BarChart3 className="size-5 text-primary" />
+              <p className="mt-4 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Analytics</p>
+              <p className="mt-2 text-sm leading-6 text-foreground">Prepared for patient, visit, and operational trends.</p>
+            </div>
+            <div className="rounded-[28px] border border-border/70 bg-muted/30 p-5">
+              <Gauge className="size-5 text-primary" />
+              <p className="mt-4 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Scan speed</p>
+              <p className="mt-2 text-sm leading-6 text-foreground">Designed to surface high-value metrics more quickly.</p>
+            </div>
+            <div className="rounded-[28px] border border-border/70 bg-muted/30 p-5">
+              <Users className="size-5 text-primary" />
+              <p className="mt-4 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Clinic activity</p>
+              <p className="mt-2 text-sm leading-6 text-foreground">Ready for future clinic-wide usage and engagement indicators.</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-[32px] border-border/70 shadow-sm">
+          <CardHeader>
+            <CardDescription>Module posture</CardDescription>
+            <CardTitle className="text-2xl">Prepared for live metrics</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-sm leading-7 text-muted-foreground">
+            <p>This page now sits inside the shared command-driven shell instead of a disconnected placeholder layout.</p>
+            <p>That lets future charts and metric panels inherit a stronger visual and navigational system immediately.</p>
+          </CardContent>
+        </Card>
+      </div>
+    </PortalWorkspaceShell>
   );
 }
-
-const styles = `
-  .page-shell{min-height:100vh;padding:28px 20px 40px;font-family:${bodyFont};color:#dcebf6;background:linear-gradient(180deg,#081421 0%,#0c1c2d 55%,#10253b 100%)}
-  .hero-card,.grid,.card{width:min(1080px,100%);margin:0 auto}.grid{margin-top:18px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-  .card{border-radius:28px;padding:24px;border:1px solid rgba(134,168,197,.18);background:linear-gradient(180deg,rgba(14,28,43,.92) 0%,rgba(12,24,38,.96) 100%);box-shadow:0 24px 60px rgba(3,10,18,.35)}
-  .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#8ab0c8}h1,h2{margin:8px 0 10px;font-family:${headingFont};color:#f2fbff}h1{font-size:clamp(2rem,4vw,3rem)}p{margin:0;color:#a8bfce;line-height:1.7}
-  .actions{margin-top:12px;display:grid;gap:10px}.actions a{display:inline-flex;width:fit-content;padding:12px 14px;border-radius:14px;text-decoration:none;color:#eff8ff;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08)}
-  @media (max-width:760px){.page-shell{padding:18px 14px 28px}.grid{grid-template-columns:1fr}}
-`;

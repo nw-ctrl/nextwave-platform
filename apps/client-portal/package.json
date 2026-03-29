@@ -9,19 +9,37 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@nextwave/analytics": "workspace:*",
+    "@nextwave/auth": "workspace:*",
+    "@nextwave/config": "workspace:*",
+    "@nextwave/database": "workspace:*",
+    "@nextwave/ui": "workspace:*",
+    "@tanstack/react-query": "^5.95.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "cmdk": "^1.1.1",
+    "framer-motion": "^12.38.0",
+    "lucide-react": "^1.7.0",
     "next": "^15.2.0",
+    "next-themes": "^0.4.6",
+    "radix-ui": "^1.4.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "@nextwave/ui": "workspace:*",
-    "@nextwave/auth": "workspace:*",
-    "@nextwave/database": "workspace:*",
-    "@nextwave/config": "workspace:*",
-    "@nextwave/analytics": "workspace:*",
-    "stripe": "^17.7.0"
+    "react-hook-form": "^7.72.0",
+    "recharts": "^3.8.1",
+    "sonner": "^2.0.7",
+    "stripe": "^17.7.0",
+    "tailwind-merge": "^3.5.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
-    "typescript": "^5.8.2",
     "@types/react": "^19.0.11",
-    "@types/react-dom": "^19.0.4"
+    "@types/react-dom": "^19.0.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "tailwindcss-animate": "^1.0.7",
+    "typescript": "^5.8.2"
   }
 }

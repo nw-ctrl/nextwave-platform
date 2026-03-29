@@ -1,41 +1,74 @@
-import Link from "next/link";
-import { PortalLoginForm } from "../../../components/portal-login-form";
-import { getPortalSession } from "../../../lib/auth";
+import { FileText, Sparkles, Stethoscope } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { PortalLoginForm } from "@/components/portal-login-form";
+import { PortalWorkspaceShell } from "@/components/portal-workspace-shell";
+import { getPortalSession } from "@/lib/auth";
+import { getReadablePortalPlanName } from "@/lib/portal-billing";
 
 export const dynamic = "force-dynamic";
-
-const headingFont = 'Avenir Next, Segoe UI Variable, Segoe UI, sans-serif';
-const bodyFont = 'Aptos, Avenir Next, Segoe UI, sans-serif';
-const pageTitle = "Templates";
-const pageIntro = "Prepared for a future prescription and clinic-template workflow with a modern, readable portal shell.";
-const pageBody = "Template surfaces benefit from dense-but-readable cards, clear defaults, and role-aware editing states.";
-const altHref = "/usage";
-const altLabel = "Usage";
 
 export default async function Page() {
   const session = await getPortalSession();
 
   if (!session) {
-    return <main style={{ padding: 24, minHeight: "100vh", display: "grid", placeItems: "center" }}><PortalLoginForm /></main>;
+    return <main className="grid min-h-screen place-items-center px-6 py-10"><PortalLoginForm /></main>;
   }
 
+  const membership = session.memberships.find((item) => item.clientId === session.selectedClientId) ?? session.memberships[0];
+  const planLabel = getReadablePortalPlanName(membership.subscription?.plan);
+  const statusLabel = membership.subscription?.status ?? "inactive";
+
   return (
-    <main className="page-shell">
-      <section className="card hero-card"><span className="eyebrow">Workspace module</span><h1>{pageTitle}</h1><p>{pageIntro}</p></section>
-      <section className="grid">
-        <article className="card"><span className="eyebrow">Why this matters</span><h2>{pageTitle}</h2><p>{pageBody}</p></article>
-        <article className="card"><span className="eyebrow">Navigation</span><div className="actions"><Link href="/">Portal home</Link><Link href="/dashboard">Dashboard</Link><Link href={altHref}>{altLabel}</Link></div></article>
-      </section>
-      <style>{styles}</style>
-    </main>
+    <PortalWorkspaceShell
+      user={session.user}
+      memberships={session.memberships}
+      selectedClientId={session.selectedClientId}
+      currentMembership={membership}
+      pageTitle="Templates"
+      pageDescription="A calmer shell for future prescription and clinic template workflows, with stronger readability for dense clinical content."
+      planName={planLabel}
+      statusLabel={statusLabel}
+    >
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.55fr)]">
+        <Card className="rounded-[32px] border-border/70 shadow-sm">
+          <CardHeader>
+            <Badge variant="outline" className="w-fit rounded-full px-3 py-1">Workspace module</Badge>
+            <CardTitle className="text-3xl">Prescription and clinic templates</CardTitle>
+            <CardDescription className="max-w-2xl text-sm leading-7">
+              Template surfaces benefit from dense-but-readable cards, clearer defaults, and role-aware editing states.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-3">
+            <div className="rounded-[28px] border border-border/70 bg-muted/30 p-5">
+              <FileText className="size-5 text-primary" />
+              <p className="mt-4 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Structured content</p>
+              <p className="mt-2 text-sm leading-6 text-foreground">Prepared for repeatable prescription and clinic note structures.</p>
+            </div>
+            <div className="rounded-[28px] border border-border/70 bg-muted/30 p-5">
+              <Stethoscope className="size-5 text-primary" />
+              <p className="mt-4 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Clinical readability</p>
+              <p className="mt-2 text-sm leading-6 text-foreground">Built to handle content-dense editing surfaces more comfortably.</p>
+            </div>
+            <div className="rounded-[28px] border border-border/70 bg-muted/30 p-5">
+              <Sparkles className="size-5 text-primary" />
+              <p className="mt-4 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Future-ready shell</p>
+              <p className="mt-2 text-sm leading-6 text-foreground">The shell is ready for real template workflows when those routes are exposed.</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-[32px] border-border/70 shadow-sm">
+          <CardHeader>
+            <CardDescription>Module posture</CardDescription>
+            <CardTitle className="text-2xl">Prepared for expansion</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-sm leading-7 text-muted-foreground">
+            <p>This module now shares the same navigation, search, and command system as the rest of the workspace.</p>
+            <p>That gives future template editing screens a more credible product foundation from the start.</p>
+          </CardContent>
+        </Card>
+      </div>
+    </PortalWorkspaceShell>
   );
 }
-
-const styles = `
-  .page-shell{min-height:100vh;padding:28px 20px 40px;font-family:${bodyFont};color:#dcebf6;background:linear-gradient(180deg,#081421 0%,#0c1c2d 55%,#10253b 100%)}
-  .hero-card,.grid,.card{width:min(1080px,100%);margin:0 auto}.grid{margin-top:18px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-  .card{border-radius:28px;padding:24px;border:1px solid rgba(134,168,197,.18);background:linear-gradient(180deg,rgba(14,28,43,.92) 0%,rgba(12,24,38,.96) 100%);box-shadow:0 24px 60px rgba(3,10,18,.35)}
-  .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#8ab0c8}h1,h2{margin:8px 0 10px;font-family:${headingFont};color:#f2fbff}h1{font-size:clamp(2rem,4vw,3rem)}p{margin:0;color:#a8bfce;line-height:1.7}
-  .actions{margin-top:12px;display:grid;gap:10px}.actions a{display:inline-flex;width:fit-content;padding:12px 14px;border-radius:14px;text-decoration:none;color:#eff8ff;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08)}
-  @media (max-width:760px){.page-shell{padding:18px 14px 28px}.grid{grid-template-columns:1fr}}
-`;
