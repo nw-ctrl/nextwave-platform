@@ -154,26 +154,57 @@ export async function listClinicDoctors(clientId: string) {
   if (!members || members.length === 0) return [];
   const userIds = members.map(m => m.user_id);
 
-  const { data, error } = await supabase
+  const { data: profiles } = await supabase
     .from("profiles")
-    .select("id, full_name, pmdc_no, qualification")
+    .select("id, full_name, pmdc_no, qualification, prescription_header, prescription_footer")
     .in("id", userIds)
     .order("full_name", { ascending: true });
 
-  if (error) throw new Error(error.message);
-  return data ?? [];
+  const { data: syncProfiles } = await supabase
+    .from("doctor_profiles")
+    .select("user_id, header_path, footer_path, license_number, specialty")
+    .in("user_id", userIds);
+
+  return (profiles ?? []).map(p => {
+    const sync = syncProfiles?.find(s => s.user_id === p.id);
+    return {
+      ...p,
+      header_path: sync?.header_path ?? null,
+      footer_path: sync?.footer_path ?? null,
+      pmdc_no: p.pmdc_no ?? sync?.license_number ?? null,
+      qualification: p.qualification ?? sync?.specialty ?? null,
+    };
+  });
 }
 
 export async function getDoctorProfile(clientId: string, doctorId: string) {
   const supabase = getSupabase();
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", doctorId)
-    .maybeSingle<DoctorProfileRecord>();
+  
+  const [{ data: profile }, { data: syncProfile }] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", doctorId)
+      .maybeSingle<DoctorProfileRecord>(),
+    supabase
+      .from("doctor_profiles")
+      .select("*")
+      .eq("user_id", doctorId)
+      .maybeSingle<any>()
+  ]);
 
-  if (error) throw new Error(error.message);
-  return data;
+  if (!profile && !syncProfile) return null;
+
+  return {
+    ...profile,
+    full_name: profile?.full_name || syncProfile?.full_name || "Doctor",
+    header_path: syncProfile?.header_path || profile?.header_path || null,
+    footer_path: syncProfile?.footer_path || profile?.footer_path || null,
+    pmdc_no: profile?.pmdc_no || syncProfile?.license_number || null,
+    qualification: profile?.qualification || syncProfile?.specialty || null,
+    prescription_header: profile?.prescription_header || syncProfile?.prescription_header || null,
+    prescription_footer: profile?.prescription_footer || syncProfile?.prescription_footer || null,
+  } as DoctorProfileRecord;
 }
 
 export async function listVisitsForPatient(clientId: string, patientId: string) {
