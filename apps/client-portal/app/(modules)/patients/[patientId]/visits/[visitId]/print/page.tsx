@@ -39,13 +39,24 @@ export default async function PrintVisitPage({ params }: { params: Promise<{ pat
     <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col gap-6 px-6 py-8 print:px-0 print:py-0">
       <div className="print:hidden"><PrintVisitActions /></div>
       <Card className="rounded-[32px] border-border/70 shadow-sm print:rounded-none print:border-0 print:shadow-none overflow-hidden">
-        {/* Prescription Header */}
-        <div className="bg-primary/5 p-8 border-b border-border/40 print:bg-white print:p-0 print:border-0">
-             <div className="flex justify-between items-start gap-8">
-                <div>
-                   <h1 className="text-3xl font-bold tracking-tight text-primary print:text-black">{doctorDisplayName}</h1>
+        {/* Prescription Header / Letterhead */}
+        <div className="bg-primary/5 p-8 border-b border-border/40 print:bg-white print:p-0 print:border-0 min-h-[140px] flex items-center">
+             <div className="flex w-full justify-between items-start gap-8">
+                <div className="flex-1">
+                   {doctor?.header_path ? (
+                        <div className="h-28 flex items-center mb-4">
+                            <img src={doctor.header_path} alt="Letterhead" className="max-h-full max-w-full object-contain" />
+                        </div>
+                   ) : (
+                       <h1 className="text-3xl font-bold tracking-tight text-primary print:text-black mb-1">{doctorDisplayName}</h1>
+                   )}
                    <p className="text-sm font-semibold opacity-70">{doctor?.qualification || "General Physician"}</p>
                    <p className="text-xs uppercase tracking-widest opacity-50 font-bold mt-1">PMDC: {doctor?.pmdc_no || "N/A"}</p>
+                   {doctor?.prescription_header && (
+                       <p className="mt-3 text-xs font-medium text-muted-foreground leading-relaxed max-w-sm whitespace-pre-wrap">
+                           {doctor.prescription_header}
+                       </p>
+                   )}
                 </div>
                 <div className="text-right">
                    <h2 className="text-xl font-bold tracking-tight">{membership.clinicName}</h2>
@@ -111,8 +122,15 @@ export default async function PrintVisitPage({ params }: { params: Promise<{ pat
               </div>
           </div>
           
-          <div className="mt-12 flex justify-end">
-                <div className="text-center w-48 pt-4 border-t border-border/40 print:border-black/10">
+          <div className="mt-12 flex justify-between items-end border-t border-border/40 pt-6 print:border-black/5">
+                <div className="max-w-md">
+                    {doctor?.prescription_footer && (
+                        <p className="text-xs text-muted-foreground whitespace-pre-wrap leading-5 italic">
+                            {doctor.prescription_footer}
+                        </p>
+                    )}
+                </div>
+                <div className="text-center w-48">
                     <p className="text-[10px] font-bold uppercase opacity-40">Digital Signature</p>
                     <p className="text-sm font-bold mt-1">{doctorDisplayName}</p>
                 </div>

@@ -51,6 +51,11 @@ export type DoctorProfileRecord = {
   signature_y_offset: number | null;
   header_path: string | null;
   footer_path: string | null;
+  prescription_header?: string | null;
+  prescription_footer?: string | null;
+  prescription_font_size?: number | null;
+  pdf_line_offset?: number | null;
+  pdf_signature_y?: number | null;
 };
 
 function getSupabase() {
