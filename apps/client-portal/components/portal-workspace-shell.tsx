@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -180,11 +180,8 @@ export function PortalWorkspaceShell({
             </div>
             <div className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
               <p className="truncate text-sm font-semibold text-sidebar-foreground">MediFlow</p>
-              <p className="truncate text-xs text-muted-foreground">GP Clinical Portal</p>
+              <p className="truncate text-xs text-muted-foreground">Clinical Operations</p>
             </div>
-          </div>
-          <div className="rounded-2xl border border-dashed border-sidebar-border/70 bg-background/70 px-3 py-2 text-xs leading-5 text-muted-foreground group-data-[collapsible=icon]:hidden">
-            Use the header search or press <span className="font-medium text-sidebar-foreground">Ctrl+K</span> for quick actions.
           </div>
         </SidebarHeader>
 
@@ -197,7 +194,7 @@ export function PortalWorkspaceShell({
               <SidebarMenu>
                 {navItems.map((item) => {
                   const Icon = item.icon;
-                  const active = pathname === item.href;
+                  const active = pathname === item.href || (item.href !== "/" && pathname.startsWith(`${item.href}/`));
 
                   return (
                     <SidebarMenuItem key={item.key}>
@@ -244,41 +241,39 @@ export function PortalWorkspaceShell({
 
       <SidebarInset className="bg-transparent">
         <div className="flex min-h-svh flex-col">
-          <header className="sticky top-0 z-20 border-b border-border/60 bg-background/80 backdrop-blur-xl">
+          <header className="sticky top-0 z-20 border-b border-border/60 bg-background/92 backdrop-blur-xl">
             <div className="flex flex-col gap-4 px-4 py-4 md:px-6 lg:px-8">
               <div className="flex flex-wrap items-center gap-3">
                 <SidebarTrigger className="rounded-xl border border-border/70 bg-background shadow-sm" />
                 <Button
                   type="button"
                   variant="outline"
-                  className="h-11 flex-1 justify-between rounded-2xl border-border/70 bg-card/80 px-4 text-left text-muted-foreground shadow-sm sm:max-w-md"
+                  className="h-10 flex-1 justify-between rounded-2xl border-border/70 bg-card/80 px-4 text-left text-muted-foreground shadow-sm sm:max-w-sm"
                   onClick={() => setCommandOpen(true)}
                 >
                   <span className="flex items-center gap-2 text-sm">
                     <Search className="size-4 text-primary" />
-                    Search patients or commands
+                    Quick actions
                   </span>
                   <span className="hidden items-center gap-1 rounded-md bg-muted px-2 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground sm:inline-flex">
                     <Command className="size-3" />K
                   </span>
                 </Button>
-                {memberships.length > 1 ? (
-                  <Select value={selectedClientId ?? memberships[0]?.clientId} onValueChange={handleSelectClinic} disabled={clinicPending}>
-                    <SelectTrigger className="h-11 min-w-[190px] rounded-2xl bg-card/80 px-4 shadow-sm md:min-w-[210px]">
-                      <SelectValue placeholder="Clinic" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {memberships.map((membership) => (
-                        <SelectItem key={membership.clientId} value={membership.clientId}>
-                          {membership.clinicName}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ) : null}
+                <Select value={selectedClientId ?? memberships[0]?.clientId} onValueChange={handleSelectClinic} disabled={clinicPending}>
+                  <SelectTrigger className="h-10 min-w-[170px] rounded-2xl bg-card/80 px-3 shadow-sm md:min-w-[190px]">
+                    <SelectValue placeholder="Clinic" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {memberships.map((membership) => (
+                      <SelectItem key={membership.clientId} value={membership.clientId}>
+                        {membership.clinicName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="h-11 gap-3 rounded-2xl border-border/70 bg-card/80 px-3 shadow-sm">
+                    <Button variant="outline" className="h-10 gap-3 rounded-2xl border-border/70 bg-card/80 px-3 shadow-sm">
                       <Avatar className="size-8">
                         <AvatarFallback>{initials(user.fullName ?? user.email)}</AvatarFallback>
                       </Avatar>
@@ -294,11 +289,17 @@ export function PortalWorkspaceShell({
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleOpenBillingSettings}>
-                      <Settings2 className="mr-2 size-4 text-muted-foreground" />
-                      Billing settings
-                      <ArrowUpRight className="ml-auto size-4 text-muted-foreground" />
+                    <DropdownMenuItem asChild>
+                      <Link href="/settings">
+                        <Settings2 className="mr-2 size-4 text-muted-foreground" />
+                        Workspace settings
+                      </Link>
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleOpenBillingSettings}>
+                      <ArrowUpRight className="mr-2 size-4 text-muted-foreground" />
+                      Billing settings
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => setTheme("light")}>
                       <SunMedium className="mr-2 size-4 text-muted-foreground" />
                       Light theme
@@ -306,10 +307,6 @@ export function PortalWorkspaceShell({
                     <DropdownMenuItem onClick={() => setTheme("dark")}>
                       <MoonStar className="mr-2 size-4 text-muted-foreground" />
                       Dark theme
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setTheme("system")}>
-                      <ChevronsUpDown className="mr-2 size-4 text-muted-foreground" />
-                      System theme
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleLogout}>
@@ -321,22 +318,17 @@ export function PortalWorkspaceShell({
               </div>
 
               <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge variant="secondary" className="rounded-full bg-primary/10 px-3 py-1 text-primary">{currentMembership.clinicName}</Badge>
                     <Badge variant="outline" className="rounded-full px-3 py-1 capitalize">{roleLabel}</Badge>
+                    {statusLabel ? <Badge variant="outline" className="rounded-full px-3 py-1 capitalize">{statusLabel}</Badge> : null}
+                    {planName ? <Badge variant="outline" className="rounded-full px-3 py-1">{planName}</Badge> : null}
                   </div>
                   <div>
                     <h1 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">{pageTitle}</h1>
-                    <p className="mt-1 max-w-3xl text-sm leading-6 text-muted-foreground md:text-base">{pageDescription}</p>
+                    <p className="mt-1 max-w-3xl text-sm leading-6 text-muted-foreground">{pageDescription}</p>
                   </div>
-                </div>
-                <div className="flex flex-wrap items-center gap-2 lg:max-w-[340px] lg:justify-end">
-                  {statusLabel ? <Badge variant="outline" className="rounded-full px-3 py-1 capitalize">{statusLabel}</Badge> : null}
-                  {planName ? <Badge variant="outline" className="rounded-full px-3 py-1">{planName}</Badge> : null}
-                  {memberships.length > 1 ? (
-                    <Badge variant="outline" className="rounded-full px-3 py-1">{memberships.length} accounts</Badge>
-                  ) : null}
                 </div>
               </div>
             </div>
@@ -350,3 +342,4 @@ export function PortalWorkspaceShell({
     </SidebarProvider>
   );
 }
+

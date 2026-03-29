@@ -1,5 +1,5 @@
-import type { LucideIcon } from "lucide-react";
-import { CreditCard, Home, LayoutDashboard, Settings, UsersRound } from "lucide-react";
+﻿import type { LucideIcon } from "lucide-react";
+import { CreditCard, FileText, Home, Plus, Settings, UserRoundSearch, UsersRound } from "lucide-react";
 import type { PortalMembership, PortalSession } from "./auth";
 
 export type PortalNavItem = {
@@ -17,15 +17,29 @@ const portalNavItems: PortalNavItem[] = [
     key: "home",
     label: "Home",
     href: "/",
-    description: "Clinical workspace overview and clinic context.",
+    description: "Operational overview and quick actions.",
     icon: Home,
   },
   {
-    key: "dashboard",
-    label: "Dashboard",
-    href: "/dashboard",
-    description: "Account-level dashboard and quick operational summary.",
-    icon: LayoutDashboard,
+    key: "patients",
+    label: "Patients",
+    href: "/patients",
+    description: "Search, open, and manage clinic patients.",
+    icon: UserRoundSearch,
+  },
+  {
+    key: "new-patient",
+    label: "New Patient",
+    href: "/patients/new",
+    description: "Register a new patient record.",
+    icon: Plus,
+  },
+  {
+    key: "templates",
+    label: "Templates",
+    href: "/templates",
+    description: "Open diagnosis and prescription templates.",
+    icon: FileText,
   },
   {
     key: "billing",
@@ -69,3 +83,4 @@ export function getPortalNavItems(session: PortalSession, membership: PortalMemb
     return membership.modules.length === 0 || membership.modules.includes(item.moduleKey);
   });
 }
+

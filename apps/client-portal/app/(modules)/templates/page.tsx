@@ -1,14 +1,18 @@
-import { FileText, Sparkles, Stethoscope } from "lucide-react";
+﻿import Link from "next/link";
+import { ArrowRight, FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PortalLoginForm } from "@/components/portal-login-form";
 import { PortalWorkspaceShell } from "@/components/portal-workspace-shell";
 import { getPortalSession } from "@/lib/auth";
+import { getDisplayTemplates, listPrescriptionTemplates } from "@/lib/clinical-data";
 import { getReadablePortalPlanName } from "@/lib/portal-billing";
 
 export const dynamic = "force-dynamic";
 
-export default async function Page() {
+export default async function Page({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
+  const params = (await searchParams) ?? {};
+  const patientId = typeof params.patientId === "string" ? params.patientId : "";
   const session = await getPortalSession();
 
   if (!session) {
@@ -18,6 +22,7 @@ export default async function Page() {
   const membership = session.memberships.find((item) => item.clientId === session.selectedClientId) ?? session.memberships[0];
   const planLabel = getReadablePortalPlanName(membership.subscription?.plan);
   const statusLabel = membership.subscription?.status ?? "inactive";
+  const templates = getDisplayTemplates(await listPrescriptionTemplates(membership.clientId));
 
   return (
     <PortalWorkspaceShell
@@ -26,49 +31,43 @@ export default async function Page() {
       selectedClientId={session.selectedClientId}
       currentMembership={membership}
       pageTitle="Templates"
-      pageDescription="A calmer shell for future prescription and clinic template workflows, with stronger readability for dense clinical content."
+      pageDescription="Diagnosis and prescription templates ready for clinic use."
       planName={planLabel}
       statusLabel={statusLabel}
     >
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.55fr)]">
-        <Card className="rounded-[32px] border-border/70 shadow-sm">
-          <CardHeader>
-            <Badge variant="outline" className="w-fit rounded-full px-3 py-1">Workspace module</Badge>
-            <CardTitle className="text-3xl">Prescription and clinic templates</CardTitle>
-            <CardDescription className="max-w-2xl text-sm leading-7">
-              Template surfaces benefit from dense-but-readable cards, clearer defaults, and role-aware editing states.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4 md:grid-cols-3">
-            <div className="rounded-[28px] border border-border/70 bg-muted/30 p-5">
-              <FileText className="size-5 text-primary" />
-              <p className="mt-4 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Structured content</p>
-              <p className="mt-2 text-sm leading-6 text-foreground">Prepared for repeatable prescription and clinic note structures.</p>
+      <Card className="rounded-[32px] border-border/70 shadow-sm">
+        <CardHeader>
+          <CardDescription>Template library</CardDescription>
+          <CardTitle className="text-2xl">Prescription and diagnosis templates</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4 xl:grid-cols-2">
+          {templates.map((template) => (
+            <div key={template.id} className="rounded-[28px] border border-border/70 bg-muted/25 p-5">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h2 className="text-lg font-semibold text-foreground">{template.name}</h2>
+                    <Badge variant="outline" className="rounded-full">{template.source === "clinic" ? "Clinic" : "Built-in"}</Badge>
+                  </div>
+                  <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-muted-foreground">{template.diagnosis || "No diagnosis text"}</p>
+                </div>
+                <div className="flex size-10 items-center justify-center rounded-2xl bg-primary/10 text-primary"><FileText className="size-5" /></div>
+              </div>
+              <div className="mt-4 rounded-2xl border border-border/70 bg-background/70 p-4">
+                <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Prescription</p>
+                <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-foreground">{template.prescription || "No prescription text"}</p>
+                {template.notes ? <><p className="mt-4 text-xs uppercase tracking-[0.18em] text-muted-foreground">Notes</p><p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-foreground">{template.notes}</p></> : null}
+              </div>
+              {patientId ? (
+                <Link href={`/patients/${patientId}/visits/new?template=${encodeURIComponent(template.name)}`} className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-primary">
+                  Use for this patient <ArrowRight className="size-4" />
+                </Link>
+              ) : null}
             </div>
-            <div className="rounded-[28px] border border-border/70 bg-muted/30 p-5">
-              <Stethoscope className="size-5 text-primary" />
-              <p className="mt-4 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Clinical readability</p>
-              <p className="mt-2 text-sm leading-6 text-foreground">Built to handle content-dense editing surfaces more comfortably.</p>
-            </div>
-            <div className="rounded-[28px] border border-border/70 bg-muted/30 p-5">
-              <Sparkles className="size-5 text-primary" />
-              <p className="mt-4 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Future-ready shell</p>
-              <p className="mt-2 text-sm leading-6 text-foreground">The shell is ready for real template workflows when those routes are exposed.</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-[32px] border-border/70 shadow-sm">
-          <CardHeader>
-            <CardDescription>Module posture</CardDescription>
-            <CardTitle className="text-2xl">Prepared for expansion</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 text-sm leading-7 text-muted-foreground">
-            <p>This module now shares the same navigation, search, and command system as the rest of the workspace.</p>
-            <p>That gives future template editing screens a more credible product foundation from the start.</p>
-          </CardContent>
-        </Card>
-      </div>
+          ))}
+        </CardContent>
+      </Card>
     </PortalWorkspaceShell>
   );
 }
+

@@ -1,26 +1,16 @@
-import Link from "next/link";
-import { headers } from "next/headers";
-import { ArrowRight, BriefcaseMedical, ShieldCheck, Sparkles } from "lucide-react";
+﻿import Link from "next/link";
+import { ArrowRight, ClipboardList, FileText, Plus, UserRoundSearch } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ClinicSelectorCard } from "@/components/clinic-selector-card";
 import { PortalLoginForm } from "@/components/portal-login-form";
 import { PortalWorkspaceShell } from "@/components/portal-workspace-shell";
 import { getPortalSession } from "@/lib/auth";
-import { getPortalNavItems } from "@/lib/portal-navigation";
+import { getClinicalWorkspaceSummary } from "@/lib/clinical-data";
 import { getReadablePortalPlanName } from "@/lib/portal-billing";
 
 export const dynamic = "force-dynamic";
 
-function humanizeRole(role?: string | null) {
-  if (!role) return "Doctor";
-  return role.charAt(0).toUpperCase() + role.slice(1);
-}
-
-export default async function ClinicPortalHome({ searchParams }: { searchParams?: Promise<Record<string, string | string[] | undefined>> }) {
-  const requestHeaders = await headers();
-  const tenantSlug = requestHeaders.get("x-tenant-slug");
-  await searchParams;
+export default async function ClinicPortalHome() {
   const session = await getPortalSession();
 
   if (!session) {
@@ -44,130 +34,157 @@ export default async function ClinicPortalHome({ searchParams }: { searchParams?
     );
   }
 
-  const currentMembership = session.memberships.find((item) => item.clientId === session.selectedClientId) ?? session.memberships[0];
-  const navItems = getPortalNavItems(session, currentMembership);
-  const roleLabel = humanizeRole(session.user.role || "doctor");
-  const planLabel = getReadablePortalPlanName(currentMembership.subscription?.plan);
-  const statusLabel = currentMembership.subscription?.status ?? "inactive";
+  const membership = session.memberships.find((item) => item.clientId === session.selectedClientId) ?? session.memberships[0];
+  const planLabel = getReadablePortalPlanName(membership.subscription?.plan);
+  const statusLabel = membership.subscription?.status ?? "inactive";
+  const summary = await getClinicalWorkspaceSummary(membership.clientId);
+
+  const quickActions = [
+    {
+      title: "Open patients",
+      description: "Search and open patient files.",
+      href: "/patients",
+      icon: UserRoundSearch,
+    },
+    {
+      title: "Register patient",
+      description: "Create a new patient record.",
+      href: "/patients/new",
+      icon: Plus,
+    },
+    {
+      title: "Open templates",
+      description: "Use saved diagnosis and prescription templates.",
+      href: "/templates",
+      icon: FileText,
+    },
+  ];
 
   return (
     <PortalWorkspaceShell
       user={session.user}
       memberships={session.memberships}
       selectedClientId={session.selectedClientId}
-      currentMembership={currentMembership}
-      pageTitle="Clinical workspace overview"
-      pageDescription="A calmer browser workspace for day-to-day clinic use. Navigation, context, and subscription details are surfaced clearly without changing the underlying portal behavior."
+      currentMembership={membership}
+      pageTitle="Clinical operations"
+      pageDescription="Patients, visits, templates, and account context in one working portal."
       planName={planLabel}
       statusLabel={statusLabel}
     >
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.55fr)_minmax(320px,0.95fr)]">
-        <Card className="overflow-hidden rounded-[32px] border-border/70 bg-card/95 shadow-sm">
-          <CardContent className="space-y-6 p-7 md:p-9">
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge className="rounded-full bg-primary/10 px-3 py-1 text-primary hover:bg-primary/10">MediFlow Clinical Workspace</Badge>
-              <Badge variant="outline" className="rounded-full px-3 py-1">Secure access</Badge>
-            </div>
-            <div className="space-y-4">
-              <h2 className="text-3xl font-semibold tracking-tight text-foreground md:text-5xl">{currentMembership.clinicName}</h2>
-              <p className="max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">
-                A controlled browser workspace with clearer account context, more readable hierarchy, and a calmer visual rhythm suited to consulting room screens and mobile browsers.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Badge variant="secondary" className="rounded-full px-3 py-1">{roleLabel}</Badge>
-              <Badge variant="secondary" className="rounded-full px-3 py-1">{planLabel}</Badge>
-              <Badge variant="outline" className="rounded-full px-3 py-1 capitalize">{statusLabel}</Badge>
-              {tenantSlug ? <Badge variant="outline" className="rounded-full px-3 py-1">{tenantSlug}</Badge> : null}
-            </div>
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="rounded-3xl border border-border/70 bg-muted/40 p-5">
-                <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Signed in as</p>
-                <p className="mt-2 text-sm font-semibold text-foreground">{session.user.fullName ?? session.user.email}</p>
-              </div>
-              <div className="rounded-3xl border border-border/70 bg-muted/40 p-5">
-                <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Workspace mode</p>
-                <p className="mt-2 text-sm font-semibold text-foreground">{roleLabel} access</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-[32px] border-border/70 bg-card/95 shadow-sm">
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card className="rounded-[28px] border-border/70 shadow-sm">
           <CardHeader>
-            <Badge variant="outline" className="w-fit rounded-full px-3 py-1">Workspace standards</Badge>
-            <CardTitle className="text-2xl">Calm, readable, and client-safe</CardTitle>
-            <CardDescription className="text-sm leading-7">
-              The shell now surfaces only relevant account paths while keeping role context, security posture, and subscription information visible from entry.
-            </CardDescription>
+            <CardDescription>Total patients</CardDescription>
+            <CardTitle className="text-3xl">{summary.patientCount}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4 text-sm text-muted-foreground">
-            <div className="flex items-start gap-3 rounded-3xl border border-border/70 bg-muted/40 p-4">
-              <ShieldCheck className="mt-0.5 size-5 text-primary" />
-              <p>Clearer access framing reduces ambiguity during day-to-day use.</p>
-            </div>
-            <div className="flex items-start gap-3 rounded-3xl border border-border/70 bg-muted/40 p-4">
-              <BriefcaseMedical className="mt-0.5 size-5 text-primary" />
-              <p>Desktop and mobile browser layouts now share the same premium shell.</p>
-            </div>
-            <div className="flex items-start gap-3 rounded-3xl border border-border/70 bg-muted/40 p-4">
-              <Sparkles className="mt-0.5 size-5 text-primary" />
-              <p>Machine-like labels and dead-end surfaces are being removed from the visible experience.</p>
-            </div>
-          </CardContent>
         </Card>
-      </div>
-
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)]">
-        <div className="rounded-[32px] border border-border/70 bg-card/95 p-2 shadow-sm">
-          <ClinicSelectorCard memberships={session.memberships} selectedClientId={session.selectedClientId} />
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
-          <Card className="rounded-[28px] border-border/70 shadow-sm">
-            <CardHeader>
-              <CardDescription>Account role</CardDescription>
-              <CardTitle className="text-2xl">{roleLabel}</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm leading-6 text-muted-foreground">Role handling remains unchanged and still defaults safely when no explicit web role is present.</CardContent>
-          </Card>
-          <Card className="rounded-[28px] border-border/70 shadow-sm">
-            <CardHeader>
-              <CardDescription>Available destinations</CardDescription>
-              <CardTitle className="text-2xl">{navItems.length}</CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm leading-6 text-muted-foreground">Only active and role-appropriate workspace areas are shown in navigation.</CardContent>
-          </Card>
-        </div>
+        <Card className="rounded-[28px] border-border/70 shadow-sm">
+          <CardHeader>
+            <CardDescription>Total visits</CardDescription>
+            <CardTitle className="text-3xl">{summary.visitCount}</CardTitle>
+          </CardHeader>
+        </Card>
+        <Card className="rounded-[28px] border-border/70 shadow-sm">
+          <CardHeader>
+            <CardDescription>Current clinic</CardDescription>
+            <CardTitle className="text-2xl">{membership.clinicName}</CardTitle>
+          </CardHeader>
+        </Card>
       </div>
 
       <Card className="rounded-[32px] border-border/70 shadow-sm">
-        <CardHeader className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-          <div>
-            <CardDescription>Workspace destinations</CardDescription>
-            <CardTitle className="text-2xl">Available areas</CardTitle>
-          </div>
-          <CardDescription className="max-w-2xl text-sm leading-6">The shell keeps navigation focused on live, useful account destinations so the portal feels more trustworthy and easier to scan.</CardDescription>
+        <CardHeader>
+          <CardDescription>Quick actions</CardDescription>
+          <CardTitle className="text-2xl">Start work</CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {navItems.map((item) => {
-            const Icon = item.icon;
+        <CardContent className="grid gap-4 md:grid-cols-3">
+          {quickActions.map((action) => {
+            const Icon = action.icon;
             return (
-              <Link key={item.key} href={item.href} className="group rounded-[28px] border border-border/70 bg-muted/30 p-5 transition-colors hover:border-primary/40 hover:bg-primary/[0.03]">
+              <Link key={action.href} href={action.href} className="group rounded-[24px] border border-border/70 bg-muted/25 p-5 transition-colors hover:border-primary/40 hover:bg-primary/[0.03]">
                 <div className="flex items-start justify-between gap-4">
-                  <div className="flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <div className="flex size-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                     <Icon className="size-5" />
                   </div>
                   <ArrowRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-primary" />
                 </div>
-                <div className="mt-5 space-y-2">
-                  <h3 className="text-lg font-semibold text-foreground">{item.label}</h3>
-                  <p className="text-sm leading-6 text-muted-foreground">{item.description}</p>
+                <div className="mt-4">
+                  <h2 className="text-lg font-semibold text-foreground">{action.title}</h2>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{action.description}</p>
                 </div>
               </Link>
             );
           })}
         </CardContent>
       </Card>
+
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+        <Card className="rounded-[32px] border-border/70 shadow-sm">
+          <CardHeader>
+            <CardDescription>Recent patients</CardDescription>
+            <CardTitle className="text-2xl">Latest patient updates</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {summary.latestPatients.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-border/70 bg-muted/25 px-4 py-8 text-sm text-muted-foreground">
+                No patient records yet.
+              </div>
+            ) : (
+              summary.latestPatients.map((patient) => (
+                <Link key={patient.id} href={`/patients/${patient.id}`} className="flex items-center justify-between gap-4 rounded-2xl border border-border/70 px-4 py-3 transition-colors hover:border-primary/40 hover:bg-primary/[0.03]">
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-foreground">{patient.full_name}</p>
+                    <p className="truncate text-xs text-muted-foreground">{patient.patient_code ?? "Patient record"}</p>
+                  </div>
+                  <Badge variant="outline" className="rounded-full px-2 py-0 text-[10px]">Open</Badge>
+                </Link>
+              ))
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-[32px] border-border/70 shadow-sm">
+          <CardHeader>
+            <CardDescription>Recent visits</CardDescription>
+            <CardTitle className="text-2xl">Latest diagnoses</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {summary.latestVisits.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-border/70 bg-muted/25 px-4 py-8 text-sm text-muted-foreground">
+                No visit records yet.
+              </div>
+            ) : (
+              summary.latestVisits.map((visit) => (
+                <div key={visit.id} className="rounded-2xl border border-border/70 px-4 py-3">
+                  <p className="text-sm font-medium text-foreground">{visit.assessment || "Clinical visit"}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{visit.visit_date || "No visit date"}</p>
+                </div>
+              ))
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card className="rounded-[32px] border-border/70 shadow-sm">
+        <CardHeader>
+          <CardDescription>Working scope</CardDescription>
+          <CardTitle className="text-2xl">Current portal functions</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          {[
+            "Search and open patients",
+            "Register a new patient",
+            "Add diagnosis and plan",
+            "Print visit prescription view",
+          ].map((item) => (
+            <div key={item} className="flex items-center gap-3 rounded-2xl border border-border/70 bg-muted/25 px-4 py-3 text-sm text-foreground">
+              <ClipboardList className="size-4 text-primary" />
+              <span>{item}</span>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
     </PortalWorkspaceShell>
   );
 }
+

@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Building2, CreditCard, LogOut, MoonStar, Search, SunMedium, X } from "lucide-react";
+import { Building2, CreditCard, FileSearch, LogOut, MoonStar, SunMedium, X } from "lucide-react";
 import type { PortalMembership } from "@/lib/auth";
 import type { PortalNavItem } from "@/lib/portal-navigation";
 import { Badge } from "@/components/ui/badge";
@@ -55,7 +55,7 @@ export function PortalCommandMenu({
       title: item.label,
       description: item.description,
       group: "Navigate",
-      meta: item.href === "/" ? "GH" : item.href === "/dashboard" ? "GD" : "GB",
+      meta: item.href,
       run: () => {
         onOpenChange(false);
         router.push(item.href);
@@ -64,9 +64,29 @@ export function PortalCommandMenu({
 
     const actions: CommandEntry[] = [
       {
+        id: "action-open-patients",
+        title: "Open patients",
+        description: "Go to the patient list and search screen.",
+        group: "Actions",
+        run: () => {
+          onOpenChange(false);
+          router.push("/patients");
+        },
+      },
+      {
+        id: "action-new-patient",
+        title: "Register patient",
+        description: "Create a new patient file.",
+        group: "Actions",
+        run: () => {
+          onOpenChange(false);
+          router.push("/patients/new");
+        },
+      },
+      {
         id: "action-billing-settings",
-        title: "Open billing settings",
-        description: "Manage plan and invoice settings for this clinic account.",
+        title: "Billing settings",
+        description: "Open billing and invoices for this clinic account.",
         group: "Actions",
         run: () => {
           onOpenChange(false);
@@ -129,12 +149,12 @@ export function PortalCommandMenu({
     <div className="fixed inset-0 z-50 flex items-start justify-center bg-slate-950/35 px-4 pt-[12vh] backdrop-blur-sm" onClick={() => onOpenChange(false)}>
       <div className="w-full max-w-2xl overflow-hidden rounded-[28px] border border-border/70 bg-background shadow-2xl" onClick={(event) => event.stopPropagation()}>
         <div className="flex items-center gap-3 border-b border-border/70 px-4 py-4 sm:px-5">
-          <Search className="size-4 text-primary" />
+          <FileSearch className="size-4 text-primary" />
           <input
             autoFocus
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search patients, clinics, billing, and commands..."
+            placeholder="Search pages, clinics, and actions..."
             className="h-10 flex-1 border-0 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
           />
           <Button type="button" variant="ghost" size="icon-sm" className="rounded-xl" onClick={() => onOpenChange(false)}>
@@ -145,7 +165,7 @@ export function PortalCommandMenu({
         <div className="max-h-[60vh] overflow-y-auto px-3 py-3 sm:px-4">
           {filteredEntries.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-border/80 bg-muted/30 px-4 py-10 text-center text-sm text-muted-foreground">
-              No matching workspace action.
+              No matching action.
             </div>
           ) : (
             Object.entries(grouped).map(([group, items]) => (
@@ -153,7 +173,7 @@ export function PortalCommandMenu({
                 <div className="px-2 pb-2 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">{group}</div>
                 <div className="space-y-2">
                   {items.map((entry) => {
-                    const icon = group === "Navigate" ? <Search className="size-4 text-primary" /> : group === "Actions" ? <CreditCard className="size-4 text-primary" /> : <Building2 className="size-4 text-primary" />;
+                    const icon = group === "Navigate" ? <FileSearch className="size-4 text-primary" /> : group === "Actions" ? <CreditCard className="size-4 text-primary" /> : <Building2 className="size-4 text-primary" />;
                     return (
                       <button
                         key={entry.id}
@@ -181,3 +201,4 @@ export function PortalCommandMenu({
     </div>
   );
 }
+
