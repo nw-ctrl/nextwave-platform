@@ -15,10 +15,28 @@ export type ClinicUsageMetrics = {
 export async function getClinicUsage(clientId: string): Promise<ClinicUsageMetrics> {
   const supabase = createSupabaseServiceClient();
 
+  const { data: profileRef } = await supabase
+    .from("clinic_profiles")
+    .select("id")
+    .eq("client_id", clientId)
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  if (!profileRef?.id) {
+    return {
+      clientId,
+      patientCount: 0,
+      visitCount: 0,
+      storageBytes: 0,
+      lastScannedAt: new Date().toISOString()
+    };
+  }
+
   // 1. Fetch Row Counts
   const [patientsResult, visitsResult] = await Promise.all([
-    supabase.from("patients").select("id", { count: "estimated", head: true }).eq("clinic_id", clientId).eq("is_deleted", false),
-    supabase.from("visits").select("id", { count: "estimated", head: true }).eq("clinic_id", clientId).eq("is_deleted", false)
+    supabase.from("patients").select("id", { count: "exact", head: true }).eq("clinic_id", profileRef.id).eq("is_deleted", false),
+    supabase.from("visits").select("id", { count: "exact", head: true }).eq("clinic_id", profileRef.id).eq("is_deleted", false)
   ]);
 
   if (patientsResult.error) throw new Error(`Patient count failed: ${patientsResult.error.message}`);

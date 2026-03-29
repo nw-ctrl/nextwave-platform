@@ -21,10 +21,22 @@ export async function GET(request: Request) {
 
   const supabase = createSupabaseServiceClient();
 
+  const { data: profileRef } = await supabase
+    .from("clinic_profiles")
+    .select("id")
+    .eq("client_id", clientId)
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  if (!profileRef?.id) {
+    return Response.json({ doctorProfile: null });
+  }
+
   const { data: members, error: memberErr } = await supabase
     .from("clinic_members")
     .select("user_id")
-    .eq("clinic_id", clientId)
+    .eq("clinic_id", profileRef.id)
     .in("role", ["Doctor", "Admin"])
     .order("role", { ascending: true })
     .limit(1);
@@ -73,10 +85,22 @@ export async function PUT(request: Request) {
   const data = await request.json();
   const supabase = createSupabaseServiceClient();
 
+  const { data: profileRef } = await supabase
+    .from("clinic_profiles")
+    .select("id")
+    .eq("client_id", clientId)
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  if (!profileRef?.id) {
+    return Response.json({ error: "No clinic profile linked" }, { status: 404 });
+  }
+
   const { data: members } = await supabase
     .from("clinic_members")
     .select("user_id")
-    .eq("clinic_id", clientId)
+    .eq("clinic_id", profileRef.id)
     .in("role", ["Doctor", "Admin"])
     .order("role", { ascending: true })
     .limit(1);

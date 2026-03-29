@@ -2,6 +2,7 @@ import Stripe from "stripe";
 import { env } from "@nextwave/config";
 import { createSupabaseServiceClient } from "@nextwave/database";
 import { getClientPortalAccess } from "./access";
+import { resolveClinicProfileId } from "./clinical-data";
 
 type BillingProfileRow = {
   client_id: string;
@@ -239,9 +240,19 @@ export async function createClinicPortalCheckoutSession(input: {
 export async function getClinicUsage(clientId: string) {
   const supabase = createSupabaseServiceClient();
 
+  const clinicProfileId = await resolveClinicProfileId(clientId);
+  if (!clinicProfileId) {
+    return {
+      clientId,
+      patientCount: 0,
+      visitCount: 0,
+      storageBytes: 0,
+    };
+  }
+
   const [patientsResult, visitsResult] = await Promise.all([
-    supabase.from("patients").select("id", { count: "estimated", head: true }).eq("clinic_id", clientId).eq("is_deleted", false),
-    supabase.from("visits").select("id", { count: "estimated", head: true }).eq("clinic_id", clientId).eq("is_deleted", false)
+    supabase.from("patients").select("id", { count: "exact", head: true }).eq("clinic_id", clinicProfileId).eq("is_deleted", false),
+    supabase.from("visits").select("id", { count: "exact", head: true }).eq("clinic_id", clinicProfileId).eq("is_deleted", false)
   ]);
 
   const visitReportsBucket = supabase.storage.from("visit-reports");

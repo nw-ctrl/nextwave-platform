@@ -42,10 +42,19 @@ export default async function Page() {
 
   // Fetch doctor profile data
   const supabase = createSupabaseServiceClient();
+
+  const { data: profileRef } = await supabase
+    .from("clinic_profiles")
+    .select("id")
+    .eq("client_id", membership.clientId)
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
   const { data: members } = await supabase
     .from("clinic_members")
     .select("user_id")
-    .eq("clinic_id", membership.clientId)
+    .eq("clinic_id", profileRef?.id ?? "")
     .in("role", ["Doctor", "Admin"])
     .order("role", { ascending: true })
     .limit(1);

@@ -1,4 +1,4 @@
-﻿import { createSupabaseServiceClient } from "@nextwave/database";
+import { createSupabaseServiceClient } from "@nextwave/database";
 import { builtInClinicalTemplates } from "@/lib/clinical-templates";
 
 export type PatientRecord = {
@@ -48,22 +48,26 @@ function getSupabase() {
 }
 
 export async function getClinicalWorkspaceSummary(clientId: string) {
+  const clinicProfileId = await resolveClinicProfileId(clientId);
+  if (!clinicProfileId) {
+    return { patientCount: 0, visitCount: 0, latestPatients: [], latestVisits: [] };
+  }
   const supabase = getSupabase();
 
   const [{ count: patientCount }, { count: visitCount }, { data: latestPatients }, { data: latestVisits }] = await Promise.all([
-    supabase.from("patients").select("id", { count: "estimated", head: true }).eq("clinic_id", clientId).eq("is_deleted", false),
-    supabase.from("visits").select("id", { count: "estimated", head: true }).eq("clinic_id", clientId).eq("is_deleted", false),
+    supabase.from("patients").select("id", { count: "exact", head: true }).eq("clinic_id", clinicProfileId).eq("is_deleted", false),
+    supabase.from("visits").select("id", { count: "exact", head: true }).eq("clinic_id", clinicProfileId).eq("is_deleted", false),
     supabase
       .from("patients")
       .select("id, full_name, patient_code, updated_at")
-      .eq("clinic_id", clientId)
+      .eq("clinic_id", clinicProfileId)
       .eq("is_deleted", false)
       .order("updated_at", { ascending: false })
       .limit(5),
     supabase
       .from("visits")
       .select("id, patient_id, assessment, visit_date")
-      .eq("clinic_id", clientId)
+      .eq("clinic_id", clinicProfileId)
       .eq("is_deleted", false)
       .order("visit_date", { ascending: false })
       .limit(5),
@@ -78,11 +82,13 @@ export async function getClinicalWorkspaceSummary(clientId: string) {
 }
 
 export async function listPatients(clientId: string, query?: string) {
+  const clinicProfileId = await resolveClinicProfileId(clientId);
+  if (!clinicProfileId) return [];
   const supabase = getSupabase();
   let builder = supabase
     .from("patients")
     .select("id, clinic_id, doctor_id, patient_code, full_name, phone_number, cnic, sex, age, age_months, digital_consent_granted, created_at, updated_at, is_deleted")
-    .eq("clinic_id", clientId)
+    .eq("clinic_id", clinicProfileId)
     .eq("is_deleted", false)
     .order("full_name", { ascending: true });
 
@@ -101,11 +107,13 @@ export async function listPatients(clientId: string, query?: string) {
 }
 
 export async function getPatientById(clientId: string, patientId: string) {
+  const clinicProfileId = await resolveClinicProfileId(clientId);
+  if (!clinicProfileId) return null;
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from("patients")
     .select("id, clinic_id, doctor_id, patient_code, full_name, phone_number, cnic, sex, age, age_months, digital_consent_granted, created_at, updated_at, is_deleted")
-    .eq("clinic_id", clientId)
+    .eq("clinic_id", clinicProfileId)
     .eq("id", patientId)
     .eq("is_deleted", false)
     .maybeSingle<PatientRecord>();
@@ -118,11 +126,13 @@ export async function getPatientById(clientId: string, patientId: string) {
 }
 
 export async function listVisitsForPatient(clientId: string, patientId: string) {
+  const clinicProfileId = await resolveClinicProfileId(clientId);
+  if (!clinicProfileId) return [];
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from("visits")
     .select("id, patient_id, clinic_id, doctor_id, subjective, bp, temp, weight, assessment, plan, visit_date, revisit_date, updated_at, is_deleted, report_path")
-    .eq("clinic_id", clientId)
+    .eq("clinic_id", clinicProfileId)
     .eq("patient_id", patientId)
     .eq("is_deleted", false)
     .order("visit_date", { ascending: false })
@@ -136,11 +146,13 @@ export async function listVisitsForPatient(clientId: string, patientId: string) 
 }
 
 export async function getVisitById(clientId: string, patientId: string, visitId: string) {
+  const clinicProfileId = await resolveClinicProfileId(clientId);
+  if (!clinicProfileId) return null;
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from("visits")
     .select("id, patient_id, clinic_id, doctor_id, subjective, bp, temp, weight, assessment, plan, visit_date, revisit_date, updated_at, is_deleted, report_path")
-    .eq("clinic_id", clientId)
+    .eq("clinic_id", clinicProfileId)
     .eq("patient_id", patientId)
     .eq("id", visitId)
     .eq("is_deleted", false)
@@ -153,7 +165,7 @@ export async function getVisitById(clientId: string, patientId: string, visitId:
   return data;
 }
 
-async function resolveClinicProfileId(clientId: string) {
+export async function resolveClinicProfileId(clientId: string) {
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from("clinic_profiles")
