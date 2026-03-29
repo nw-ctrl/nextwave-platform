@@ -43,6 +43,16 @@ export type PrescriptionTemplateRecord = {
   updated_at: string | null;
 };
 
+export type DoctorProfileRecord = {
+  id: string;
+  full_name: string;
+  pmdc_no: string | null;
+  qualification: string | null;
+  signature_y_offset: number | null;
+  header_path: string | null;
+  footer_path: string | null;
+};
+
 function getSupabase() {
   return createSupabaseServiceClient();
 }
@@ -122,6 +132,35 @@ export async function getPatientById(clientId: string, patientId: string) {
     throw new Error(error.message);
   }
 
+  return data;
+}
+
+export async function listClinicDoctors(clientId: string) {
+  const clinicProfileId = await resolveClinicProfileId(clientId);
+  if (!clinicProfileId) return [];
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("doctor_profiles")
+    .select("id, full_name, pmdc_no, qualification")
+    .eq("clinic_id", clinicProfileId)
+    .order("full_name", { ascending: true });
+
+  if (error) throw new Error(error.message);
+  return data ?? [];
+}
+
+export async function getDoctorProfile(clientId: string, doctorId: string) {
+  const clinicProfileId = await resolveClinicProfileId(clientId);
+  if (!clinicProfileId) return null;
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("doctor_profiles")
+    .select("*")
+    .eq("clinic_id", clinicProfileId)
+    .eq("id", doctorId)
+    .maybeSingle<DoctorProfileRecord>();
+
+  if (error) throw new Error(error.message);
   return data;
 }
 
@@ -221,4 +260,3 @@ export function getDisplayTemplates(records: PrescriptionTemplateRecord[]) {
     source: "builtin" as const,
   }));
 }
-

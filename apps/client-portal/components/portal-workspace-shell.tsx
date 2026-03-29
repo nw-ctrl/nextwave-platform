@@ -86,9 +86,14 @@ export function PortalWorkspaceShell({
 }: Props) {
   const pathname = usePathname();
   const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
   const [clinicPending, setClinicPending] = useState(false);
   const [logoutPending, setLogoutPending] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const navItems = useMemo(
     () => getPortalNavItems({ user, memberships, selectedClientId }, currentMembership),
@@ -96,6 +101,7 @@ export function PortalWorkspaceShell({
   );
 
   useEffect(() => {
+    if (!mounted) return;
     const handleKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
@@ -110,7 +116,7 @@ export function PortalWorkspaceShell({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [resolvedTheme, setTheme]);
+  }, [mounted, resolvedTheme, setTheme]);
 
   async function handleSelectClinic(clientId: string) {
     if (!clientId || clientId === selectedClientId) {
@@ -157,6 +163,8 @@ export function PortalWorkspaceShell({
   }
 
   const roleLabel = currentMembership.role.charAt(0).toUpperCase() + currentMembership.role.slice(1);
+
+  if (!mounted) return null;
 
   return (
     <SidebarProvider defaultOpen>
@@ -241,9 +249,9 @@ export function PortalWorkspaceShell({
         <SidebarRail />
       </Sidebar>
 
-      <SidebarInset className="bg-transparent backdrop-blur-sm">
-        <div className="flex min-h-svh flex-col">
-          <header className="sticky top-0 z-20 bg-background/40 backdrop-blur-3xl px-4 py-4 md:px-8">
+      <SidebarInset className="bg-transparent flex flex-col min-h-screen">
+        <div className="flex flex-1 flex-col">
+          <header className="sticky top-0 z-20 bg-background/90 backdrop-blur-3xl border-b border-border/50 px-4 py-4 md:px-8">
             <div className="mx-auto flex w-full max-w-7xl items-center gap-4">
               <SidebarTrigger className="rounded-xl border-none bg-white/50 dark:bg-black/20 shadow-sm transition-all hover:bg-white/80" />
               <div className="flex flex-1 items-center gap-3">
@@ -347,4 +355,3 @@ export function PortalWorkspaceShell({
     </SidebarProvider>
   );
 }
-

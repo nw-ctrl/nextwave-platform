@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { PortalLoginForm } from "@/components/portal-login-form";
 import { PortalWorkspaceShell } from "@/components/portal-workspace-shell";
 import { getPortalSession } from "@/lib/auth";
-import { listPatients } from "@/lib/clinical-data";
+import { listPatients, listClinicDoctors } from "@/lib/clinical-data";
 import { getReadablePortalPlanName } from "@/lib/portal-billing";
 
 export const dynamic = "force-dynamic";
@@ -24,7 +24,13 @@ export default async function PatientsPage({ searchParams }: { searchParams?: Pr
   const membership = session.memberships.find((item) => item.clientId === session.selectedClientId) ?? session.memberships[0];
   const planLabel = getReadablePortalPlanName(membership.subscription?.plan);
   const statusLabel = membership.subscription?.status ?? "inactive";
-  const patients = await listPatients(membership.clientId, query);
+  
+  const [patients, doctors] = await Promise.all([
+    listPatients(membership.clientId, query),
+    listClinicDoctors(membership.clientId)
+  ]);
+
+  const doctorMap = Object.fromEntries(doctors.map(d => [d.id, d.full_name]));
 
   return (
     <PortalWorkspaceShell
@@ -64,7 +70,11 @@ export default async function PatientsPage({ searchParams }: { searchParams?: Pr
               No clinical records found for this workspace.
             </Card>
           ) : (
-            patients.map((patient) => (
+            patients.map((patient) => {
+              const doctorName = doctorMap[patient.doctor_id] || "Unknown Doctor";
+              const isOwner = membership.role === 'doctor' && session.user.id === patient.doctor_id;
+
+              return (
               <Link key={patient.id} href={`/patients/${patient.id}`}>
                 <Card className="glass border-none rounded-[28px] overflow-hidden group hover:scale-[1.005] transition-all">
                     <CardContent className="p-5">
@@ -78,11 +88,18 @@ export default async function PatientsPage({ searchParams }: { searchParams?: Pr
                                     <div className="flex flex-wrap items-center gap-3 mt-1 opacity-70">
                                         <span className="text-xs font-mono tracking-wider">{patient.patient_code || "N/A"}</span>
                                         <span className="text-[10px] opacity-40">•</span>
+                                        <span className="text-xs font-medium capitalize truncate max-w-[120px]">{doctorName}</span>
+                                        <span className="text-[10px] opacity-40">•</span>
                                         <span className="text-xs font-medium capitalize">{[patient.sex, patient.age != null ? `${patient.age}Y` : null].filter(Boolean).join(" • ")}</span>
                                     </div>
                                 </div>
                             </div>
                             <div className="flex items-center gap-4">
+                                {!isOwner && membership.role === 'doctor' ? (
+                                    <Badge className="rounded-full px-3 py-1 bg-black/5 dark:bg-white/10 text-[10px] uppercase font-bold text-muted-foreground border-none">
+                                        Read-only
+                                    </Badge>
+                                ) : null}
                                 <Badge variant="outline" className="rounded-full px-3 border-none bg-black/5 dark:bg-white/5 text-[10px] font-bold tracking-tighter uppercase opacity-60">
                                     {patient.is_deleted ? "Archived" : "Active"}
                                 </Badge>
@@ -92,7 +109,8 @@ export default async function PatientsPage({ searchParams }: { searchParams?: Pr
                     </CardContent>
                 </Card>
               </Link>
-            ))
+              );
+            })
           )}
         </div>
       </div>
