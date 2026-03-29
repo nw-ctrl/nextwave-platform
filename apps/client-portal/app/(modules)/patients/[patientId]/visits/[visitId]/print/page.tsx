@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { PrintVisitActions } from "@/components/print-visit-actions";
 import { getPortalSession } from "@/lib/auth";
-import { getPatientById, getVisitById, getDoctorProfile, getClinicBranding, getClinicProfile } from "@/lib/clinical-data";
+import { getPatientById, getVisitById, getDoctorProfile, getClinicBranding, getClinicProfile, listClinicTemplates } from "@/lib/clinical-data";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +25,18 @@ export default async function PrintVisitPage({ params }: { params: Promise<{ pat
   const doctor = await getDoctorProfile(membership.clientId, visit.doctor_id);
   const branding = await getClinicBranding(membership.clientId);
   const clinic = await getClinicProfile(membership.clientId);
+  const templates = await listClinicTemplates(membership.clientId);
+  
+  // Look for a template that might be a Letterhead/Letter Pad
+  const letterheadTemplate = templates.find(t => 
+    t.name.toLowerCase().includes('letter') || 
+    t.name.toLowerCase().includes('head') || 
+    t.name.toLowerCase().includes('pad')
+  );
+
+  const templateLogo = letterheadTemplate?.payload?.logoUrl || letterheadTemplate?.payload?.imageUrl;
+  const templateHeader = letterheadTemplate?.payload?.headerText;
+  const templateFooter = letterheadTemplate?.payload?.footerText;
 
   const formatDrName = (name: string) => {
     if (!name) return "Doctor";
@@ -45,10 +57,10 @@ export default async function PrintVisitPage({ params }: { params: Promise<{ pat
         <div className="bg-primary/5 p-8 border-b border-border/40 print:bg-white print:p-0 print:border-0 min-h-[140px] flex items-center">
              <div className="flex w-full justify-between items-start gap-8">
                 <div className="flex-1">
-                   {doctor?.header_path || branding?.logo_url ? (
+                   {doctor?.header_path || branding?.logo_url || templateLogo ? (
                         <div className="h-28 flex items-center mb-4">
                             <img 
-                                src={doctor?.header_path || branding?.logo_url || ""} 
+                                src={doctor?.header_path || branding?.logo_url || templateLogo || ""} 
                                 alt="Letterhead" 
                                 className="max-h-full max-w-full object-contain" 
                             />
@@ -58,9 +70,9 @@ export default async function PrintVisitPage({ params }: { params: Promise<{ pat
                    )}
                    <p className="text-sm font-semibold opacity-70">{doctor?.qualification || "General Physician"}</p>
                    <p className="text-xs uppercase tracking-widest opacity-50 font-bold mt-1">PMDC: {doctor?.pmdc_no || "N/A"}</p>
-                   {doctor?.prescription_header && (
+                   {(doctor?.prescription_header || templateHeader) && (
                        <p className="mt-3 text-xs font-medium text-muted-foreground leading-relaxed max-w-sm whitespace-pre-wrap">
-                           {doctor.prescription_header}
+                           {doctor?.prescription_header || templateHeader}
                        </p>
                    )}
                 </div>
@@ -132,9 +144,9 @@ export default async function PrintVisitPage({ params }: { params: Promise<{ pat
           
           <div className="mt-12 flex justify-between items-end border-t border-border/40 pt-6 print:border-black/5">
                 <div className="max-w-md">
-                    {doctor?.prescription_footer && (
+                    {(doctor?.prescription_footer || templateFooter) && (
                         <p className="text-xs text-muted-foreground whitespace-pre-wrap leading-5 italic">
-                            {doctor.prescription_footer}
+                            {doctor?.prescription_footer || templateFooter}
                         </p>
                     )}
                 </div>

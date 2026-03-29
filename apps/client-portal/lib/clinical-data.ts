@@ -272,6 +272,20 @@ export async function getClinicBranding(clientId: string) {
   return data;
 }
 
+export async function listClinicTemplates(clientId: string) {
+  const clinicProfileId = await resolveClinicProfileId(clientId);
+  if (!clinicProfileId) return [];
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("prescription_templates")
+    .select("*")
+    .eq("clinic_profile_id", clinicProfileId)
+    .order("created_at", { ascending: true });
+
+  if (error) throw new Error(error.message);
+  return data ?? [];
+}
+
 export async function resolveClinicProfileId(clientId: string) {
   const supabase = getSupabase();
   const { data, error } = await supabase
