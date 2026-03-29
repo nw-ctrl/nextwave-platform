@@ -7,6 +7,8 @@ import { PortalWorkspaceShell } from "@/components/portal-workspace-shell";
 import { getPortalSession } from "@/lib/auth";
 import { getReadablePortalPlanName } from "@/lib/portal-billing";
 import { isAdmin } from "@/lib/role-helper";
+import { createSupabaseServiceClient } from "@nextwave/database";
+import { DoctorProfileForm } from "./doctor-profile-form";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +20,7 @@ export default async function Page() {
   }
 
   const membership = session.memberships.find((item) => item.clientId === session.selectedClientId) ?? session.memberships[0];
-  const adminVisible = isAdmin(session.user) || membership?.role === "manager";
+  const adminVisible = isAdmin(session.user) || membership?.role === "manager" || membership?.role === "doctor";
   const planLabel = getReadablePortalPlanName(membership.subscription?.plan);
   const statusLabel = membership.subscription?.status ?? "inactive";
 
@@ -38,53 +40,59 @@ export default async function Page() {
     );
   }
 
+  // Fetch doctor profile data
+  const supabase = createSupabaseServiceClient();
+  const { data: members } = await supabase
+    .from("clinic_members")
+    .select("user_id")
+    .eq("clinic_id", membership.clientId)
+    .in("role", ["Doctor", "Admin"])
+    .order("role", { ascending: true })
+    .limit(1);
+
+  let doctorProfile = null;
+  if (members && members.length > 0) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", members[0].user_id)
+      .single();
+    doctorProfile = profile;
+  }
+
   return (
     <PortalWorkspaceShell
       user={session.user}
       memberships={session.memberships}
       selectedClientId={session.selectedClientId}
       currentMembership={membership}
-      pageTitle="Manage doctors"
-      pageDescription="Administrative doctor controls are now presented inside the same premium shell while preserving the existing access rules."
+      pageTitle="Doctor Profile"
+      pageDescription="Manage qualifications, registration details, and prescription layout templates."
       planName={planLabel}
       statusLabel={statusLabel}
     >
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.55fr)]">
-        <Card className="rounded-[32px] border-border/70 shadow-sm">
-          <CardHeader>
-            <Badge variant="outline" className="w-fit rounded-full px-3 py-1">Admin control</Badge>
-            <CardTitle className="text-3xl">Doctor administration</CardTitle>
-            <CardDescription className="max-w-2xl text-sm leading-7">
-              This area is reserved for clinic administration tasks such as roster control, access management, and future provider-level configuration.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4 md:grid-cols-3">
-            <div className="rounded-[28px] border border-border/70 bg-muted/30 p-5">
-              <UsersRound className="size-5 text-primary" />
-              <p className="mt-4 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Roster control</p>
-              <p className="mt-2 text-sm leading-6 text-foreground">Prepare and manage doctor access structures for each clinic account.</p>
-            </div>
-            <div className="rounded-[28px] border border-border/70 bg-muted/30 p-5">
-              <UserCog className="size-5 text-primary" />
-              <p className="mt-4 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Permissions</p>
-              <p className="mt-2 text-sm leading-6 text-foreground">Keep role-sensitive actions in one clearly marked administrative area.</p>
-            </div>
-            <div className="rounded-[28px] border border-border/70 bg-muted/30 p-5">
-              <ShieldCheck className="size-5 text-primary" />
-              <p className="mt-4 text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Access posture</p>
-              <p className="mt-2 text-sm leading-6 text-foreground">Visibility still follows the existing admin and manager access checks.</p>
-            </div>
-          </CardContent>
-        </Card>
+        <div>
+          {doctorProfile ? (
+            <DoctorProfileForm initialProfile={doctorProfile} clientId={membership.clientId} />
+          ) : (
+             <Card className="rounded-[32px] border-border/70 shadow-sm">
+               <CardHeader>
+                 <CardTitle>Doctor Profile</CardTitle>
+                 <CardDescription>No doctor profile could be resolved for this clinic.</CardDescription>
+               </CardHeader>
+             </Card>
+          )}
+        </div>
 
-        <Card className="rounded-[32px] border-border/70 shadow-sm">
+        <Card className="rounded-[32px] border-border/70 shadow-sm h-fit">
           <CardHeader>
-            <CardDescription>Current state</CardDescription>
-            <CardTitle className="text-2xl">Admin-only workspace</CardTitle>
+            <CardDescription>Parity Information</CardDescription>
+            <CardTitle className="text-2xl">Android Sync</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-sm leading-7 text-muted-foreground">
-            <p>Use this area for doctor roster, permissions, and future clinic member management flows.</p>
-            <p>The visual shell is modernized here first so future admin tools inherit a cleaner operational frame.</p>
+            <p>Changes made to this profile impact both the web and Android app.</p>
+            <p>Printing properties like font size and offsets are used directly by the Android prescription generator to format final PDFs.</p>
           </CardContent>
         </Card>
       </div>
