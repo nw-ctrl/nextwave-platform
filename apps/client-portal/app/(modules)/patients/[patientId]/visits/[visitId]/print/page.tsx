@@ -100,7 +100,7 @@ export default async function PrintVisitPage({ params }: { params: Promise<{ pat
             <div className="space-y-1">
               <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-50">Patient Details</p>
               <p className="text-lg font-bold">{patient.full_name}</p>
-              <p className="text-xs font-medium opacity-70">{[patient.sex, patientAgeLabel, patient.patient_code].filter(Boolean).join(" • ")}</p>
+              <p className="text-xs font-medium opacity-70">{[patient.sex, patientAgeLabel, patient.patient_code].filter(Boolean).join(" | ")}</p>
             </div>
             <div className="space-y-1 md:text-right" style={{ paddingRight: `${Math.max(0, dateOffset - 100) * 0.35}px` }}>
               <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-50">Visit Date</p>
