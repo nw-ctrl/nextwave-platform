@@ -1,6 +1,7 @@
 "use client";
 
-import { CSSProperties, FormEvent, useState } from "react";
+import { CSSProperties, FormEvent, startTransition, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type Status = {
   state: "idle" | "pending" | "error";
@@ -29,6 +30,7 @@ const mutedText: CSSProperties = {
 };
 
 export function PortalLoginForm() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState<Status>({ state: "idle", message: "" });
@@ -49,7 +51,10 @@ export function PortalLoginForm() {
         throw new Error(typeof result?.error === "string" ? result.error : "Unable to sign in");
       }
 
-      window.location.href = "/";
+      startTransition(() => {
+        router.replace("/");
+        router.refresh();
+      });
     } catch (error) {
       setStatus({ state: "error", message: error instanceof Error ? error.message : "Sign-in failed" });
     }
@@ -61,7 +66,7 @@ export function PortalLoginForm() {
         <div className="portal-login-header">
           <div className="portal-login-stage">Secure Clinical Access</div>
           <h1>MediFlow Portal</h1>
-          <p>Sign in to access your clinic workspace, account settings, and subscription controls.</p>
+          <p>Sign in to access your clinic workspace, account settings, and prescription operations.</p>
         </div>
 
         <div className="portal-login-summary">
@@ -73,37 +78,21 @@ export function PortalLoginForm() {
             <span>Portal posture</span>
             <strong>Clear and secure</strong>
           </div>
+          <div className="portal-login-summary-item portal-login-highlight">
+            <span>Prescription setup</span>
+            <strong>Doctor-ready templates</strong>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="portal-login-form">
-          <input
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            autoComplete="email"
-            required
-            placeholder="Email"
-            style={fieldStyle}
-          />
-          <input
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            autoComplete="current-password"
-            required
-            placeholder="Password"
-            style={fieldStyle}
-          />
+          <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" required placeholder="Email" style={fieldStyle} />
+          <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="current-password" required placeholder="Password" style={fieldStyle} />
           <button type="submit" disabled={status.state === "pending"} className="portal-login-submit">
             {status.state === "pending" ? "Signing in..." : "Sign In"}
           </button>
         </form>
 
-        {status.state === "error" ? (
-          <div className="portal-login-status" role="alert">
-            {status.message}
-          </div>
-        ) : null}
+        {status.state === "error" ? <div className="portal-login-status" role="alert">{status.message}</div> : null}
 
         <div className="portal-login-footer">
           <span style={mutedText}>All portal access is protected with encrypted transport and session controls.</span>
@@ -115,17 +104,19 @@ export function PortalLoginForm() {
           width: min(520px, 100%);
           margin: 0 auto;
           padding: 20px;
-          font-family: Avenir Next, Segoe UI, Helvetica Neue, Arial, sans-serif;
+          font-family: ${headingFont};
         }
 
         .portal-login-panel {
           padding: clamp(24px, 4vw, 36px);
-          border-radius: 28px;
-          background: rgba(255, 255, 255, 0.92);
-          border: 1px solid rgba(203, 213, 225, 0.8);
-          box-shadow: 0 24px 50px rgba(15, 23, 42, 0.08);
+          border-radius: 32px;
+          background:
+            radial-gradient(circle at top right, rgba(125, 211, 252, 0.2), transparent 34%),
+            linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.94));
+          border: 1px solid rgba(191, 219, 254, 0.8);
+          box-shadow: 0 32px 70px rgba(15, 23, 42, 0.1);
           display: grid;
-          gap: 18px;
+          gap: 20px;
         }
 
         .portal-login-stage {
@@ -139,7 +130,7 @@ export function PortalLoginForm() {
           margin: 4px 0 0;
           font-size: 34px;
           letter-spacing: -0.02em;
-          font-family: Avenir Next, Segoe UI, Helvetica Neue, Arial, sans-serif;
+          font-family: ${headingFont};
           font-weight: 700;
           color: #0f172a;
         }
@@ -154,7 +145,7 @@ export function PortalLoginForm() {
 
         .portal-login-summary {
           display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
+          grid-template-columns: repeat(3, minmax(0, 1fr));
           gap: 12px;
         }
 
@@ -165,6 +156,11 @@ export function PortalLoginForm() {
           background: #f8fafc;
           display: grid;
           gap: 4px;
+        }
+
+        .portal-login-highlight {
+          background: linear-gradient(135deg, #eff6ff, #ecfeff);
+          border-color: #bfdbfe;
         }
 
         .portal-login-summary-item span {
@@ -193,7 +189,7 @@ export function PortalLoginForm() {
           color: #fff;
           font-weight: 700;
           font-size: 16px;
-          font-family: Avenir Next, Segoe UI, Helvetica Neue, Arial, sans-serif;
+          font-family: ${headingFont};
           cursor: pointer;
           box-shadow: 0 14px 30px rgba(2, 132, 199, 0.22);
           transition: transform 0.25s ease;

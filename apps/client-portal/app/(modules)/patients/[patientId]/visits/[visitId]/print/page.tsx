@@ -40,16 +40,15 @@ export default async function PrintVisitPage({ params }: { params: Promise<{ pat
   const effectiveLetterhead = doctor?.letterhead_image_url || doctor?.header_path || branding?.logo_url || templateLogo || null;
   const effectiveHeader = doctor?.prescription_header || templateHeader || null;
   const effectiveFooter = doctor?.prescription_footer || templateFooter || null;
+  const hasFullPageLetterhead = Boolean(effectiveLetterhead);
   const dateOffset = Math.max(0, doctor?.pdf_date_x ?? 140);
-  const contentTopPadding = Math.max(24, 24 + (doctor?.pdf_line_offset ?? 12) * 0.25);
+  const contentTopPadding = Math.max(hasFullPageLetterhead ? 110 : 24, (hasFullPageLetterhead ? 110 : 24) + (doctor?.pdf_line_offset ?? 12) * 0.25);
   const signatureTopMargin = Math.max(48, (doctor?.pdf_signature_y ?? 150) * 0.35);
 
   const formatDrName = (name: string) => {
     if (!name) return "Doctor";
     const trimmed = name.trim();
-    if (trimmed.toLowerCase().startsWith("dr.") || trimmed.toLowerCase().startsWith("dr ")) {
-      return trimmed;
-    }
+    if (trimmed.toLowerCase().startsWith("dr.") || trimmed.toLowerCase().startsWith("dr ")) return trimmed;
     return `Dr. ${trimmed}`;
   };
 
@@ -74,44 +73,34 @@ export default async function PrintVisitPage({ params }: { params: Promise<{ pat
         }
       `}</style>
       <div className="print:hidden"><PrintVisitActions /></div>
-      <Card className="overflow-hidden rounded-[32px] border-border/70 shadow-sm print:mx-auto print:max-w-[4in] print:rounded-none print:border-0 print:shadow-none">
-        <div className="bg-primary/5 p-8 border-b border-border/40 print:bg-white print:p-0 print:border-0 min-h-[140px] flex items-center">
+      <Card className="relative overflow-hidden rounded-[32px] border-border/70 shadow-sm print:mx-auto print:max-w-[4in] print:rounded-none print:border-0 print:shadow-none">
+        {hasFullPageLetterhead ? (
+          <div className="pointer-events-none absolute inset-0 z-0">
+            <img src={effectiveLetterhead ?? ""} alt="Prescription background" className="h-full w-full object-fill" />
+          </div>
+        ) : null}
+
+        <div className={`relative z-10 flex items-center ${hasFullPageLetterhead ? "min-h-[140px] p-8 print:p-0 print:border-0" : "min-h-[140px] border-b border-border/40 bg-primary/5 p-8 print:border-0 print:bg-white print:p-0"}`}>
           <div className="flex w-full justify-between items-start gap-8">
             <div className="flex-1">
-              {effectiveLetterhead ? (
-                <div className="h-28 flex items-center mb-4">
-                  <img
-                    src={effectiveLetterhead}
-                    alt="Letterhead"
-                    className="max-h-full max-w-full object-contain"
-                  />
-                </div>
-              ) : (
-                <h1 className="text-3xl font-bold tracking-tight text-primary print:text-black mb-1">{doctorDisplayName}</h1>
-              )}
-              <p className="text-sm font-semibold opacity-70">{doctor?.qualification || "General Physician"}</p>
-              <p className="text-xs uppercase tracking-widest opacity-50 font-bold mt-1">PMDC: {doctor?.pmdc_no || "N/A"}</p>
-              {effectiveHeader && (
-                <p className="mt-3 text-xs font-medium text-muted-foreground leading-relaxed max-w-sm whitespace-pre-wrap">
-                  {effectiveHeader}
-                </p>
-              )}
+              {!hasFullPageLetterhead ? <h1 className="mb-1 text-3xl font-bold tracking-tight text-primary print:text-black">{doctorDisplayName}</h1> : null}
+              <p className="text-sm font-semibold opacity-80">{doctor?.qualification || "General Physician"}</p>
+              <p className="mt-1 text-xs font-bold uppercase tracking-widest opacity-60">PMDC: {doctor?.pmdc_no || "N/A"}</p>
+              {effectiveHeader && !hasFullPageLetterhead ? <p className="mt-3 max-w-sm whitespace-pre-wrap text-xs font-medium leading-relaxed text-muted-foreground">{effectiveHeader}</p> : null}
             </div>
             <div className="text-right">
               <h2 className="text-xl font-bold tracking-tight">{membership.clinicName}</h2>
-              <p className="text-xs text-muted-foreground opacity-70">
-                {clinic?.address?.city ? `${clinic.address.city}, ${clinic.address.country || "PK"}` : "Electronic Health Record"}
-              </p>
+              <p className="text-xs text-muted-foreground opacity-70">{clinic?.address?.city ? `${clinic.address.city}, ${clinic.address.country || "PK"}` : "Electronic Health Record"}</p>
             </div>
           </div>
         </div>
 
-        <CardContent className="space-y-8 p-8 text-sm leading-7 text-foreground print:p-0 print:pt-6" style={{ fontSize: `${prescriptionFontSize}px` }}>
-          <section className="grid gap-6 md:grid-cols-2 border-b border-border/40 pb-6 print:border-black/10">
+        <CardContent className="relative z-10 space-y-8 p-8 text-sm leading-7 text-foreground print:p-0 print:pt-6" style={{ fontSize: `${prescriptionFontSize}px` }}>
+          <section className="grid gap-6 border-b border-border/40 pb-6 print:border-black/10 md:grid-cols-2">
             <div className="space-y-1">
               <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-50">Patient Details</p>
               <p className="text-lg font-bold">{patient.full_name}</p>
-              <p className="text-xs font-medium opacity-70">{[patient.sex, patientAgeLabel, patient.patient_code].filter(Boolean).join(" | ")}</p>
+              <p className="text-xs font-medium opacity-70">{[patient.sex, patientAgeLabel, patient.patient_code].filter(Boolean).join(" • ")}</p>
             </div>
             <div className="space-y-1 md:text-right" style={{ paddingRight: `${Math.max(0, dateOffset - 100) * 0.35}px` }}>
               <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-50">Visit Date</p>
@@ -123,62 +112,49 @@ export default async function PrintVisitPage({ params }: { params: Promise<{ pat
           <div className="grid grid-cols-[140px_1fr] gap-8 print:grid-cols-[120px_1fr]">
             <aside className="space-y-6">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-50 mb-3">Vitals</p>
+                <p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-50">Vitals</p>
                 <div className="space-y-4">
-                  <div>
-                    <p className="text-[10px] font-bold uppercase opacity-30">BP</p>
-                    <p className="font-bold">{visit.bp || "-"}</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-bold uppercase opacity-30">Temp</p>
-                    <p className="font-bold">{visit.temp || "-"}</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-bold uppercase opacity-30">Weight</p>
-                    <p className="font-bold">{visit.weight || "-"}</p>
-                  </div>
+                  <div><p className="text-[10px] font-bold uppercase opacity-30">BP</p><p className="font-bold">{visit.bp || "-"}</p></div>
+                  <div><p className="text-[10px] font-bold uppercase opacity-30">Temp</p><p className="font-bold">{visit.temp || "-"}</p></div>
+                  <div><p className="text-[10px] font-bold uppercase opacity-30">Weight</p><p className="font-bold">{visit.weight || "-"}</p></div>
                 </div>
               </div>
             </aside>
 
-            <div className="space-y-8 min-w-0">
+            <div className="min-w-0 space-y-8">
               {visit.subjective ? (
                 <section>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-50 mb-2">Subjective / Complaints</p>
+                  <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-50">Subjective / Complaints</p>
                   <p className="whitespace-pre-wrap">{visit.subjective}</p>
                 </section>
               ) : null}
 
               <section>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-50 mb-2">Diagnosis / Assessment</p>
+                <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-50">Diagnosis / Assessment</p>
                 <p className="whitespace-pre-wrap text-xl font-bold tracking-tight text-primary print:text-black">{visit.assessment || "Clinical Assessment"}</p>
               </section>
 
               <section className="min-h-[300px] border-t border-border/40 print:border-black/5" style={{ paddingTop: `${contentTopPadding}px` }}>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-50 mb-4">Prescription / Treatment Plan</p>
-                <div className="font-medium leading-relaxed whitespace-pre-wrap text-foreground italic" style={{ fontSize: `${prescriptionFontSize}px` }}>
+                <p className="mb-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-50">Prescription / Treatment Plan</p>
+                <div className="whitespace-pre-wrap font-medium italic leading-relaxed text-foreground" style={{ fontSize: `${prescriptionFontSize}px` }}>
                   {visit.plan || "Observation and general care."}
                 </div>
               </section>
             </div>
           </div>
 
-          <div className="flex justify-between items-end border-t border-border/40 pt-6 print:border-black/5" style={{ marginTop: `${signatureTopMargin}px` }}>
+          <div className="flex items-end justify-between border-t border-border/40 pt-6 print:border-black/5" style={{ marginTop: `${signatureTopMargin}px` }}>
             <div className="max-w-md">
-              {effectiveFooter && (
-                <p className="text-xs text-muted-foreground whitespace-pre-wrap leading-5 italic">
-                  {effectiveFooter}
-                </p>
-              )}
+              {effectiveFooter ? <p className="whitespace-pre-wrap text-xs italic leading-5 text-muted-foreground">{effectiveFooter}</p> : null}
             </div>
-            <div className="text-center w-48">
+            <div className="w-48 text-center">
               <p className="text-[10px] font-bold uppercase opacity-40">Digital Signature</p>
-              <p className="text-sm font-bold mt-1">{doctorDisplayName}</p>
+              <p className="mt-1 text-sm font-bold">{doctorDisplayName}</p>
             </div>
           </div>
         </CardContent>
 
-        <div className="bg-muted/30 p-4 text-[10px] text-center text-muted-foreground print:bg-transparent print:mt-10">
+        <div className={`relative z-10 p-4 text-center text-[10px] text-muted-foreground print:mt-10 print:bg-transparent ${hasFullPageLetterhead ? "" : "bg-muted/30"}`}>
           Powered by MediVault Dashboard | {new Date().toLocaleDateString()}
         </div>
       </Card>
