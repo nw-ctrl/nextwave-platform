@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { PortalLoginForm } from "@/components/portal-login-form";
 import { PortalWorkspaceShell } from "@/components/portal-workspace-shell";
 import { getPortalSession } from "@/lib/auth";
+import { getDoctorProfile } from "@/lib/clinical-data";
 import { getReadablePortalPlanName } from "@/lib/portal-billing";
 import { isAdmin } from "@/lib/role-helper";
 import { createSupabaseServiceClient } from "@nextwave/database";
@@ -40,7 +41,6 @@ export default async function Page() {
     );
   }
 
-  // Fetch doctor profile data
   const supabase = createSupabaseServiceClient();
 
   const { data: profileRef } = await supabase
@@ -59,15 +59,9 @@ export default async function Page() {
     .order("role", { ascending: true })
     .limit(1);
 
-  let doctorProfile = null;
-  if (members && members.length > 0) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", members[0].user_id)
-      .single();
-    doctorProfile = profile;
-  }
+  const doctorProfile = members && members.length > 0
+    ? await getDoctorProfile(membership.clientId, members[0].user_id)
+    : null;
 
   return (
     <PortalWorkspaceShell
@@ -101,7 +95,7 @@ export default async function Page() {
           </CardHeader>
           <CardContent className="space-y-4 text-sm leading-7 text-muted-foreground">
             <p>Changes made to this profile impact both the web and Android app.</p>
-            <p>Printing properties like font size and offsets are used directly by the Android prescription generator to format final PDFs.</p>
+            <p>Printing properties like font size, date offset, divider alignment, signature position, and letterhead are read from the same doctor profile used by Android prescription generation.</p>
           </CardContent>
         </Card>
       </div>

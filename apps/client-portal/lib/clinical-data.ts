@@ -1,4 +1,5 @@
 import { createSupabaseServiceClient } from "@nextwave/database";
+import { env } from "@nextwave/config";
 import { builtInClinicalTemplates } from "@/lib/clinical-templates";
 
 export type PatientRecord = {
@@ -51,15 +52,26 @@ export type DoctorProfileRecord = {
   signature_y_offset: number | null;
   header_path: string | null;
   footer_path: string | null;
+  letterhead_image_path?: string | null;
+  letterhead_image_url?: string | null;
   prescription_header?: string | null;
   prescription_footer?: string | null;
   prescription_font_size?: number | null;
   pdf_line_offset?: number | null;
   pdf_signature_y?: number | null;
+  pdf_date_x?: number | null;
 };
 
 function getSupabase() {
   return createSupabaseServiceClient();
+}
+
+function resolveStoragePublicUrl(bucket: string, path?: string | null) {
+  const trimmed = path?.trim();
+  if (!trimmed) return null;
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  if (!env.supabaseUrl) return null;
+  return `${env.supabaseUrl}/storage/v1/object/public/${bucket}/${trimmed}`;
 }
 
 export async function getClinicalWorkspaceSummary(clientId: string) {
@@ -144,7 +156,7 @@ export async function listClinicDoctors(clientId: string) {
   const clinicProfileId = await resolveClinicProfileId(clientId);
   if (!clinicProfileId) return [];
   const supabase = getSupabase();
-  
+
   const { data: members } = await supabase
     .from("clinic_members")
     .select("user_id")
@@ -152,11 +164,11 @@ export async function listClinicDoctors(clientId: string) {
     .in("role", ["Doctor", "Admin"]);
 
   if (!members || members.length === 0) return [];
-  const userIds = members.map(m => m.user_id);
+  const userIds = members.map((member) => member.user_id);
 
   const { data: profiles } = await supabase
     .from("profiles")
-    .select("id, full_name, pmdc_no, qualification, prescription_header, prescription_footer")
+    .select("id, full_name, pmdc_no, qualification, prescription_header, prescription_footer, letterhead_image_path, prescription_font_size, pdf_line_offset, pdf_signature_y, pdf_date_x")
     .in("id", userIds)
     .order("full_name", { ascending: true });
 
@@ -165,21 +177,23 @@ export async function listClinicDoctors(clientId: string) {
     .select("user_id, header_path, footer_path, license_number, specialty")
     .in("user_id", userIds);
 
-  return (profiles ?? []).map(p => {
-    const sync = syncProfiles?.find(s => s.user_id === p.id);
+  return (profiles ?? []).map((profile) => {
+    const sync = syncProfiles?.find((item) => item.user_id === profile.id);
     return {
-      ...p,
-      header_path: sync?.header_path ?? null,
+      ...profile,
+      header_path: resolveStoragePublicUrl("letterheads", profile.letterhead_image_path) ?? sync?.header_path ?? null,
       footer_path: sync?.footer_path ?? null,
-      pmdc_no: p.pmdc_no ?? sync?.license_number ?? null,
-      qualification: p.qualification ?? sync?.specialty ?? null,
+      letterhead_image_path: profile.letterhead_image_path ?? null,
+      letterhead_image_url: resolveStoragePublicUrl("letterheads", profile.letterhead_image_path),
+      pmdc_no: profile.pmdc_no ?? sync?.license_number ?? null,
+      qualification: profile.qualification ?? sync?.specialty ?? null,
     };
   });
 }
 
 export async function getDoctorProfile(clientId: string, doctorId: string) {
   const supabase = getSupabase();
-  
+
   const [{ data: profile }, { data: syncProfile }] = await Promise.all([
     supabase
       .from("profiles")
@@ -198,12 +212,22 @@ export async function getDoctorProfile(clientId: string, doctorId: string) {
   return {
     ...profile,
     full_name: profile?.full_name || syncProfile?.full_name || "Doctor",
-    header_path: syncProfile?.header_path || profile?.header_path || null,
+    header_path:
+      resolveStoragePublicUrl("letterheads", profile?.letterhead_image_path) ||
+      syncProfile?.header_path ||
+      profile?.header_path ||
+      null,
     footer_path: syncProfile?.footer_path || profile?.footer_path || null,
+    letterhead_image_path: profile?.letterhead_image_path || null,
+    letterhead_image_url: resolveStoragePublicUrl("letterheads", profile?.letterhead_image_path),
     pmdc_no: profile?.pmdc_no || syncProfile?.license_number || null,
     qualification: profile?.qualification || syncProfile?.specialty || null,
     prescription_header: profile?.prescription_header || syncProfile?.prescription_header || null,
     prescription_footer: profile?.prescription_footer || syncProfile?.prescription_footer || null,
+    prescription_font_size: profile?.prescription_font_size ?? syncProfile?.prescription_font_size ?? null,
+    pdf_line_offset: profile?.pdf_line_offset ?? syncProfile?.pdf_line_offset ?? null,
+    pdf_signature_y: profile?.pdf_signature_y ?? syncProfile?.pdf_signature_y ?? null,
+    pdf_date_x: profile?.pdf_date_x ?? syncProfile?.pdf_date_x ?? null,
   } as DoctorProfileRecord;
 }
 

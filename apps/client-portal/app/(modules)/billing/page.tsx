@@ -14,13 +14,8 @@ const accountChecklist = ["Plan status", "Renewal date", "Invoice history", "Bil
 
 function formatMoney(amount: number | null, currency: string) {
   if (amount == null) return "Available in your account";
-
   try {
-    return new Intl.NumberFormat("en-AU", {
-      style: "currency",
-      currency,
-      maximumFractionDigits: amount % 1 === 0 ? 0 : 2,
-    }).format(amount);
+    return new Intl.NumberFormat("en-AU", { style: "currency", currency, maximumFractionDigits: amount % 1 === 0 ? 0 : 2 }).format(amount);
   } catch {
     return `${currency} ${amount.toLocaleString()}`;
   }
@@ -28,13 +23,8 @@ function formatMoney(amount: number | null, currency: string) {
 
 function formatDate(value?: string | null) {
   if (!value) return "Available in your account";
-
   try {
-    return new Intl.DateTimeFormat("en-AU", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    }).format(new Date(value));
+    return new Intl.DateTimeFormat("en-AU", { day: "numeric", month: "short", year: "numeric" }).format(new Date(value));
   } catch {
     return value;
   }
@@ -42,11 +32,7 @@ function formatDate(value?: string | null) {
 
 function humanizeStatus(status?: string | null) {
   if (!status) return "Not available";
-
-  return status
-    .split("_")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
+  return status.split("_").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
 }
 
 function statusTone(status?: string | null) {
@@ -69,9 +55,9 @@ function statusTone(status?: string | null) {
 }
 
 const planFeatureNotes: Record<string, string[]> = {
-  basic: ["Your clinic is on the Basic plan.", "You can review or change plan settings from the billing area."],
-  standard: ["Your clinic is on the Standard plan.", "This plan supports routine day-to-day clinic operations."],
-  premium: ["Your clinic is on the Premium plan.", "This plan includes the broadest level of access currently available."],
+  basic: ["Your clinic is on Essential Care.", "You can review or change plan settings from the billing area."],
+  standard: ["Your clinic is on Advanced Practice.", "This plan supports routine day-to-day clinic operations."],
+  premium: ["Your clinic is on Total Wellness.", "This plan includes the broadest level of access currently available."],
   custom: ["Your clinic is on a custom plan.", "For plan adjustments, use billing settings or contact support."],
   unknown: ["Plan details are being refreshed.", "Your account remains active while billing information loads."],
 };
@@ -81,11 +67,7 @@ export default async function Page({ searchParams }: { searchParams?: Promise<Re
   const session = await getPortalSession();
 
   if (!session) {
-    return (
-      <main className="grid min-h-screen place-items-center px-6 py-10">
-        <PortalLoginForm />
-      </main>
-    );
+    return <main className="grid min-h-screen place-items-center px-6 py-10"><PortalLoginForm /></main>;
   }
 
   if (session.memberships.length === 0) {
@@ -120,7 +102,6 @@ export default async function Page({ searchParams }: { searchParams?: Promise<Re
 
   let billing = null;
   let billingError: string | null = null;
-
   try {
     billing = await getClinicBillingSummary(membership.clientId);
   } catch (error) {
@@ -156,26 +137,9 @@ export default async function Page({ searchParams }: { searchParams?: Promise<Re
       planName={planName}
       statusLabel={billingStatus}
     >
-      {checkoutSuccess ? (
-        <Card className="rounded-[24px] border-emerald-200 bg-emerald-50/80 shadow-sm">
-          <CardContent className="p-4 text-sm font-medium text-emerald-700">Payment completed successfully.</CardContent>
-        </Card>
-      ) : null}
-
-      {portalError ? (
-        <Card className="rounded-[24px] border-rose-200 bg-rose-50/80 shadow-sm">
-          <CardContent className="p-4 text-sm font-medium text-rose-700">{portalMessage ?? "Unable to open billing settings for this clinic right now."}</CardContent>
-        </Card>
-      ) : null}
-
-      {billingError ? (
-        <Card className="rounded-[24px] border-amber-200 bg-amber-50/80 shadow-sm">
-          <CardContent className="p-4 text-sm font-medium text-amber-700">
-            Live billing information is temporarily unavailable. Your clinic account remains active.
-            {billingError ? ` (${billingError})` : ""}
-          </CardContent>
-        </Card>
-      ) : null}
+      {checkoutSuccess ? <Card className="rounded-[24px] border-emerald-200 bg-emerald-50/80 shadow-sm"><CardContent className="p-4 text-sm font-medium text-emerald-700">Payment completed successfully.</CardContent></Card> : null}
+      {portalError ? <Card className="rounded-[24px] border-rose-200 bg-rose-50/80 shadow-sm"><CardContent className="p-4 text-sm font-medium text-rose-700">{portalMessage ?? "Unable to open billing settings for this clinic right now."}</CardContent></Card> : null}
+      {billingError ? <Card className="rounded-[24px] border-amber-200 bg-amber-50/80 shadow-sm"><CardContent className="p-4 text-sm font-medium text-amber-700">Live billing information is temporarily unavailable. Your clinic account remains active.{billingError ? ` (${billingError})` : ""}</CardContent></Card> : null}
 
       <div className="grid gap-6 xl:grid-cols-3">
         <Card className="rounded-[32px] border-border/70 shadow-sm">
@@ -196,12 +160,7 @@ export default async function Page({ searchParams }: { searchParams?: Promise<Re
             <CardDescription className="text-sm leading-7">Renews {formatDate(nextBillingDate)}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-muted-foreground">
-            {hasDiscount && baseCyclePrice != null && cyclePrice != null && baseCyclePrice > cyclePrice ? (
-              <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-                <span className="line-through decoration-muted-foreground/60">{formatMoney(baseCyclePrice, currency)}</span>
-                <Badge variant="secondary" className="rounded-full">Adjusted pricing</Badge>
-              </div>
-            ) : null}
+            {hasDiscount && baseCyclePrice != null && cyclePrice != null && baseCyclePrice > cyclePrice ? <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground"><span className="line-through decoration-muted-foreground/60">{formatMoney(baseCyclePrice, currency)}</span><Badge variant="secondary" className="rounded-full">Adjusted pricing</Badge></div> : null}
             {monthlySavings ? <p>Current pricing is below the standard amount for this plan.</p> : null}
           </CardContent>
         </Card>
@@ -214,12 +173,7 @@ export default async function Page({ searchParams }: { searchParams?: Promise<Re
           <CardContent className="space-y-4">
             <p className="text-sm leading-7 text-muted-foreground">{accountNote ?? slimNotes[1]}</p>
             <div className="grid gap-2">
-              {accountChecklist.map((item) => (
-                <div key={item} className="flex items-center gap-3 rounded-2xl border border-border/70 bg-muted/30 px-4 py-3 text-sm text-foreground">
-                  <span className="size-2 rounded-full bg-primary" />
-                  <span>{item}</span>
-                </div>
-              ))}
+              {accountChecklist.map((item) => <div key={item} className="flex items-center gap-3 rounded-2xl border border-border/70 bg-muted/30 px-4 py-3 text-sm text-foreground"><span className="size-2 rounded-full bg-primary" /><span>{item}</span></div>)}
             </div>
           </CardContent>
         </Card>
@@ -233,54 +187,19 @@ export default async function Page({ searchParams }: { searchParams?: Promise<Re
               <CardTitle className="text-2xl">Recent invoices</CardTitle>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Button asChild variant="outline" className="rounded-full">
-                <a href="/api/billing/manage">Open billing settings</a>
-              </Button>
-              {invoices[0]?.hostedInvoiceUrl ? (
-                <Button asChild className="rounded-full">
-                  <a href={invoices[0].hostedInvoiceUrl} target="_blank" rel="noreferrer">
-                    View latest invoice
-                    <ArrowUpRight className="size-4" />
-                  </a>
-                </Button>
-              ) : null}
+              <Button asChild variant="outline" className="rounded-full"><a href="/api/billing/manage">Open billing settings</a></Button>
+              {invoices[0]?.hostedInvoiceUrl ? <Button asChild className="rounded-full"><a href={invoices[0].hostedInvoiceUrl} target="_blank" rel="noreferrer">View latest invoice<ArrowUpRight className="size-4" /></a></Button> : null}
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             {invoices.length ? (
               <div className="overflow-hidden rounded-[24px] border border-border/70">
-                <div className="hidden grid-cols-[1.1fr_1fr_0.9fr_0.9fr] gap-4 border-b border-border/70 bg-muted/40 px-5 py-3 text-[11px] uppercase tracking-[0.18em] text-muted-foreground md:grid">
-                  <span>Date</span>
-                  <span>Plan</span>
-                  <span>Amount</span>
-                  <span>Status</span>
-                </div>
+                <div className="hidden grid-cols-[1.1fr_1fr_0.9fr_0.9fr] gap-4 border-b border-border/70 bg-muted/40 px-5 py-3 text-[11px] uppercase tracking-[0.18em] text-muted-foreground md:grid"><span>Date</span><span>Plan</span><span>Amount</span><span>Status</span></div>
                 <div className="divide-y divide-border/70">
-                  {invoices.map((invoice) => (
-                    <div key={invoice.id} className="grid gap-3 px-5 py-4 text-sm md:grid-cols-[1.1fr_1fr_0.9fr_0.9fr] md:items-center">
-                      <div>
-                        <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground md:hidden">Date</p>
-                        <p className="text-foreground">{formatDate(invoice.date)}</p>
-                      </div>
-                      <div>
-                        <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground md:hidden">Plan</p>
-                        <p className="text-foreground">{invoice.planName}</p>
-                      </div>
-                      <div>
-                        <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground md:hidden">Amount</p>
-                        <p className="text-foreground">{formatMoney(invoice.amount, invoice.currency)}</p>
-                      </div>
-                      <div>
-                        <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground md:hidden">Status</p>
-                        <Badge variant="outline" className={`rounded-full capitalize ${statusTone(invoice.status)}`}>{humanizeStatus(invoice.status)}</Badge>
-                      </div>
-                    </div>
-                  ))}
+                  {invoices.map((invoice) => <div key={invoice.id} className="grid gap-3 px-5 py-4 text-sm md:grid-cols-[1.1fr_1fr_0.9fr_0.9fr] md:items-center"><div><p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground md:hidden">Date</p><p className="text-foreground">{formatDate(invoice.date)}</p></div><div><p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground md:hidden">Plan</p><p className="text-foreground">{invoice.planName}</p></div><div><p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground md:hidden">Amount</p><p className="text-foreground">{formatMoney(invoice.amount, invoice.currency)}</p></div><div><p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground md:hidden">Status</p><Badge variant="outline" className={`rounded-full capitalize ${statusTone(invoice.status)}`}>{humanizeStatus(invoice.status)}</Badge></div></div>)}
                 </div>
               </div>
-            ) : (
-              <div className="rounded-[28px] border border-dashed border-border/80 bg-muted/30 px-6 py-10 text-center text-sm text-muted-foreground">No invoice entries available yet.</div>
-            )}
+            ) : <div className="rounded-[28px] border border-dashed border-border/80 bg-muted/30 px-6 py-10 text-center text-sm text-muted-foreground">No invoice entries available yet.</div>}
           </CardContent>
         </Card>
 
@@ -290,29 +209,14 @@ export default async function Page({ searchParams }: { searchParams?: Promise<Re
             <CardTitle className="text-2xl">Current billing posture</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-sm leading-7 text-muted-foreground">
-            <div className="flex items-start gap-3 rounded-[24px] border border-border/70 bg-muted/30 p-4">
-              <ReceiptText className="mt-0.5 size-5 text-primary" />
-              <p>{monthlySavings ? `Current pricing is ${formatMoney(monthlySavings, currency)} below the standard plan amount.` : "Your current billing amount is shown exactly as charged for this clinic account."}</p>
-            </div>
-            <div className="rounded-[24px] border border-border/70 bg-muted/30 p-4">
-              <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Renewal</p>
-              <p className="mt-2 text-base font-semibold text-foreground">{formatDate(nextBillingDate)}</p>
-            </div>
-            {hasDiscount && baseCyclePrice != null && cyclePrice != null && baseCyclePrice > cyclePrice ? (
-              <div className="rounded-[24px] border border-border/70 bg-muted/30 p-4">
-                <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Standard rate</p>
-                <p className="mt-2 text-base font-semibold text-foreground line-through decoration-muted-foreground/60">{formatMoney(baseCyclePrice, currency)}</p>
-              </div>
-            ) : null}
+            <div className="flex items-start gap-3 rounded-[24px] border border-border/70 bg-muted/30 p-4"><ReceiptText className="mt-0.5 size-5 text-primary" /><p>{monthlySavings ? `Current pricing is ${formatMoney(monthlySavings, currency)} below the standard plan amount.` : "Your current billing amount is shown exactly as charged for this clinic account."}</p></div>
+            <div className="rounded-[24px] border border-border/70 bg-muted/30 p-4"><p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Renewal</p><p className="mt-2 text-base font-semibold text-foreground">{formatDate(nextBillingDate)}</p></div>
+            {hasDiscount && baseCyclePrice != null && cyclePrice != null && baseCyclePrice > cyclePrice ? <div className="rounded-[24px] border border-border/70 bg-muted/30 p-4"><p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Standard rate</p><p className="mt-2 text-base font-semibold text-foreground line-through decoration-muted-foreground/60">{formatMoney(baseCyclePrice, currency)}</p></div> : null}
           </CardContent>
         </Card>
       </div>
 
-      {isActive ? null : (
-        <div className="overflow-hidden rounded-[32px] border border-border/70 bg-card/95 shadow-sm">
-          <PricingSection />
-        </div>
-      )}
+      {isActive ? null : <div className="overflow-hidden rounded-[32px] border border-border/70 bg-card/95 shadow-sm"><PricingSection /></div>}
     </PortalWorkspaceShell>
   );
 }

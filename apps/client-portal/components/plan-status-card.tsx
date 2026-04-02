@@ -9,12 +9,7 @@ interface PlanStatusCardProps {
   onManage?: () => void;
 }
 
-export function PlanStatusCard({
-  planName = "Standard Plan",
-  price = 3990,
-  nextBillingDate = "12 April 2026",
-  onManage
-}: PlanStatusCardProps) {
+export function PlanStatusCard({ planName = "Advanced Practice", price = 3990, nextBillingDate = "12 April 2026", onManage }: PlanStatusCardProps) {
   return (
     <div style={{ padding: 24, borderRadius: 24, background: "linear-gradient(135deg, #ffffff 0%, #f9fafb 100%)", border: "1px solid #e5e7eb", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.08), 0 20px 25px -5px rgba(0,0,0,0.04)", maxWidth: 400 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16, gap: 12 }}>
@@ -35,9 +30,7 @@ export function PlanStatusCard({
         </div>
       </div>
       <div style={{ display: "grid", gap: 12 }}>
-        <button onClick={onManage} style={{ width: "100%", padding: "12px", borderRadius: 12, border: "none", background: "#111827", color: "white", fontWeight: 600, cursor: "pointer" }}>
-          Manage Plan
-        </button>
+        <button onClick={onManage} style={{ width: "100%", padding: "12px", borderRadius: 12, border: "none", background: "#111827", color: "white", fontWeight: 600, cursor: "pointer" }}>Manage Plan</button>
       </div>
     </div>
   );

@@ -60,9 +60,7 @@ export function PricingSection() {
         const res = await fetch("/api/billing/recommendation");
         if (res.ok) {
           const data = await res.json();
-          if (data.recommendation) {
-            setRecommendedPlan(data.recommendation.recommendedPlan);
-          }
+          if (data.recommendation) setRecommendedPlan(data.recommendation.recommendedPlan);
         }
       } catch {
         setRecommendedPlan(null);
@@ -81,10 +79,7 @@ export function PricingSection() {
       });
 
       const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || "Unable to continue");
-      }
-
+      if (!response.ok) throw new Error(data.error || "Unable to continue");
       window.location.href = data.url;
     } catch (err) {
       alert(err instanceof Error ? err.message : "Unable to continue");
@@ -101,9 +96,9 @@ export function PricingSection() {
           <p style={{ fontSize: 18, color: "#4b5563", maxWidth: 600, margin: "0 auto", lineHeight: 1.6 }}>Select the level of access and support that fits your clinic's current needs.</p>
         </div>
         <div style={{ display: "flex", gap: 24, flexWrap: "wrap", justifyContent: "center" }}>
-          <PricingTier name="Basic" price={2490} description="Essential access for clinics getting started with MediVault." isRecommended={recommendedPlan === "basic"} isLoading={loadingTier === "basic"} onSelect={() => handleCheckout("basic")} features={["Patient profiles", "Core platform access", "Standard record access", "Standard security", "Email support"]} />
-          <PricingTier name="Standard" price={4750} isPopular={recommendedPlan !== "standard"} isRecommended={recommendedPlan === "standard"} isLoading={loadingTier === "standard"} onSelect={() => handleCheckout("standard")} description="A balanced plan for routine clinic operations." features={["Everything in Basic", "Secure record storage", "Improved search and access", "Clinic insights", "Priority support"]} />
-          <PricingTier name="Premium" price={6700} isRecommended={recommendedPlan === "premium"} isLoading={loadingTier === "premium"} onSelect={() => handleCheckout("premium")} description="Advanced capabilities for larger or more active clinics." features={["Everything in Standard", "Advanced assistance tools", "Enhanced document handling", "Broader operational insight", "Priority service"]} />
+          <PricingTier name="Essential Care" price={2490} description="Foundational access for clinics that want dependable day-to-day MediVault workflows." isRecommended={recommendedPlan === "basic"} isLoading={loadingTier === "basic"} onSelect={() => handleCheckout("basic")} features={["Patient profiles", "Core platform access", "Clinical record viewing", "Standard security", "Email support"]} />
+          <PricingTier name="Advanced Practice" price={4750} isPopular={recommendedPlan !== "standard"} isRecommended={recommendedPlan === "standard"} isLoading={loadingTier === "standard"} onSelect={() => handleCheckout("standard")} description="A stronger operational plan for busy clinics that need broader visibility and storage." features={["Everything in Essential Care", "Secure record storage", "Improved search and retrieval", "Clinic insights", "Priority support"]} />
+          <PricingTier name="Total Wellness" price={6700} isRecommended={recommendedPlan === "premium"} isLoading={loadingTier === "premium"} onSelect={() => handleCheckout("premium")} description="Expanded capability for clinics that need the broadest MediVault toolkit." features={["Everything in Advanced Practice", "Advanced assistance tools", "Enhanced document handling", "Broader operational insight", "Priority service"]} />
         </div>
         <div style={{ marginTop: 40, textAlign: "center" }}>
           <p style={{ fontSize: 14, color: "#6b7280" }}>Need a tailored clinic-wide arrangement? Contact the NextWave team for assistance.</p>
