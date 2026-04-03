@@ -69,7 +69,7 @@ export default async function PatientsPage({ searchParams }: { searchParams?: Pr
                     name="q"
                     defaultValue={query}
                     placeholder="Search patients by name, phone, CNIC, or patient code..."
-                    className="h-13 w-full rounded-[22px] border-none bg-white/10 pl-12 shadow-[0_10px_40px_rgba(2,6,23,0.35)] transition-all focus-visible:bg-white/20"
+                    className="h-13 w-full rounded-[22px] border border-white/5 bg-white/10 pl-12 text-white shadow-[0_15px_50px_rgba(2,6,23,0.35)] transition-all focus-visible:bg-white/20 focus-visible:text-foreground"
                   />
                 </form>
               </div>
@@ -125,7 +125,7 @@ export default async function PatientsPage({ searchParams }: { searchParams?: Pr
 
               return (
                 <Link key={patient.id} href={`/patients/${patient.id}`}>
-                  <Card className="glass border-none rounded-[30px] overflow-hidden group transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(15,23,42,0.08)]">
+                <Card className="border border-white/10 bg-slate-950/70 text-white shadow-[0_20px_60px_rgba(2,6,23,0.4)] transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_80px_rgba(2,6,23,0.7)]">
                     <CardContent className="p-5">
                       <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
                         <div className="flex items-start gap-4 min-w-0">
@@ -172,7 +172,7 @@ export default async function PatientsPage({ searchParams }: { searchParams?: Pr
                         </div>
 
                         <div className="flex items-center justify-between gap-4 xl:justify-end">
-                          <div className="hidden rounded-full border border-border/50 bg-white/60 px-3 py-2 text-xs text-muted-foreground md:inline-flex">
+                          <div className="hidden rounded-full border border-white/10 bg-slate-900/70 px-3 py-2 text-xs text-white md:inline-flex">
                             Open chart
                           </div>
                           <ChevronRight className="size-5 text-muted-foreground opacity-20 transition-all group-hover:translate-x-1 group-hover:opacity-100" />
@@ -189,3 +189,6 @@ export default async function PatientsPage({ searchParams }: { searchParams?: Pr
     </PortalWorkspaceShell>
   );
 }
+
+
+

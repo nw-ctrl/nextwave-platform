@@ -63,7 +63,7 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
       statusLabel={statusLabel}
     >
       <div className="grid gap-8 xl:grid-cols-[minmax(0,1.3fr)_minmax(340px,0.7fr)]">
-        <Card className="glass border-none rounded-[32px] overflow-hidden">
+        <Card className="border border-white/10 bg-[linear-gradient(180deg,rgba(15,23,42,0.85),rgba(7,11,18,0.92))] text-white shadow-[0_30px_120px_rgba(2,6,23,0.35)]">
           <CardHeader className="p-8 pb-5">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
               <div className="space-y-3">
@@ -108,7 +108,7 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
           </CardHeader>
 
           <CardContent className="grid gap-4 p-8 pt-2 md:grid-cols-2">
-            <div className="rounded-[24px] border border-border/50 bg-white/60 p-5 shadow-sm">
+            <div className="rounded-[24px] border border-white/10 bg-slate-900/60 text-white p-5 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="flex size-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                   <Stethoscope className="size-4" />
@@ -120,7 +120,7 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
               </div>
             </div>
 
-            <div className="rounded-[24px] border border-border/50 bg-white/60 p-5 shadow-sm">
+            <div className="rounded-[24px] border border-white/10 bg-slate-900/60 text-white p-5 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="flex size-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                   <Phone className="size-4" />
@@ -132,7 +132,7 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
               </div>
             </div>
 
-            <div className="rounded-[24px] border border-border/50 bg-white/60 p-5 shadow-sm">
+            <div className="rounded-[24px] border border-white/10 bg-slate-900/60 text-white p-5 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="flex size-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                   <UserRound className="size-4" />
@@ -144,7 +144,7 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
               </div>
             </div>
 
-            <div className="rounded-[24px] border border-border/50 bg-white/60 p-5 shadow-sm">
+            <div className="rounded-[24px] border border-white/10 bg-slate-900/60 text-white p-5 shadow-sm">
               <div className="flex items-center gap-3">
                 <div className="flex size-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                   <ShieldCheck className="size-4" />
@@ -167,11 +167,11 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
             <CardTitle className="text-2xl font-bold tracking-tight">Patient timeline</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4 p-8 pt-2">
-            <div className="rounded-[28px] border border-border/50 bg-white/60 p-6 text-center shadow-sm">
+            <div className="rounded-[28px] border border-white/10 bg-slate-900/60 text-white p-6 text-center shadow-sm">
               <div className="text-6xl font-light tracking-tighter text-primary/80">{visits.length}</div>
               <p className="mt-2 text-xs font-medium text-muted-foreground opacity-70">Recorded interactions</p>
             </div>
-            <div className="rounded-[28px] border border-border/50 bg-white/60 p-6 shadow-sm">
+            <div className="rounded-[28px] border border-white/10 bg-slate-900/60 text-white p-6 shadow-sm">
               <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground opacity-60">Latest visit</p>
               <p className="mt-2 text-base font-semibold">{visits[0]?.visit_date || "No visits yet"}</p>
               <p className="mt-1 text-sm text-muted-foreground">{visits[0]?.assessment || "No assessment recorded"}</p>
@@ -208,7 +208,7 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
                         </div>
 
                         {visit.subjective ? (
-                          <div className="rounded-[22px] border border-border/50 bg-white/60 p-4">
+                          <div className="rounded-[22px] border border-white/10 bg-slate-900/60 text-white p-4">
                             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground opacity-60">Subjective</p>
                             <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-muted-foreground">{visit.subjective}</p>
                           </div>
@@ -248,3 +248,4 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
     </PortalWorkspaceShell>
   );
 }
+
