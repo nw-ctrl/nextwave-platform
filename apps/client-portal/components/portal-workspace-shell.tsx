@@ -204,7 +204,7 @@ export function PortalWorkspaceShell({ user, memberships, selectedClientId, curr
       <SidebarInset className="flex min-h-screen flex-col bg-[linear-gradient(180deg,#09111d_0%,#0d1624_45%,#101a2a_100%)]">
         <div className="flex flex-1 flex-col">
           <header className="sticky top-0 z-20 border-b border-white/10 bg-[linear-gradient(180deg,rgba(10,16,28,0.92),rgba(10,16,28,0.72))] px-4 py-4 backdrop-blur-3xl md:px-8">
-            <div className="mx-auto flex w-full max-w-7xl items-center gap-4">
+            <div className="mx-auto flex w-full max-w-[1600px] items-center gap-4">
               <SidebarTrigger className="rounded-xl border-none bg-white/6 text-slate-200 shadow-sm transition-all hover:bg-white/10" />
               <div className="flex flex-1 items-center gap-3">
                 <Button type="button" variant="outline" className="h-11 flex-1 justify-between rounded-2xl border border-white/10 bg-white/5 px-4 text-left text-slate-400 shadow-sm transition-all hover:bg-white/[0.07] sm:max-w-sm" onClick={() => setCommandOpen(true)}>
