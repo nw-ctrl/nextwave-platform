@@ -8,25 +8,26 @@ type Status = {
   message: string;
 };
 
-const headingFont = 'Avenir Next, Segoe UI, Helvetica Neue, Arial, sans-serif';
-const bodyFont = 'Avenir Next, Segoe UI, Helvetica Neue, Arial, sans-serif';
+const headingFont = "Avenir Next, Segoe UI, Helvetica Neue, Arial, sans-serif";
+const bodyFont = "Avenir Next, Segoe UI, Helvetica Neue, Arial, sans-serif";
 
 const fieldStyle: CSSProperties = {
   width: "100%",
   padding: "14px 16px",
-  borderRadius: 14,
-  border: "1px solid #cbd5e1",
-  background: "rgba(255,255,255,0.78)",
-  color: "#0f172a",
+  borderRadius: 16,
+  border: "1px solid rgba(255,255,255,0.1)",
+  background: "rgba(255,255,255,0.05)",
+  color: "#f8fafc",
   fontSize: 15,
   outline: "none",
   boxSizing: "border-box",
   fontFamily: bodyFont,
-  transition: "border 0.2s ease, box-shadow 0.2s ease"
+  transition: "border 0.2s ease, box-shadow 0.2s ease, background 0.2s ease",
+  backdropFilter: "blur(18px)",
 };
 
 const mutedText: CSSProperties = {
-  color: "#64748b"
+  color: "#94a3b8",
 };
 
 export function PortalLoginForm() {
@@ -43,7 +44,7 @@ export function PortalLoginForm() {
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
       });
 
       const result = await response.json();
@@ -76,7 +77,7 @@ export function PortalLoginForm() {
           </div>
           <div className="portal-login-summary-item">
             <span>Portal posture</span>
-            <strong>Clear and secure</strong>
+            <strong>Calm and controlled</strong>
           </div>
           <div className="portal-login-summary-item portal-login-highlight">
             <span>Prescription setup</span>
@@ -112,11 +113,11 @@ export function PortalLoginForm() {
           padding: clamp(24px, 4vw, 36px);
           border-radius: 32px;
           background:
-            radial-gradient(circle at top right, rgba(125, 211, 252, 0.22), transparent 34%),
-            radial-gradient(circle at bottom left, rgba(255, 255, 255, 0.66), transparent 28%),
-            linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(248, 250, 252, 0.62));
-          border: 1px solid rgba(255, 255, 255, 0.72);
-          box-shadow: 0 32px 70px rgba(15, 23, 42, 0.1);
+            radial-gradient(circle at top right, rgba(56, 189, 248, 0.18), transparent 32%),
+            radial-gradient(circle at bottom left, rgba(245, 158, 11, 0.08), transparent 24%),
+            linear-gradient(180deg, rgba(15, 23, 42, 0.8), rgba(3, 7, 18, 0.95));
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          box-shadow: 0 32px 70px rgba(2, 6, 23, 0.35);
           backdrop-filter: blur(24px) saturate(145%);
           -webkit-backdrop-filter: blur(24px) saturate(145%);
           display: grid;
@@ -128,7 +129,7 @@ export function PortalLoginForm() {
           content: "";
           position: absolute;
           inset: 0;
-          background: linear-gradient(180deg, rgba(255,255,255,0.35), rgba(255,255,255,0));
+          background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0));
           pointer-events: none;
         }
 
@@ -136,7 +137,7 @@ export function PortalLoginForm() {
           font-size: 12px;
           letter-spacing: 0.16em;
           text-transform: uppercase;
-          color: #0f766e;
+          color: #7dd3fc;
         }
 
         .portal-login-header h1 {
@@ -145,13 +146,13 @@ export function PortalLoginForm() {
           letter-spacing: -0.02em;
           font-family: ${headingFont};
           font-weight: 700;
-          color: #0f172a;
+          color: #f8fafc;
         }
 
         .portal-login-header p {
           margin: 0;
           font-size: 15px;
-          color: #475569;
+          color: #cbd5e1;
           max-width: 40ch;
           line-height: 1.6;
         }
@@ -165,8 +166,8 @@ export function PortalLoginForm() {
         .portal-login-summary-item {
           padding: 14px 16px;
           border-radius: 18px;
-          border: 1px solid rgba(255, 255, 255, 0.72);
-          background: rgba(255, 255, 255, 0.52);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: rgba(255, 255, 255, 0.04);
           backdrop-filter: blur(18px) saturate(140%);
           -webkit-backdrop-filter: blur(18px) saturate(140%);
           display: grid;
@@ -174,8 +175,8 @@ export function PortalLoginForm() {
         }
 
         .portal-login-highlight {
-          background: linear-gradient(135deg, rgba(239, 246, 255, 0.72), rgba(236, 254, 255, 0.7));
-          border-color: rgba(191, 219, 254, 0.92);
+          background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(245, 158, 11, 0.08));
+          border-color: rgba(56, 189, 248, 0.2);
         }
 
         .portal-login-summary-item span {
@@ -187,7 +188,7 @@ export function PortalLoginForm() {
 
         .portal-login-summary-item strong {
           font-size: 14px;
-          color: #0f172a;
+          color: #f8fafc;
         }
 
         .portal-login-form {
@@ -206,8 +207,8 @@ export function PortalLoginForm() {
           font-size: 16px;
           font-family: ${headingFont};
           cursor: pointer;
-          box-shadow: 0 14px 30px rgba(2, 132, 199, 0.22);
-          transition: transform 0.25s ease;
+          box-shadow: 0 16px 36px rgba(2, 132, 199, 0.22);
+          transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
 
         .portal-login-submit:disabled {
@@ -217,22 +218,23 @@ export function PortalLoginForm() {
 
         .portal-login-submit:not(:disabled):hover {
           transform: translateY(-1px);
+          box-shadow: 0 18px 42px rgba(2, 132, 199, 0.28);
         }
 
         .portal-login-status {
           margin-top: 10px;
           padding: 12px 14px;
           border-radius: 14px;
-          background: rgba(254, 242, 242, 0.95);
-          border: 1px solid #fecaca;
-          color: #b91c1c;
+          background: rgba(127, 29, 29, 0.28);
+          border: 1px solid rgba(248, 113, 113, 0.3);
+          color: #fecaca;
           font-size: 14px;
           font-weight: 600;
         }
 
         .portal-login-footer {
           font-size: 12px;
-          color: #64748b;
+          color: #94a3b8;
         }
 
         @media (max-width: 960px) {
