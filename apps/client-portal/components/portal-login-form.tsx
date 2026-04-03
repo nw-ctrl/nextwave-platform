@@ -67,7 +67,7 @@ export function PortalLoginForm() {
         <div className="portal-login-header">
           <div className="portal-login-stage">Secure Clinical Access</div>
           <h1>MediFlow Portal</h1>
-          <p>Sign in to access your clinic workspace, account settings, and prescription operations.</p>
+          <p>Sign in to access patient records, prescription workflows, clinic settings, and role-governed operational tools.</p>
         </div>
 
         <div className="portal-login-summary">
@@ -77,7 +77,7 @@ export function PortalLoginForm() {
           </div>
           <div className="portal-login-summary-item">
             <span>Portal posture</span>
-            <strong>Calm and controlled</strong>
+            <strong>Secure operations</strong>
           </div>
           <div className="portal-login-summary-item portal-login-highlight">
             <span>Prescription setup</span>

@@ -33,10 +33,10 @@ export default async function ClinicPortalHome() {
 
               <div className="space-y-4">
                 <h1 className="max-w-3xl text-4xl font-bold tracking-tight text-white sm:text-5xl">
-                  Clinical software should feel calm, sharp, and built for long days.
+                  Medical operations software should feel precise, dependable, and built for continuous clinical use.
                 </h1>
                 <p className="max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">
-                  Access patients, prescriptions, templates, and clinic operations from a darker, quieter workspace that stays aligned with the Android app and reduces screen fatigue.
+                  Access patients, prescriptions, templates, and clinic operations from a professional workspace designed for sustained use and aligned with the Android app.
                 </p>
               </div>
 
@@ -130,19 +130,19 @@ export default async function ClinicPortalHome() {
                   </Badge>
 
                   <div className="space-y-3">
-                    <h2 className="max-w-3xl text-4xl font-bold tracking-tight text-white">Keep the clinic under control without drowning in forms.</h2>
+                    <h2 className="max-w-3xl text-4xl font-bold tracking-tight text-white">Maintain full clinical visibility with a stricter, more operational workspace.</h2>
                     <p className="max-w-2xl text-sm leading-7 text-slate-300">
-                      The home surface keeps the same information, but reorganizes it into calmer, higher-contrast modules so patient work, templates, and review tasks stay readable for an entire workday.
+                      The home surface preserves the same data and actions, but presents them in tighter modules with clearer hierarchy so charts, visits, and administrative tasks remain controlled and readable.
                     </p>
                   </div>
 
                   <div className="grid gap-4 sm:grid-cols-3">
                     {operationalNotes.map((item) => (
-                      <div key={item.label} className="flex min-h-[150px] flex-col justify-between rounded-[28px] border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
-                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">{item.label}</p>
+                      <div key={item.label} className="flex min-h-[164px] min-w-0 flex-col justify-between rounded-[28px] border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
+                        <p className="break-words text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">{item.label}</p>
                         <div className="mt-4">
                           <p className="text-3xl font-bold tracking-tight text-white">{item.value}</p>
-                          <p className="mt-2 text-xs leading-5 text-slate-400">{item.helper}</p>
+                          <p className="mt-2 break-words text-xs leading-5 text-slate-400">{item.helper}</p>
                         </div>
                       </div>
                     ))}
@@ -160,16 +160,16 @@ export default async function ClinicPortalHome() {
                       <Link
                         key={action.href}
                         href={action.href}
-                        className="group rounded-[28px] border border-white/10 bg-white/5 p-5 shadow-sm backdrop-blur-xl transition-all hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.07]"
+                        className="group min-w-0 rounded-[28px] border border-white/10 bg-white/5 p-5 shadow-sm backdrop-blur-xl transition-all hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.07]"
                       >
                         <div className="flex items-start justify-between gap-4">
-                          <div className="flex items-start gap-4">
+                          <div className="flex min-w-0 items-start gap-4">
                             <div className={`flex size-11 items-center justify-center rounded-2xl ${toneClass}`}>
                               <Icon className="size-5" />
                             </div>
-                            <div>
-                              <p className="text-base font-semibold text-white">{action.title}</p>
-                              <p className="mt-1 text-sm leading-6 text-slate-400">{action.description}</p>
+                            <div className="min-w-0">
+                              <p className="break-words text-base font-semibold text-white">{action.title}</p>
+                              <p className="mt-1 break-words text-sm leading-6 text-slate-400">{action.description}</p>
                             </div>
                           </div>
                           <ArrowRight className="mt-1 size-4 text-slate-500 transition-transform group-hover:translate-x-1 group-hover:text-white" />
@@ -223,20 +223,20 @@ export default async function ClinicPortalHome() {
                   <div className="rounded-[28px] border border-white/10 bg-white/5 p-5">
                     <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">Today&apos;s focus</p>
                     <div className="mt-4 space-y-3">
-                      <div className="flex items-center gap-3 rounded-2xl bg-white/5 px-4 py-3">
-                        <UsersRound className="size-4 text-sky-300" />
-                        <span className="text-sm text-slate-200">Review incoming patient charts</span>
-                      </div>
-                      <div className="flex items-center gap-3 rounded-2xl bg-amber-400/8 px-4 py-3">
-                        <ClipboardList className="size-4 text-amber-300" />
-                        <span className="text-sm text-slate-200">Verify active prescription templates</span>
-                      </div>
-                      <div className="flex items-center gap-3 rounded-2xl bg-white/5 px-4 py-3">
-                        <Stethoscope className="size-4 text-sky-300" />
-                        <span className="text-sm text-slate-200">Confirm doctor print settings are aligned</span>
-                      </div>
+                    <div className="flex items-center gap-3 rounded-2xl bg-white/5 px-4 py-3">
+                      <UsersRound className="size-4 text-sky-300" />
+                      <span className="text-sm text-slate-200">Review newly updated patient charts</span>
+                    </div>
+                    <div className="flex items-center gap-3 rounded-2xl bg-amber-400/8 px-4 py-3">
+                      <ClipboardList className="size-4 text-amber-300" />
+                      <span className="text-sm text-slate-200">Verify active prescription templates</span>
+                    </div>
+                    <div className="flex items-center gap-3 rounded-2xl bg-white/5 px-4 py-3">
+                      <Stethoscope className="size-4 text-sky-300" />
+                      <span className="text-sm text-slate-200">Confirm doctor profile and print settings</span>
                     </div>
                   </div>
+                </div>
                 </div>
               </CardContent>
             </Card>
@@ -257,7 +257,7 @@ export default async function ClinicPortalHome() {
                   <Link
                     key={patient.id}
                     href={`/patients/${patient.id}`}
-                    className="group grid gap-4 rounded-[24px] border border-white/10 bg-white/5 px-5 py-4 backdrop-blur-xl transition-all hover:border-white/20 hover:bg-white/[0.07] md:grid-cols-[minmax(0,1fr)_auto]"
+                    className="group grid min-w-0 gap-4 rounded-[24px] border border-white/10 bg-white/5 px-5 py-4 backdrop-blur-xl transition-all hover:border-white/20 hover:bg-white/[0.07] md:grid-cols-[minmax(0,1fr)_auto]"
                   >
                     <div className="min-w-0">
                       <p className="truncate text-sm font-semibold text-white">{patient.full_name}</p>
@@ -288,9 +288,9 @@ export default async function ClinicPortalHome() {
                   <div className="rounded-[24px] border border-dashed border-white/10 bg-white/5 px-4 py-8 text-sm text-slate-400">No visit records yet.</div>
                 ) : (
                   summary.latestVisits.map((visit) => (
-                    <div key={visit.id} className="rounded-[24px] border border-white/10 bg-white/5 px-5 py-4 backdrop-blur-xl">
+                    <div key={visit.id} className="min-w-0 rounded-[24px] border border-white/10 bg-white/5 px-5 py-4 backdrop-blur-xl">
                       <div className="flex items-center justify-between gap-4">
-                        <p className="text-sm font-semibold text-white">{visit.assessment || "Clinical visit"}</p>
+                        <p className="break-words text-sm font-semibold text-white">{visit.assessment || "Clinical visit"}</p>
                         <Activity className="size-4 text-slate-500" />
                       </div>
                       <div className="mt-2 flex items-center gap-2 text-xs text-slate-400">
@@ -310,9 +310,9 @@ export default async function ClinicPortalHome() {
               </CardHeader>
               <CardContent className="grid gap-3">
                 {["Search and open patients", "Register a new patient", "Add diagnosis and plan", "Print visit prescription view"].map((item, index) => (
-                  <div key={item} className={`flex items-center gap-3 rounded-[22px] border px-4 py-3 text-sm ${index === 1 ? "border-amber-400/20 bg-amber-400/8 text-slate-100" : "border-white/10 bg-white/5 text-slate-200"}`}>
+                  <div key={item} className={`min-w-0 flex items-center gap-3 rounded-[22px] border px-4 py-3 text-sm ${index === 1 ? "border-amber-400/20 bg-amber-400/8 text-slate-100" : "border-white/10 bg-white/5 text-slate-200"}`}>
                     <ClipboardList className={`size-4 ${index === 1 ? "text-amber-300" : "text-sky-300"}`} />
-                    <span>{item}</span>
+                    <span className="break-words">{item}</span>
                   </div>
                 ))}
               </CardContent>
