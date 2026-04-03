@@ -130,7 +130,7 @@ export function PortalWorkspaceShell({ user, memberships, selectedClientId, curr
   return (
     <SidebarProvider
       defaultOpen
-      className="[--sidebar:#0a111c] [--sidebar-foreground:#e2e8f0] [--sidebar-accent:#111827] [--sidebar-accent-foreground:#f8fafc] [--sidebar-border:rgba(255,255,255,0.08)] [--sidebar-ring:#38bdf8]"
+      className="[--sidebar-background:218_41%_9%] [--sidebar-foreground:210_40%_96%] [--sidebar-primary:199_89%_56%] [--sidebar-primary-foreground:222_47%_11%] [--sidebar-accent:221_39%_13%] [--sidebar-accent-foreground:210_40%_98%] [--sidebar-border:215_28%_17%] [--sidebar-ring:199_89%_56%]"
     >
       <PortalCommandMenu open={commandOpen} onOpenChange={setCommandOpen} navItems={navItems} memberships={memberships} selectedClientId={selectedClientId} onSelectClinic={handleSelectClinic} onLogout={handleLogout} onOpenBillingSettings={handleOpenBillingSettings} onToggleTheme={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")} />
 
@@ -204,7 +204,7 @@ export function PortalWorkspaceShell({ user, memberships, selectedClientId, curr
       <SidebarInset className="flex min-h-screen flex-col bg-[linear-gradient(180deg,#09111d_0%,#0d1624_45%,#101a2a_100%)]">
         <div className="flex flex-1 flex-col">
           <header className="sticky top-0 z-20 border-b border-white/10 bg-[linear-gradient(180deg,rgba(10,16,28,0.92),rgba(10,16,28,0.72))] px-4 py-4 backdrop-blur-3xl md:px-8">
-            <div className="mx-auto flex w-full max-w-[1600px] items-center gap-4">
+            <div className="mx-auto flex w-full max-w-[1720px] items-center gap-4">
               <SidebarTrigger className="rounded-xl border-none bg-white/6 text-slate-200 shadow-sm transition-all hover:bg-white/10" />
               <div className="flex flex-1 items-center gap-3">
                 <Button type="button" variant="outline" className="h-11 flex-1 justify-between rounded-2xl border border-white/10 bg-white/5 px-4 text-left text-slate-400 shadow-sm transition-all hover:bg-white/[0.07] sm:max-w-sm" onClick={() => setCommandOpen(true)}>
@@ -255,7 +255,7 @@ export function PortalWorkspaceShell({ user, memberships, selectedClientId, curr
           </header>
 
           <div className="flex-1 px-4 py-8 md:px-8">
-            <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-8">
+            <div className="mx-auto flex w-full max-w-[1720px] flex-col gap-8">
               <div className="space-y-1 ml-1">
                 <h1 className="text-4xl font-bold tracking-tight text-white">{pageTitle}</h1>
                 <p className="max-w-2xl text-sm text-slate-400">{pageDescription}</p>
