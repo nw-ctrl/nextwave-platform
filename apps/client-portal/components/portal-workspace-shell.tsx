@@ -130,11 +130,11 @@ export function PortalWorkspaceShell({ user, memberships, selectedClientId, curr
   return (
     <SidebarProvider
       defaultOpen
-      className="[--sidebar-background:218_41%_9%] [--sidebar-foreground:210_40%_96%] [--sidebar-primary:199_89%_56%] [--sidebar-primary-foreground:222_47%_11%] [--sidebar-accent:221_39%_13%] [--sidebar-accent-foreground:210_40%_98%] [--sidebar-border:215_28%_17%] [--sidebar-ring:199_89%_56%]"
+      className="[--sidebar-background:0_0%_100%] [--sidebar-foreground:210_40%_6%] [--sidebar-primary:255_255%_255%] [--sidebar-border:230_24%_94%] [--sidebar-ring:218_82%_71%]"
     >
       <PortalCommandMenu open={commandOpen} onOpenChange={setCommandOpen} navItems={navItems} memberships={memberships} selectedClientId={selectedClientId} onSelectClinic={handleSelectClinic} onLogout={handleLogout} onOpenBillingSettings={handleOpenBillingSettings} onToggleTheme={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")} />
 
-      <Sidebar collapsible="icon" variant="inset" className="border-none bg-[linear-gradient(180deg,rgba(9,14,24,0.96),rgba(5,9,17,0.98))] text-slate-100 shadow-[0_24px_80px_rgba(2,6,23,0.28)]">
+      <Sidebar collapsible="icon" variant="inset" className="border border-white/10 bg-white/100 text-slate-900 shadow-[0_10px_35px_rgba(15,23,42,0.12)]">
         <SidebarHeader className="gap-3 p-4">
           <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-3 backdrop-blur-xl transition-all hover:bg-white/[0.07]">
             <div className="flex size-10 items-center justify-center rounded-xl bg-sky-500/15 text-sky-200 shadow-md">
@@ -201,9 +201,9 @@ export function PortalWorkspaceShell({ user, memberships, selectedClientId, curr
         <SidebarRail />
       </Sidebar>
 
-      <SidebarInset className="flex min-h-screen flex-col bg-[linear-gradient(180deg,#09111d_0%,#0d1624_45%,#101a2a_100%)]">
-        <div className="flex flex-1 flex-col">
-          <header className="sticky top-0 z-20 border-b border-white/10 bg-[linear-gradient(180deg,rgba(10,16,28,0.92),rgba(10,16,28,0.72))] px-4 py-4 backdrop-blur-3xl md:px-8">
+        <SidebarInset className="flex min-h-screen flex-col bg-[#f1f1f6]">
+          <div className="flex flex-1 flex-col">
+          <header className="sticky top-0 z-20 border-b border-white/15 bg-[linear-gradient(180deg,#6d4dc4,#512c91)] px-4 py-4 backdrop-blur-3xl md:px-8 text-white shadow-xl">
             <div className="mx-auto flex w-full max-w-[1720px] items-center gap-4">
               <SidebarTrigger className="rounded-xl border-none bg-white/6 text-slate-200 shadow-sm transition-all hover:bg-white/10" />
               <div className="flex flex-1 items-center gap-3">

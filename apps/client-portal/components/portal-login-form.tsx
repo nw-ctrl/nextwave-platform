@@ -64,7 +64,7 @@ export function PortalLoginForm() {
   return (
     <section className="portal-login-shell">
       <div className="portal-login-panel">
-        <div className="portal-login-header">
+      <div className="portal-login-top">
           <div className="portal-login-stage">Secure Clinical Access</div>
           <h1>MediFlow Portal</h1>
           <p>Sign in to access patient records, prescription workflows, clinic settings, and role-governed operational tools.</p>
@@ -102,7 +102,7 @@ export function PortalLoginForm() {
 
       <style jsx>{`
         .portal-login-shell {
-          width: min(520px, 100%);
+          width: min(540px, 100%);
           margin: 0 auto;
           padding: 20px;
           font-family: ${headingFont};
@@ -110,50 +110,45 @@ export function PortalLoginForm() {
 
         .portal-login-panel {
           position: relative;
-          padding: clamp(24px, 4vw, 36px);
+          padding: clamp(26px, 4vw, 40px);
           border-radius: 32px;
-          background:
-            radial-gradient(circle at top right, rgba(56, 189, 248, 0.18), transparent 32%),
-            radial-gradient(circle at bottom left, rgba(245, 158, 11, 0.08), transparent 24%),
-            linear-gradient(180deg, rgba(15, 23, 42, 0.8), rgba(3, 7, 18, 0.95));
-          border: 1px solid rgba(255, 255, 255, 0.1);
-          box-shadow: 0 32px 70px rgba(2, 6, 23, 0.35);
-          backdrop-filter: blur(24px) saturate(145%);
-          -webkit-backdrop-filter: blur(24px) saturate(145%);
+          background: #f3f2fa;
+          border: 1px solid rgba(124, 58, 237, 0.25);
+          box-shadow: 0 32px 70px rgba(15, 23, 42, 0.2);
           display: grid;
-          gap: 20px;
-          overflow: hidden;
+          gap: 18px;
         }
 
-        .portal-login-panel::before {
+        .portal-login-panel::after {
           content: "";
           position: absolute;
           inset: 0;
-          background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0));
+          border-radius: inherit;
+          border: 1px solid rgba(124, 58, 237, 0.25);
           pointer-events: none;
         }
 
-        .portal-login-stage {
-          font-size: 12px;
-          letter-spacing: 0.16em;
-          text-transform: uppercase;
-          color: #7dd3fc;
-        }
-
-        .portal-login-header h1 {
-          margin: 4px 0 0;
-          font-size: 34px;
+        .portal-login-top h1 {
+          margin: 4px 0 6px;
+          font-size: clamp(32px, 4vw, 38px);
           letter-spacing: -0.02em;
           font-family: ${headingFont};
           font-weight: 700;
-          color: #f8fafc;
+          color: #1f1b4d;
         }
 
-        .portal-login-header p {
+        .portal-login-stage {
+          font-size: 11px;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: #7c3aed;
+        }
+
+        .portal-login-top p {
           margin: 0;
           font-size: 15px;
-          color: #cbd5e1;
-          max-width: 40ch;
+          color: #4b5563;
+          max-width: 44ch;
           line-height: 1.6;
         }
 
@@ -166,29 +161,27 @@ export function PortalLoginForm() {
         .portal-login-summary-item {
           padding: 14px 16px;
           border-radius: 18px;
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          background: rgba(255, 255, 255, 0.04);
-          backdrop-filter: blur(18px) saturate(140%);
-          -webkit-backdrop-filter: blur(18px) saturate(140%);
+          border: 1px solid rgba(15, 23, 42, 0.08);
+          background: rgba(255, 255, 255, 0.8);
           display: grid;
           gap: 4px;
         }
 
         .portal-login-highlight {
-          background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(245, 158, 11, 0.08));
-          border-color: rgba(56, 189, 248, 0.2);
+          background: rgba(124, 58, 237, 0.08);
+          border-color: rgba(124, 58, 237, 0.3);
         }
 
         .portal-login-summary-item span {
           font-size: 11px;
           text-transform: uppercase;
           letter-spacing: 0.14em;
-          color: #64748b;
+          color: #6b7280;
         }
 
         .portal-login-summary-item strong {
           font-size: 14px;
-          color: #f8fafc;
+          color: #1f1b4d;
         }
 
         .portal-login-form {
@@ -200,14 +193,14 @@ export function PortalLoginForm() {
           margin-top: 4px;
           padding: 14px 16px;
           border: none;
-          border-radius: 16px;
-          background: linear-gradient(180deg, #0ea5e9 0%, #0284c7 100%);
+          border-radius: 14px;
+          background: linear-gradient(180deg, #7c3aed 0%, #4c1d95 100%);
           color: #fff;
           font-weight: 700;
           font-size: 16px;
           font-family: ${headingFont};
           cursor: pointer;
-          box-shadow: 0 16px 36px rgba(2, 132, 199, 0.22);
+          box-shadow: 0 14px 30px rgba(76, 29, 149, 0.25);
           transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
 
@@ -218,28 +211,31 @@ export function PortalLoginForm() {
 
         .portal-login-submit:not(:disabled):hover {
           transform: translateY(-1px);
-          box-shadow: 0 18px 42px rgba(2, 132, 199, 0.28);
+          box-shadow: 0 16px 36px rgba(76, 29, 149, 0.35);
         }
 
         .portal-login-status {
           margin-top: 10px;
           padding: 12px 14px;
           border-radius: 14px;
-          background: rgba(127, 29, 29, 0.28);
-          border: 1px solid rgba(248, 113, 113, 0.3);
-          color: #fecaca;
+          background: rgba(248, 113, 113, 0.15);
+          border: 1px solid rgba(248, 113, 113, 0.4);
+          color: #be123c;
           font-size: 14px;
           font-weight: 600;
         }
 
         .portal-login-footer {
           font-size: 12px;
-          color: #94a3b8;
+          color: #6b7280;
         }
 
         @media (max-width: 960px) {
           .portal-login-panel {
             padding: 28px 24px;
+          }
+          .portal-login-summary {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
           }
         }
 
@@ -248,26 +244,20 @@ export function PortalLoginForm() {
             width: 100%;
             padding: 12px;
           }
-
-          .portal-login-header h1 {
+          .portal-login-top h1 {
             font-size: 30px;
           }
-
-          .portal-login-header p,
           .portal-login-summary-item strong {
             font-size: 14px;
           }
-
           .portal-login-submit {
             width: 100%;
             min-height: 48px;
           }
-
           .portal-login-panel {
             padding: 24px 18px;
             border-radius: 22px;
           }
-
           .portal-login-summary {
             grid-template-columns: 1fr;
           }

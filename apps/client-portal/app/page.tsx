@@ -22,45 +22,29 @@ export default async function ClinicPortalHome() {
 
   if (!session) {
     return (
-      <main className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(14,165,233,0.16),_transparent_26%),linear-gradient(180deg,#09111d_0%,#0d1624_45%,#101a2a_100%)] text-white">
-        <section className="mx-auto grid min-h-screen w-full max-w-7xl gap-10 px-6 py-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(440px,0.95fr)] lg:items-center">
-          <div className="relative overflow-hidden rounded-[2.7rem] border border-white/10 bg-[linear-gradient(180deg,rgba(16,25,40,0.84),rgba(8,14,24,0.96))] px-8 py-10 shadow-[0_35px_120px_rgba(2,6,23,0.45)] backdrop-blur-2xl lg:px-12 lg:py-14">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.18),_transparent_26%),radial-gradient(circle_at_bottom_right,_rgba(245,158,11,0.10),_transparent_24%)]" />
-            <div className="relative z-10 space-y-8">
-              <Badge className="rounded-full border-none bg-sky-500/15 px-4 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-sky-200 shadow-none">
-                medivault.nextwave.au
-              </Badge>
-
-              <div className="space-y-4">
-                <h1 className="max-w-3xl text-4xl font-bold tracking-tight text-white sm:text-5xl">
-                  Clinical software for dependable daily practice.
-                </h1>
-                <p className="max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">
-                  Access patients, prescriptions, templates, and clinic operations from one secure workspace.
+      <main className="min-h-screen bg-[#f4f3fb] text-slate-900">
+        <section className="mx-auto grid min-h-screen w-full max-w-6xl gap-10 px-6 py-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(420px,0.85fr)] lg:items-center">
+          <div className="relative rounded-[2.5rem] border border-purple-200 bg-white shadow-[0_30px_90px_rgba(15,23,42,0.15)]">
+            <div className="flex flex-col gap-6 px-8 py-10">
+              <div className="rounded-[28px] bg-gradient-to-br from-[#8b5cf6] to-[#7c3aed] px-6 py-4 text-white shadow-inner">
+                <p className="text-xs uppercase tracking-[0.3em] opacity-80">MediFlow</p>
+                <h1 className="text-4xl font-bold tracking-tight">Clinical operations simplified</h1>
+                <p className="mt-2 text-sm leading-7 text-white/80">
+                  Built for busy clinics, this portal keeps patients, templates, and diagnostics aligned with the desktop workflow.
                 </p>
               </div>
-
-              <div className="grid gap-4 sm:grid-cols-3">
+              <div className="grid gap-4 md:grid-cols-2">
                 {[
-                  ["Doctor profiles", "Prescription layout sync"],
-                  ["Visit printing", "4x6 print support"],
-                  ["Clinic access", "Role-aware navigation"],
-                ].map(([title, text]) => (
-                  <div key={title} className="rounded-[1.8rem] border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
-                    <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">{title}</p>
-                    <p className="mt-2 text-sm font-medium text-slate-100">{text}</p>
+                  ["Calendar-ready", "Immediate appointment context"],
+                  ["Aligned records", "One source for doctor & patient data"],
+                  ["Prescription sync", "Mirror Android print layouts"],
+                  ["Role-aware", "Team-aware navigation & settings"],
+                ].map(([title, desc]) => (
+                  <div key={title} className="rounded-2xl border border-purple-50 bg-purple-50/70 px-5 py-4">
+                    <p className="text-xs uppercase tracking-[0.2em] text-purple-600">{title}</p>
+                    <p className="mt-1 text-sm text-purple-900">{desc}</p>
                   </div>
                 ))}
-              </div>
-
-              <div className="grid gap-5 rounded-[2rem] border border-white/10 bg-[linear-gradient(135deg,rgba(56,189,248,0.12),rgba(15,23,42,0.12))] p-6 backdrop-blur-xl sm:grid-cols-2">
-                <div>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Designed for</p>
-                  <p className="mt-2 text-2xl font-bold text-white">Essential Care to Total Wellness</p>
-                </div>
-                <div className="text-sm leading-7 text-slate-300">
-                  Secure sign-in, clinic switching, doctor profile sync, and printable prescription workflows in one place.
-                </div>
               </div>
             </div>
           </div>

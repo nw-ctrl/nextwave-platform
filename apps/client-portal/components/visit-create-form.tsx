@@ -81,7 +81,7 @@ export function VisitCreateForm({ patientId, patientName, initialValues, mode = 
   });
 
   return (
-    <Card className="rounded-[32px] border-border/70 shadow-sm">
+    <Card className="rounded-[32px] border border-slate-200 bg-white shadow-md">
       <CardHeader>
         <CardTitle className="text-2xl">{mode === "edit" ? "Update diagnosis" : "Diagnosis and prescription"}</CardTitle>
         <p className="text-sm text-muted-foreground">{mode === "edit" ? `Updating visit notes for ${patientName}.` : `Recording visit notes for ${patientName}.`}</p>

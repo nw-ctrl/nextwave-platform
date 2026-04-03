@@ -79,7 +79,7 @@ export function PatientCreateForm({ mode = "create", patientId, initialValues }:
   });
 
   return (
-    <Card className="rounded-[32px] border-border/70 shadow-sm">
+    <Card className="rounded-[32px] border border-slate-200 bg-white shadow-md">
       <CardHeader>
         <CardTitle className="text-2xl">{mode === "edit" ? "Update patient" : "Patient registration"}</CardTitle>
       </CardHeader>

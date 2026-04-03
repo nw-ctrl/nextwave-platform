@@ -69,7 +69,7 @@ export default async function PatientsPage({ searchParams }: { searchParams?: Pr
                     name="q"
                     defaultValue={query}
                     placeholder="Search patients by name, phone, CNIC, or patient code..."
-                    className="h-13 w-full rounded-[22px] border border-white/5 bg-white/10 pl-12 text-white shadow-[0_15px_50px_rgba(2,6,23,0.35)] transition-all focus-visible:bg-white/20 focus-visible:text-foreground"
+                    className="h-13 w-full rounded-[22px] border border-white/5 bg-white/10 pl-12 text-slate-900 shadow-[0_15px_50px_rgba(2,6,23,0.35)] transition-all focus-visible:bg-white/20 focus-visible:text-foreground"
                   />
                 </form>
               </div>
@@ -96,7 +96,7 @@ export default async function PatientsPage({ searchParams }: { searchParams?: Pr
                 </div>
               </div>
 
-              <Link href="/patients/new" className="rounded-[28px] border border-primary/20 bg-slate-900/70 p-5 shadow-sm transition-all hover:bg-slate-900/80">
+              <Link href="/patients/new" className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm transition-all hover:bg-slate-50">
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/70">New registration</p>
@@ -112,7 +112,7 @@ export default async function PatientsPage({ searchParams }: { searchParams?: Pr
 
         <div className="grid gap-4">
           {patients.length === 0 ? (
-            <Card className="glass border-none rounded-[32px] p-20 text-center italic opacity-40">
+            <Card className="border border-slate-200 rounded-[32px] p-20 text-center italic text-slate-500 bg-white shadow-sm">
               No clinical records found for this workspace.
             </Card>
           ) : (
@@ -125,7 +125,7 @@ export default async function PatientsPage({ searchParams }: { searchParams?: Pr
 
               return (
                 <Link key={patient.id} href={`/patients/${patient.id}`}>
-                <Card className="border border-white/10 bg-slate-950/70 text-white shadow-[0_20px_60px_rgba(2,6,23,0.4)] transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_80px_rgba(2,6,23,0.7)]">
+                <Card className="border border-slate-200 bg-white text-slate-900 shadow-[0_15px_40px_rgba(15,23,42,0.15)] transition-all hover:-translate-y-0.5 hover:shadow-[0_25px_70px_rgba(15,23,42,0.2)]">
                     <CardContent className="p-5">
                       <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
                         <div className="flex items-start gap-4 min-w-0">
@@ -147,7 +147,7 @@ export default async function PatientsPage({ searchParams }: { searchParams?: Pr
                             </div>
 
                             <div className="mt-4 grid gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
-                              <div className="rounded-[20px] border border-border/50 bg-white/60 px-4 py-3">
+                              <div className="rounded-[20px] border border-slate-200 bg-[#f8fafc] px-4 py-3">
                                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground opacity-60">Attending doctor</p>
                                 <p className="mt-1 text-sm font-semibold text-foreground">{doctorName}</p>
                               </div>
