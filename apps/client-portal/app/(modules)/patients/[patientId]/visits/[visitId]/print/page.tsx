@@ -1,10 +1,41 @@
 import { notFound } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/card";
 import { PrintVisitActions } from "@/components/print-visit-actions";
 import { getPortalSession } from "@/lib/auth";
 import { getPatientById, getVisitById, getDoctorProfile, getClinicBranding, getClinicProfile, listClinicTemplates } from "@/lib/clinical-data";
 
 export const dynamic = "force-dynamic";
+
+const TARGET_WIDTH_IN = 4;
+const TARGET_HEIGHT_IN = 6;
+const BASE_WIDTH_IN = 6;
+const BASE_HEIGHT_IN = 8.5;
+const SCALE_X = TARGET_WIDTH_IN / BASE_WIDTH_IN;
+const SCALE_Y = TARGET_HEIGHT_IN / BASE_HEIGHT_IN;
+const PAGE_MARGIN_PT = 18;
+const PAGE_WIDTH_PT = BASE_WIDTH_IN * 72;
+const PAGE_HEIGHT_PT = BASE_HEIGHT_IN * 72;
+const CONTENT_WIDTH_PT = PAGE_WIDTH_PT - PAGE_MARGIN_PT * 2;
+
+function formatDoctorName(name: string) {
+  if (!name) return "Doctor";
+  const trimmed = name.trim();
+  if (trimmed.toLowerCase().startsWith("dr.") || trimmed.toLowerCase().startsWith("dr ")) return trimmed;
+  return `Dr. ${trimmed}`;
+}
+
+function formatDate(value?: string | null) {
+  if (!value) return "Not recorded";
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return value;
+  return parsed.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+}
+
+function pickAgeLabel(patient: { age?: number | null; age_months?: number | null }) {
+  if (patient.age != null && patient.age_months != null) return `${patient.age}Y ${patient.age_months}M`;
+  if (patient.age != null) return `${patient.age}Y`;
+  if (patient.age_months != null) return `${patient.age_months}M`;
+  return null;
+}
 
 export default async function PrintVisitPage({ params }: { params: Promise<{ patientId: string; visitId: string }> }) {
   const { patientId, visitId } = await params;
@@ -36,128 +67,258 @@ export default async function PrintVisitPage({ params }: { params: Promise<{ pat
   const templateLogo = letterheadTemplate?.payload?.logoUrl || letterheadTemplate?.payload?.imageUrl;
   const templateHeader = letterheadTemplate?.payload?.headerText;
   const templateFooter = letterheadTemplate?.payload?.footerText;
-  const prescriptionFontSize = doctor?.prescription_font_size ?? 14;
   const effectiveLetterhead = doctor?.letterhead_image_url || doctor?.header_path || branding?.logo_url || templateLogo || null;
   const effectiveHeader = doctor?.prescription_header || templateHeader || null;
   const effectiveFooter = doctor?.prescription_footer || templateFooter || null;
   const hasFullPageLetterhead = Boolean(effectiveLetterhead);
-  const dateOffset = Math.max(0, doctor?.pdf_date_x ?? 140);
-  const contentTopPadding = Math.max(hasFullPageLetterhead ? 110 : 24, (hasFullPageLetterhead ? 110 : 24) + (doctor?.pdf_line_offset ?? 12) * 0.25);
-  const signatureTopMargin = Math.max(48, (doctor?.pdf_signature_y ?? 150) * 0.35);
-
-  const formatDrName = (name: string) => {
-    if (!name) return "Doctor";
-    const trimmed = name.trim();
-    if (trimmed.toLowerCase().startsWith("dr.") || trimmed.toLowerCase().startsWith("dr ")) return trimmed;
-    return `Dr. ${trimmed}`;
-  };
-
-  const doctorDisplayName = formatDrName(doctor?.full_name || "");
-  const patientAgeLabel =
-    patient.age != null && patient.age_months != null
-      ? `${patient.age}Y ${patient.age_months}M`
-      : patient.age != null
-        ? `${patient.age}Y`
-        : patient.age_months != null
-          ? `${patient.age_months}M`
-          : null;
+  const doctorDisplayName = formatDoctorName(doctor?.full_name || "");
+  const patientAgeLabel = pickAgeLabel(patient);
+  const dateLabel = formatDate(visit.visit_date);
+  const reviewDateLabel = formatDate(visit.revisit_date);
+  const baseFontSize = Math.min(Math.max(Number(doctor?.prescription_font_size ?? 14), 12), 24);
+  const lineOffset = Math.min(Math.max(Number(doctor?.pdf_line_offset ?? 12), -220), 220);
+  const dateOffset = Math.max(0, Number(doctor?.pdf_date_x ?? 140));
+  const signatureOffset = Math.min(Math.max(Number(doctor?.pdf_signature_y ?? 150), 0), 320);
+  const letterheadSafeTopPt = 220;
+  const headerTopPt = hasFullPageLetterhead ? letterheadSafeTopPt : 96;
+  const lineY = headerTopPt + lineOffset;
+  const patientInfoTop = lineY + 12;
+  const vitalsTop = patientInfoTop + 84;
+  const subjectTop = vitalsTop + 48;
+  const assessmentTop = subjectTop + (visit.subjective ? 72 : 0);
+  const planTop = assessmentTop + (visit.assessment ? 64 : 24);
+  const footerTop = effectiveFooter ? PAGE_HEIGHT_PT - 120 : PAGE_HEIGHT_PT - 30;
+  const signatureTop = PAGE_HEIGHT_PT - signatureOffset;
+  const cityLine = clinic?.address?.city ? `${clinic.address.city}, ${clinic.address.country || "PK"}` : "Electronic Health Record";
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col gap-6 px-6 py-8 print:px-0 print:py-0">
+    <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-6 px-6 py-8 print:px-0 print:py-0">
       <style>{`
         @media print {
           @page {
             size: 4in 6in;
-            margin: 0.18in;
+            margin: 0;
+          }
+
+          body {
+            margin: 0;
           }
         }
       `}</style>
-      <div className="print:hidden"><PrintVisitActions /></div>
-      <Card className="relative overflow-hidden rounded-[32px] border-border/70 shadow-sm print:mx-auto print:max-w-[4in] print:rounded-none print:border-0 print:shadow-none">
-        {hasFullPageLetterhead ? (
-          <div className="pointer-events-none absolute inset-0 z-0">
-            <img src={effectiveLetterhead ?? ""} alt="Prescription background" className="h-full w-full object-fill" />
-          </div>
-        ) : null}
 
-        <div className={`relative z-10 flex items-center ${hasFullPageLetterhead ? "min-h-[140px] p-8 print:p-0 print:border-0" : "min-h-[140px] border-b border-border/40 bg-primary/5 p-8 print:border-0 print:bg-white print:p-0"}`}>
-          <div className="flex w-full justify-between items-start gap-8">
-            <div className="flex-1">
-              {!hasFullPageLetterhead ? <h1 className="mb-1 text-3xl font-bold tracking-tight text-primary print:text-black">{doctorDisplayName}</h1> : null}
-              <p className="text-sm font-semibold opacity-80">{doctor?.qualification || "General Physician"}</p>
-              <p className="mt-1 text-xs font-bold uppercase tracking-widest opacity-60">PMDC: {doctor?.pmdc_no || "N/A"}</p>
-              {effectiveHeader && !hasFullPageLetterhead ? <p className="mt-3 max-w-sm whitespace-pre-wrap text-xs font-medium leading-relaxed text-muted-foreground">{effectiveHeader}</p> : null}
-            </div>
-            <div className="text-right">
-              <h2 className="text-xl font-bold tracking-tight">{membership.clinicName}</h2>
-              <p className="text-xs text-muted-foreground opacity-70">{clinic?.address?.city ? `${clinic.address.city}, ${clinic.address.country || "PK"}` : "Electronic Health Record"}</p>
-            </div>
-          </div>
-        </div>
+      <div className="print:hidden">
+        <PrintVisitActions />
+      </div>
 
-        <CardContent className="relative z-10 space-y-8 p-8 text-sm leading-7 text-foreground print:p-0 print:pt-6" style={{ fontSize: `${prescriptionFontSize}px` }}>
-          <section className="grid gap-6 border-b border-border/40 pb-6 print:border-black/10 md:grid-cols-2">
-            <div className="space-y-1">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-50">Patient Details</p>
-              <p className="text-lg font-bold">{patient.full_name}</p>
-              <p className="text-xs font-medium opacity-70">{[patient.sex, patientAgeLabel, patient.patient_code].filter(Boolean).join(" | ")}</p>
-            </div>
-            <div className="space-y-1 md:text-right" style={{ paddingRight: `${Math.max(0, dateOffset - 100) * 0.35}px` }}>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-50">Visit Date</p>
-              <p className="text-lg font-bold">{visit.visit_date || "Not recorded"}</p>
-              {visit.revisit_date ? <p className="text-xs font-medium text-primary">Review Date: {visit.revisit_date}</p> : null}
-            </div>
-          </section>
+      <div className="mx-auto w-full max-w-[4.8in] rounded-[32px] border border-border/70 bg-white p-4 shadow-sm print:max-w-[4in] print:rounded-none print:border-0 print:p-0 print:shadow-none">
+        <div
+          className="relative overflow-hidden bg-white text-black print:overflow-hidden"
+          style={{ width: `${TARGET_WIDTH_IN}in`, height: `${TARGET_HEIGHT_IN}in` }}
+        >
+          <div
+            className="absolute left-0 top-0 origin-top-left"
+            style={{
+              width: `${BASE_WIDTH_IN}in`,
+              height: `${BASE_HEIGHT_IN}in`,
+              transform: `scale(${SCALE_X}, ${SCALE_Y})`,
+              transformOrigin: "top left",
+            }}
+          >
+            {hasFullPageLetterhead ? (
+              <img
+                src={effectiveLetterhead ?? ""}
+                alt="Prescription letterhead"
+                className="absolute inset-0 h-full w-full object-fill"
+              />
+            ) : null}
 
-          <div className="grid grid-cols-[140px_1fr] gap-8 print:grid-cols-[120px_1fr]">
-            <aside className="space-y-6">
-              <div>
-                <p className="mb-3 text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-50">Vitals</p>
-                <div className="space-y-4">
-                  <div><p className="text-[10px] font-bold uppercase opacity-30">BP</p><p className="font-bold">{visit.bp || "-"}</p></div>
-                  <div><p className="text-[10px] font-bold uppercase opacity-30">Temp</p><p className="font-bold">{visit.temp || "-"}</p></div>
-                  <div><p className="text-[10px] font-bold uppercase opacity-30">Weight</p><p className="font-bold">{visit.weight || "-"}</p></div>
-                </div>
+            {!hasFullPageLetterhead ? (
+              <div
+                className="absolute"
+                style={{
+                  left: `${PAGE_MARGIN_PT}pt`,
+                  top: "24pt",
+                  width: `${CONTENT_WIDTH_PT}pt`,
+                }}
+              >
+                <p className="text-[20pt] font-bold leading-none">{doctorDisplayName}</p>
+                {doctor?.qualification ? <p className="mt-[8pt] text-[14pt] leading-tight">{doctor.qualification}</p> : null}
+                {doctor?.pmdc_no ? <p className="mt-[4pt] text-[14pt] leading-tight">PMDC: {doctor.pmdc_no}</p> : null}
+                <p className="mt-[6pt] text-[16pt] font-semibold leading-tight">{membership.clinicName}</p>
+                {effectiveHeader ? (
+                  <p className="mt-[8pt] whitespace-pre-wrap text-[14pt] leading-[1.25] text-neutral-700">{effectiveHeader}</p>
+                ) : null}
               </div>
-            </aside>
+            ) : null}
 
-            <div className="min-w-0 space-y-8">
-              {visit.subjective ? (
-                <section>
-                  <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-50">Subjective / Complaints</p>
-                  <p className="whitespace-pre-wrap">{visit.subjective}</p>
-                </section>
-              ) : null}
+            <div
+              className="absolute"
+              style={{
+                left: `${PAGE_MARGIN_PT}pt`,
+                right: `${PAGE_MARGIN_PT}pt`,
+                top: `${lineY}pt`,
+                borderTop: "1pt solid #111",
+              }}
+            />
 
-              <section>
-                <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-50">Diagnosis / Assessment</p>
-                <p className="whitespace-pre-wrap text-xl font-bold tracking-tight text-primary print:text-black">{visit.assessment || "Clinical Assessment"}</p>
+            <div
+              className="absolute"
+              style={{
+                left: `${PAGE_MARGIN_PT}pt`,
+                top: `${patientInfoTop}pt`,
+                width: `${CONTENT_WIDTH_PT}pt`,
+                fontSize: `${baseFontSize}pt`,
+                lineHeight: 1.25,
+              }}
+            >
+              <div className="relative min-h-[60pt]">
+                <p className="font-bold">Patient Name: <span className="font-semibold">{patient.full_name || "N/A"}</span></p>
+                <p className="mt-[16pt]">Patient ID: <span className="font-normal">{patient.patient_code || "N/A"}</span></p>
+                <p className="mt-[16pt]">Age / Sex: <span className="font-normal">{[patientAgeLabel, patient.sex].filter(Boolean).join(" / ") || "N/A"}</span></p>
+                <p
+                  className="absolute top-0 whitespace-nowrap"
+                  style={{ right: `${dateOffset}pt` }}
+                >
+                  Date: {dateLabel}
+                </p>
+                {patient.phone_number ? (
+                  <p
+                    className="absolute whitespace-nowrap"
+                    style={{ right: `${dateOffset}pt`, top: `${baseFontSize + 32}pt` }}
+                  >
+                    Phone: {patient.phone_number}
+                  </p>
+                ) : null}
+              </div>
+            </div>
+
+            <div
+              className="absolute"
+              style={{
+                left: `${PAGE_MARGIN_PT}pt`,
+                top: `${vitalsTop}pt`,
+                width: `${CONTENT_WIDTH_PT}pt`,
+                fontSize: `${baseFontSize}pt`,
+                lineHeight: 1.25,
+              }}
+            >
+              {!visit.bp && !visit.temp && !visit.weight ? null : (
+                <>
+                  <p className="text-[16pt] font-bold">VITALS</p>
+                  <p className="mt-[8pt] text-neutral-700">
+                    {[visit.bp ? `BP: ${visit.bp} mmHg` : null, visit.temp ? `Temp: ${visit.temp} F` : null, visit.weight ? `Weight: ${visit.weight} kg` : null]
+                      .filter(Boolean)
+                      .join("   ")}
+                  </p>
+                </>
+              )}
+            </div>
+
+            {visit.subjective ? (
+              <section
+                className="absolute"
+                style={{
+                  left: `${PAGE_MARGIN_PT}pt`,
+                  top: `${subjectTop}pt`,
+                  width: `${CONTENT_WIDTH_PT}pt`,
+                  fontSize: `${baseFontSize}pt`,
+                  lineHeight: 1.35,
+                }}
+              >
+                <p className="text-[16pt] font-bold">CHIEF COMPLAINTS</p>
+                <p className="mt-[8pt] whitespace-pre-wrap text-neutral-700">{visit.subjective}</p>
               </section>
+            ) : null}
 
-              <section className="min-h-[300px] border-t border-border/40 print:border-black/5" style={{ paddingTop: `${contentTopPadding}px` }}>
-                <p className="mb-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground opacity-50">Prescription / Treatment Plan</p>
-                <div className="whitespace-pre-wrap font-medium italic leading-relaxed text-foreground" style={{ fontSize: `${prescriptionFontSize}px` }}>
-                  {visit.plan || "Observation and general care."}
-                </div>
+            {visit.assessment ? (
+              <section
+                className="absolute"
+                style={{
+                  left: `${PAGE_MARGIN_PT}pt`,
+                  top: `${assessmentTop}pt`,
+                  width: `${CONTENT_WIDTH_PT}pt`,
+                  fontSize: `${baseFontSize}pt`,
+                  lineHeight: 1.35,
+                }}
+              >
+                <p className="text-[16pt] font-bold">DIAGNOSIS</p>
+                <p className="mt-[8pt] whitespace-pre-wrap font-semibold text-neutral-800">{visit.assessment}</p>
               </section>
-            </div>
-          </div>
+            ) : null}
 
-          <div className="flex items-end justify-between border-t border-border/40 pt-6 print:border-black/5" style={{ marginTop: `${signatureTopMargin}px` }}>
-            <div className="max-w-md">
-              {effectiveFooter ? <p className="whitespace-pre-wrap text-xs italic leading-5 text-muted-foreground">{effectiveFooter}</p> : null}
-            </div>
-            <div className="w-48 text-center">
-              <p className="text-[10px] font-bold uppercase opacity-40">Digital Signature</p>
-              <p className="mt-1 text-sm font-bold">{doctorDisplayName}</p>
-            </div>
-          </div>
-        </CardContent>
+            <section
+              className="absolute"
+              style={{
+                left: `${PAGE_MARGIN_PT}pt`,
+                top: `${planTop}pt`,
+                width: `${CONTENT_WIDTH_PT}pt`,
+                maxHeight: `${Math.max(72, footerTop - planTop - 32)}pt`,
+                overflow: "hidden",
+                fontSize: `${baseFontSize}pt`,
+                lineHeight: 1.45,
+              }}
+            >
+              <p className="text-[16pt] font-bold">Rx / TREATMENT PLAN</p>
+              <p className="mt-[8pt] whitespace-pre-wrap text-neutral-700">{visit.plan || "No specific treatment mentioned."}</p>
+              {visit.revisit_date ? <p className="mt-[12pt] font-semibold">Follow up on: {reviewDateLabel}</p> : null}
+            </section>
 
-        <div className={`relative z-10 p-4 text-center text-[10px] text-muted-foreground print:mt-10 print:bg-transparent ${hasFullPageLetterhead ? "" : "bg-muted/30"}`}>
-          Powered by MediVault Dashboard | {new Date().toLocaleDateString()}
+            {effectiveFooter ? (
+              <div
+                className="absolute"
+                style={{
+                  left: `${PAGE_MARGIN_PT}pt`,
+                  top: `${footerTop}pt`,
+                  width: `${CONTENT_WIDTH_PT}pt`,
+                  fontSize: `${baseFontSize}pt`,
+                  lineHeight: 1.25,
+                }}
+              >
+                <div className="border-t border-black" />
+                <p className="mt-[10pt] whitespace-pre-wrap text-neutral-700">{effectiveFooter}</p>
+              </div>
+            ) : (
+              <p
+                className="absolute text-[10pt] text-neutral-400"
+                style={{ left: `${PAGE_MARGIN_PT}pt`, top: `${footerTop}pt` }}
+              >
+                Generated by MediVault Pro
+              </p>
+            )}
+
+            <div
+              className="absolute"
+              style={{
+                left: `${PAGE_WIDTH_PT - PAGE_MARGIN_PT - 150}pt`,
+                top: `${signatureTop}pt`,
+                width: "150pt",
+                fontSize: `${baseFontSize}pt`,
+                lineHeight: 1.2,
+              }}
+            >
+              <p>____________________</p>
+              <p className="mt-[6pt] italic font-semibold">{doctorDisplayName}</p>
+              {doctor?.qualification ? <p className="mt-[4pt] text-neutral-700">{doctor.qualification}</p> : null}
+              {doctor?.pmdc_no ? <p className="mt-[4pt] text-neutral-700">PMDC: {doctor.pmdc_no}</p> : null}
+            </div>
+
+            {!hasFullPageLetterhead ? (
+              <div
+                className="absolute"
+                style={{
+                  right: `${PAGE_MARGIN_PT}pt`,
+                  top: "24pt",
+                  textAlign: "right",
+                  width: "220pt",
+                }}
+              >
+                <p className="text-[16pt] font-semibold">{membership.clinicName}</p>
+                <p className="mt-[4pt] text-[12pt] text-neutral-700">{cityLine}</p>
+              </div>
+            ) : null}
+          </div>
         </div>
-      </Card>
+      </div>
     </main>
   );
 }
