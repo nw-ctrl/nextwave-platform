@@ -69,14 +69,14 @@ export default async function PatientsPage({ searchParams }: { searchParams?: Pr
                     name="q"
                     defaultValue={query}
                     placeholder="Search patients by name, phone, CNIC, or patient code..."
-                    className="h-13 w-full rounded-[22px] border-none bg-white/70 pl-12 shadow-sm transition-all focus-visible:bg-white"
+                    className="h-13 w-full rounded-[22px] border-none bg-white/10 pl-12 shadow-[0_10px_40px_rgba(2,6,23,0.35)] transition-all focus-visible:bg-white/20"
                   />
                 </form>
               </div>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
-              <div className="rounded-[28px] border border-border/60 bg-white/70 p-5 shadow-sm">
+              <div className="rounded-[28px] border border-white/10 bg-slate-900/60 p-5 shadow-sm backdrop-blur-xl">
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground opacity-60">Visible patients</p>
@@ -86,7 +86,7 @@ export default async function PatientsPage({ searchParams }: { searchParams?: Pr
                 </div>
               </div>
 
-              <div className="rounded-[28px] border border-border/60 bg-white/70 p-5 shadow-sm">
+              <div className="rounded-[28px] border border-white/10 bg-slate-900/60 p-5 shadow-sm backdrop-blur-xl">
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground opacity-60">Assigned to you</p>
@@ -96,7 +96,7 @@ export default async function PatientsPage({ searchParams }: { searchParams?: Pr
                 </div>
               </div>
 
-              <Link href="/patients/new" className="rounded-[28px] border border-primary/20 bg-primary/[0.05] p-5 shadow-sm transition-all hover:bg-primary/[0.08]">
+              <Link href="/patients/new" className="rounded-[28px] border border-primary/20 bg-slate-900/70 p-5 shadow-sm transition-all hover:bg-slate-900/80">
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/70">New registration</p>

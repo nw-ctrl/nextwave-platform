@@ -25,34 +25,41 @@ const patientSchema = z.object({
 });
 
 type PatientFormValues = z.input<typeof patientSchema>;
+type PatientFormOutput = z.output<typeof patientSchema>;
+
+type Props = {
+  mode?: "create" | "edit";
+  patientId?: string;
+  initialValues?: Partial<PatientFormOutput>;
+};
 
 function FieldError({ message }: { message?: string }) {
   return message ? <p className="text-sm text-destructive">{message}</p> : null;
 }
 
-export function PatientCreateForm() {
+export function PatientCreateForm({ mode = "create", patientId, initialValues }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [serverError, setServerError] = useState<string | null>(null);
   const form = useForm<PatientFormValues, unknown, z.output<typeof patientSchema>>({
     resolver: zodResolver(patientSchema),
     defaultValues: {
-      fullName: "",
-      phoneNumber: "",
-      sex: "female",
-      age: 0,
-      ageMonths: 0,
-      cnic: "",
-      patientCode: "",
-      digitalConsentGranted: false,
+      fullName: initialValues?.fullName ?? "",
+      phoneNumber: initialValues?.phoneNumber ?? "",
+      sex: initialValues?.sex ?? "female",
+      age: initialValues?.age ?? 0,
+      ageMonths: initialValues?.ageMonths ?? 0,
+      cnic: initialValues?.cnic ?? "",
+      patientCode: initialValues?.patientCode ?? "",
+      digitalConsentGranted: initialValues?.digitalConsentGranted ?? false,
     },
   });
 
   const onSubmit = form.handleSubmit((values) => {
     setServerError(null);
     startTransition(async () => {
-      const response = await fetch("/api/patients", {
-        method: "POST",
+      const response = await fetch(mode === "edit" && patientId ? `/api/patients/${patientId}` : "/api/patients", {
+        method: mode === "edit" ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
@@ -65,7 +72,7 @@ export function PatientCreateForm() {
         return;
       }
 
-      toast.success("Patient record created");
+      toast.success(mode === "edit" ? "Patient record updated" : "Patient record created");
       router.push(`/patients/${result.patient.id}`);
       router.refresh();
     });
@@ -74,7 +81,7 @@ export function PatientCreateForm() {
   return (
     <Card className="rounded-[32px] border-border/70 shadow-sm">
       <CardHeader>
-        <CardTitle className="text-2xl">Patient registration</CardTitle>
+        <CardTitle className="text-2xl">{mode === "edit" ? "Update patient" : "Patient registration"}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={onSubmit} className="grid gap-6">
@@ -141,8 +148,8 @@ export function PatientCreateForm() {
           {serverError ? <div className="rounded-2xl border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive">{serverError}</div> : null}
 
           <div className="flex flex-wrap gap-3">
-            <Button type="submit" disabled={isPending}>{isPending ? "Saving..." : "Create patient"}</Button>
-            <Button type="button" variant="outline" onClick={() => router.push("/patients")}>Cancel</Button>
+            <Button type="submit" disabled={isPending}>{isPending ? "Saving..." : mode === "edit" ? "Update patient" : "Create patient"}</Button>
+            <Button type="button" variant="outline" onClick={() => router.push(mode === "edit" && patientId ? `/patients/${patientId}` : "/patients")}>Cancel</Button>
           </div>
         </form>
       </CardContent>

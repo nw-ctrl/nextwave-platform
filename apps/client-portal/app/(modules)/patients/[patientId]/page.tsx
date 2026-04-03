@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FileText, Phone, Printer, ShieldCheck, Stethoscope, UserRound, ArrowUpRight } from "lucide-react";
+import { FileText, Phone, Printer, ShieldCheck, Stethoscope, UserRound, ArrowUpRight, PencilLine, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -85,6 +85,18 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
               </div>
 
               <div className="flex flex-wrap gap-3">
+                <Button asChild variant="outline" className="h-11 rounded-2xl border-none bg-black/5 px-5 font-semibold transition-all hover:bg-black/10">
+                  <Link href={`/patients/${patient.id}/edit`}>
+                    <PencilLine className="mr-2 size-4" />
+                    Edit Patient
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="h-11 rounded-2xl border-none bg-black/5 px-5 font-semibold transition-all hover:bg-black/10">
+                  <Link href={`/patients/${patient.id}/visits/new`}>
+                    <Plus className="mr-2 size-4" />
+                    Add Diagnosis
+                  </Link>
+                </Button>
                 <Button asChild variant="outline" className="h-11 rounded-2xl border-none bg-primary/10 px-5 font-semibold text-primary transition-all hover:bg-primary/20">
                   <Link href={`/templates?patientId=${patient.id}`}>
                     <FileText className="mr-2 size-4" />
@@ -211,6 +223,12 @@ export default async function PatientDetailPage({ params }: { params: Promise<{ 
                       </div>
 
                       <div className="flex items-center gap-2">
+                        <Button asChild variant="ghost" className="h-11 rounded-xl px-5 hover:bg-black/5">
+                          <Link href={`/patients/${patient.id}/visits/${visit.id}/edit`}>
+                            <PencilLine className="mr-2 size-4" />
+                            Edit
+                          </Link>
+                        </Button>
                         <Button asChild variant="ghost" className="h-11 rounded-xl px-5 hover:bg-primary/5">
                           <Link href={`/patients/${patient.id}/visits/${visit.id}/print`}>
                             <Printer className="mr-2 size-4" />

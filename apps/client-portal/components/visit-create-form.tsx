@@ -30,13 +30,15 @@ type Props = {
   patientId: string;
   patientName: string;
   initialValues?: Partial<VisitFormValues>;
+  mode?: "create" | "edit";
+  visitId?: string;
 };
 
 function FieldError({ message }: { message?: string }) {
   return message ? <p className="text-sm text-destructive">{message}</p> : null;
 }
 
-export function VisitCreateForm({ patientId, patientName, initialValues }: Props) {
+export function VisitCreateForm({ patientId, patientName, initialValues, mode = "create", visitId }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [serverError, setServerError] = useState<string | null>(null);
@@ -58,8 +60,8 @@ export function VisitCreateForm({ patientId, patientName, initialValues }: Props
   const onSubmit = form.handleSubmit((values) => {
     setServerError(null);
     startTransition(async () => {
-      const response = await fetch("/api/visits", {
-        method: "POST",
+      const response = await fetch(mode === "edit" && visitId ? `/api/visits/${visitId}` : "/api/visits", {
+        method: mode === "edit" ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
@@ -72,7 +74,7 @@ export function VisitCreateForm({ patientId, patientName, initialValues }: Props
         return;
       }
 
-      toast.success("Visit saved");
+      toast.success(mode === "edit" ? "Diagnosis updated" : "Visit saved");
       router.push(`/patients/${patientId}`);
       router.refresh();
     });
@@ -81,8 +83,8 @@ export function VisitCreateForm({ patientId, patientName, initialValues }: Props
   return (
     <Card className="rounded-[32px] border-border/70 shadow-sm">
       <CardHeader>
-        <CardTitle className="text-2xl">Diagnosis and prescription</CardTitle>
-        <p className="text-sm text-muted-foreground">Recording visit notes for {patientName}.</p>
+        <CardTitle className="text-2xl">{mode === "edit" ? "Update diagnosis" : "Diagnosis and prescription"}</CardTitle>
+        <p className="text-sm text-muted-foreground">{mode === "edit" ? `Updating visit notes for ${patientName}.` : `Recording visit notes for ${patientName}.`}</p>
       </CardHeader>
       <CardContent>
         <form onSubmit={onSubmit} className="grid gap-6">
@@ -136,7 +138,7 @@ export function VisitCreateForm({ patientId, patientName, initialValues }: Props
           {serverError ? <div className="rounded-2xl border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive">{serverError}</div> : null}
 
           <div className="flex flex-wrap gap-3">
-            <Button type="submit" disabled={isPending}>{isPending ? "Saving..." : "Save visit"}</Button>
+            <Button type="submit" disabled={isPending}>{isPending ? "Saving..." : mode === "edit" ? "Update diagnosis" : "Save visit"}</Button>
             <Button type="button" variant="outline" onClick={() => router.push(`/patients/${patientId}`)}>Cancel</Button>
           </div>
         </form>
