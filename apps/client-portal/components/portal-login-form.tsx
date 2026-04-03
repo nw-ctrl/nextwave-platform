@@ -16,7 +16,7 @@ const fieldStyle: CSSProperties = {
   padding: "14px 16px",
   borderRadius: 14,
   border: "1px solid #cbd5e1",
-  background: "#ffffff",
+  background: "rgba(255,255,255,0.78)",
   color: "#0f172a",
   fontSize: 15,
   outline: "none",
@@ -108,15 +108,28 @@ export function PortalLoginForm() {
         }
 
         .portal-login-panel {
+          position: relative;
           padding: clamp(24px, 4vw, 36px);
           border-radius: 32px;
           background:
-            radial-gradient(circle at top right, rgba(125, 211, 252, 0.2), transparent 34%),
-            linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.94));
-          border: 1px solid rgba(191, 219, 254, 0.8);
+            radial-gradient(circle at top right, rgba(125, 211, 252, 0.22), transparent 34%),
+            radial-gradient(circle at bottom left, rgba(255, 255, 255, 0.66), transparent 28%),
+            linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(248, 250, 252, 0.62));
+          border: 1px solid rgba(255, 255, 255, 0.72);
           box-shadow: 0 32px 70px rgba(15, 23, 42, 0.1);
+          backdrop-filter: blur(24px) saturate(145%);
+          -webkit-backdrop-filter: blur(24px) saturate(145%);
           display: grid;
           gap: 20px;
+          overflow: hidden;
+        }
+
+        .portal-login-panel::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(180deg, rgba(255,255,255,0.35), rgba(255,255,255,0));
+          pointer-events: none;
         }
 
         .portal-login-stage {
@@ -152,15 +165,17 @@ export function PortalLoginForm() {
         .portal-login-summary-item {
           padding: 14px 16px;
           border-radius: 18px;
-          border: 1px solid #e2e8f0;
-          background: #f8fafc;
+          border: 1px solid rgba(255, 255, 255, 0.72);
+          background: rgba(255, 255, 255, 0.52);
+          backdrop-filter: blur(18px) saturate(140%);
+          -webkit-backdrop-filter: blur(18px) saturate(140%);
           display: grid;
           gap: 4px;
         }
 
         .portal-login-highlight {
-          background: linear-gradient(135deg, #eff6ff, #ecfeff);
-          border-color: #bfdbfe;
+          background: linear-gradient(135deg, rgba(239, 246, 255, 0.72), rgba(236, 254, 255, 0.7));
+          border-color: rgba(191, 219, 254, 0.92);
         }
 
         .portal-login-summary-item span {
