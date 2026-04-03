@@ -79,7 +79,7 @@ export default async function PrintVisitPage({ params }: { params: Promise<{ pat
   const lineOffset = Math.min(Math.max(Number(doctor?.pdf_line_offset ?? 12), -220), 220);
   const dateOffset = Math.max(0, Number(doctor?.pdf_date_x ?? 140));
   const signatureOffset = Math.min(Math.max(Number(doctor?.pdf_signature_y ?? 150), 0), 320);
-  const letterheadSafeTopPt = 220;
+  const letterheadSafeTopPt = 190;
   const headerTopPt = hasFullPageLetterhead ? letterheadSafeTopPt : 96;
   const lineY = headerTopPt + lineOffset;
   const patientInfoTop = lineY + 12;

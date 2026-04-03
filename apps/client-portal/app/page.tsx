@@ -5,10 +5,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { PortalLoginForm } from "@/components/portal-login-form";
 import { PortalWorkspaceShell } from "@/components/portal-workspace-shell";
 import { getPortalSession } from "@/lib/auth";
-import { getClinicalWorkspaceSummary } from "@/lib/clinical-data";
+import { getClinicalWorkspaceSummary, listClinicDoctors } from "@/lib/clinical-data";
 import { getReadablePortalPlanName } from "@/lib/portal-billing";
 
 export const dynamic = "force-dynamic";
+
+function formatDoctorName(name: string) {
+  if (!name) return "Unknown Doctor";
+  const trimmed = name.trim();
+  if (trimmed.toLowerCase().startsWith("dr.") || trimmed.toLowerCase().startsWith("dr ")) return trimmed;
+  return `Dr. ${trimmed}`;
+}
 
 export default async function ClinicPortalHome() {
   const session = await getPortalSession();
@@ -81,7 +88,11 @@ export default async function ClinicPortalHome() {
   const membership = session.memberships.find((item) => item.clientId === session.selectedClientId) ?? session.memberships[0];
   const planLabel = getReadablePortalPlanName(membership.subscription?.plan);
   const statusLabel = membership.subscription?.status ?? "inactive";
-  const summary = await getClinicalWorkspaceSummary(membership.clientId);
+  const [summary, doctors] = await Promise.all([
+    getClinicalWorkspaceSummary(membership.clientId),
+    listClinicDoctors(membership.clientId),
+  ]);
+  const doctorMap = Object.fromEntries(doctors.map((doctor) => [doctor.id, formatDoctorName(doctor.full_name)]));
 
   const quickActions = [
     { title: "Open patients", description: "Search and open patient files.", href: "/patients", icon: UserRoundSearch },
@@ -100,7 +111,46 @@ export default async function ClinicPortalHome() {
       planName={planLabel}
       statusLabel={statusLabel}
     >
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(320px,0.5fr)_minmax(320px,0.5fr)]">
+        <Card className="glass rounded-[32px] border-none shadow-sm xl:col-span-1">
+          <CardContent className="p-8">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+              <div className="space-y-3">
+                <Badge className="rounded-full bg-sky-100 px-4 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-sky-700 shadow-none">
+                  Live clinic board
+                </Badge>
+                <div>
+                  <h2 className="text-3xl font-bold tracking-tight text-foreground">Today&apos;s clinical workspace</h2>
+                  <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">
+                    A tighter patient queue, recent diagnoses, and quick access to doctor-owned records. The layout stays aligned with your current shell while moving closer to a denser EMR workflow.
+                  </p>
+                </div>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {quickActions.slice(0, 2).map((action) => {
+                  const Icon = action.icon;
+                  return (
+                    <Link key={action.href} href={action.href} className="group rounded-[24px] border border-border/60 bg-white/70 px-5 py-4 shadow-sm transition-all hover:border-primary/30 hover:bg-primary/[0.04]">
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                          <div className="flex size-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                            <Icon className="size-4" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-foreground">{action.title}</p>
+                            <p className="text-xs text-muted-foreground">{action.description}</p>
+                          </div>
+                        </div>
+                        <ArrowRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-primary" />
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         <Card className="glass rounded-[28px] border-none shadow-sm">
           <CardHeader>
             <CardDescription className="text-[10px] font-bold uppercase tracking-widest opacity-50">Total patients</CardDescription>
@@ -152,10 +202,14 @@ export default async function ClinicPortalHome() {
               <div className="rounded-2xl border border-dashed border-border/70 bg-muted/25 px-4 py-8 text-sm text-muted-foreground">No patient records yet.</div>
             ) : (
               summary.latestPatients.map((patient) => (
-                <Link key={patient.id} href={`/patients/${patient.id}`} className="flex items-center justify-between gap-4 rounded-2xl border border-border/70 px-4 py-3 transition-colors hover:border-primary/40 hover:bg-primary/[0.03]">
+                <Link key={patient.id} href={`/patients/${patient.id}`} className="flex items-center justify-between gap-4 rounded-[24px] border border-border/70 px-4 py-4 transition-colors hover:border-primary/40 hover:bg-primary/[0.03]">
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-foreground">{patient.full_name}</p>
-                    <p className="truncate text-xs text-muted-foreground">{patient.patient_code ?? "Patient record"}</p>
+                    <p className="truncate text-sm font-semibold text-foreground">{patient.full_name}</p>
+                    <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                      <span>{patient.patient_code ?? "Patient record"}</span>
+                      <span className="opacity-30">|</span>
+                      <span>{doctorMap[patient.doctor_id] ?? "Unknown Doctor"}</span>
+                    </div>
                   </div>
                   <Badge variant="outline" className="rounded-full px-2 py-0 text-[10px]">Open</Badge>
                 </Link>

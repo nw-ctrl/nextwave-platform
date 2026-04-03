@@ -86,7 +86,7 @@ export async function getClinicalWorkspaceSummary(clientId: string) {
     supabase.from("visits").select("id", { count: "exact", head: true }).eq("clinic_id", clinicProfileId).neq("is_deleted", true),
     supabase
       .from("patients")
-      .select("id, full_name, patient_code, updated_at")
+      .select("id, full_name, patient_code, doctor_id, updated_at")
       .eq("clinic_id", clinicProfileId)
       .neq("is_deleted", true)
       .order("updated_at", { ascending: false })
