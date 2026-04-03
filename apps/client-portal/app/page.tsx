@@ -33,10 +33,10 @@ export default async function ClinicPortalHome() {
 
               <div className="space-y-4">
                 <h1 className="max-w-3xl text-4xl font-bold tracking-tight text-white sm:text-5xl">
-                  Medical operations software should feel precise, dependable, and built for continuous clinical use.
+                  Medical operations software built for reliable daily use.
                 </h1>
                 <p className="max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">
-                  Access patients, prescriptions, templates, and clinic operations from a professional workspace designed for sustained use and aligned with the Android app.
+                  Access patients, prescriptions, templates, and clinic operations from one aligned clinical workspace.
                 </p>
               </div>
 

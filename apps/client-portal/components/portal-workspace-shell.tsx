@@ -128,7 +128,10 @@ export function PortalWorkspaceShell({ user, memberships, selectedClientId, curr
   if (!mounted) return null;
 
   return (
-    <SidebarProvider defaultOpen>
+    <SidebarProvider
+      defaultOpen
+      className="[--sidebar:#0a111c] [--sidebar-foreground:#e2e8f0] [--sidebar-accent:#111827] [--sidebar-accent-foreground:#f8fafc] [--sidebar-border:rgba(255,255,255,0.08)] [--sidebar-ring:#38bdf8]"
+    >
       <PortalCommandMenu open={commandOpen} onOpenChange={setCommandOpen} navItems={navItems} memberships={memberships} selectedClientId={selectedClientId} onSelectClinic={handleSelectClinic} onLogout={handleLogout} onOpenBillingSettings={handleOpenBillingSettings} onToggleTheme={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")} />
 
       <Sidebar collapsible="icon" variant="inset" className="border-none bg-[linear-gradient(180deg,rgba(9,14,24,0.96),rgba(5,9,17,0.98))] text-slate-100 shadow-[0_24px_80px_rgba(2,6,23,0.28)]">
@@ -252,7 +255,7 @@ export function PortalWorkspaceShell({ user, memberships, selectedClientId, curr
           </header>
 
           <div className="flex-1 px-4 py-8 md:px-8">
-            <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
+            <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-8">
               <div className="space-y-1 ml-1">
                 <h1 className="text-4xl font-bold tracking-tight text-white">{pageTitle}</h1>
                 <p className="max-w-2xl text-sm text-slate-400">{pageDescription}</p>
