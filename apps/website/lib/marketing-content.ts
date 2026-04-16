@@ -1,10 +1,10 @@
 export const marketingContent = {
   nav: ["Platform", "Industries", "Global", "Integrations", "Contact"],
   hero: {
-    badge: "Designed for global trust and local relevance",
-    title: "Build products people feel belong to them.",
+    badge: "Built for regulated delivery and operational clarity",
+    title: "Build enterprise platforms with market-ready control.",
     subtitle:
-      "NextWave helps teams deliver healthcare and enterprise systems with culturally adaptable experiences, multi-tenant controls, and deployment-grade reliability.",
+      "NextWave helps teams deliver healthcare and enterprise systems with tenant-aware controls, region-ready operations, and deployment-grade reliability.",
     actions: [
       { label: "Start Enterprise Build", href: "/contact", variant: "primary" as const },
       { label: "View Architecture", href: "/platform", variant: "secondary" as const }
@@ -18,9 +18,9 @@ export const marketingContent = {
   ],
   platformPillars: [
     {
-      title: "Emotion-aware UX foundation",
+      title: "Operational UX foundation",
       description:
-        "Design language built around clarity, confidence, and ownership so each customer feels the platform reflects their values."
+        "Interface systems built around clarity, consistency, and task completion for regulated and operational environments."
     },
     {
       title: "Multi-GitHub delivery topology",
@@ -41,7 +41,7 @@ export const marketingContent = {
   industries: [
     {
       name: "Healthcare and clinics",
-      fit: "Patient-safe workflows, controlled templates, secure records"
+      fit: "Clinical workflows, role-governed access, secure records, and operational reliability"
     },
     {
       name: "Professional services",

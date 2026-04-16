@@ -13,7 +13,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "MediFlow | GP Clinical Portal",
-  description: "Modern, calming EHR for General Practitioners - Australia & beyond",
+  description: "Clinical operations platform for General Practitioners, with secure records, practice workflows, and operational control.",
   icons: { icon: "/favicon.ico" },
 };
 
