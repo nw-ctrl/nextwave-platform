@@ -67,21 +67,21 @@ export function PortalLoginForm() {
         <div className="portal-login-top">
           <div className="portal-login-stage">Secure Clinical Access</div>
           <h1>MediFlow Portal</h1>
-          <p>Sign in to open patient records, templates, billing, and role-scoped clinical tools from one workspace.</p>
+          <p>Sign in to access patient records, clinical documentation, billing oversight, and role-governed practice operations.</p>
         </div>
 
         <div className="portal-login-summary">
           <div className="portal-login-summary-item">
             <span>Workspace</span>
-            <strong>Clinical dashboard</strong>
+            <strong>Clinical operations</strong>
           </div>
           <div className="portal-login-summary-item">
             <span>Access model</span>
             <strong>Role-aware controls</strong>
           </div>
           <div className="portal-login-summary-item portal-login-highlight">
-            <span>Readiness</span>
-            <strong>Doctor-ready templates</strong>
+            <span>Practice scope</span>
+            <strong>Documentation and oversight</strong>
           </div>
         </div>
 

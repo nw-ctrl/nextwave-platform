@@ -14,6 +14,17 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "MediFlow | GP Clinical Portal",
   description: "Clinical operations platform for General Practitioners, with secure records, practice workflows, and operational control.",
+  openGraph: {
+    title: "MediFlow | Clinical Operations Portal",
+    description: "Secure clinical operations portal for patient records, practice workflows, and operational oversight.",
+    siteName: "MediFlow",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MediFlow | Clinical Operations Portal",
+    description: "Secure clinical operations portal for patient records, practice workflows, and operational oversight.",
+  },
   icons: { icon: "/favicon.ico" },
 };
 

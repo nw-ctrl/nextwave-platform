@@ -29,16 +29,16 @@ export default async function ClinicPortalHome() {
             <div className="relative flex flex-col gap-6 px-8 py-10">
               <div className="rounded-[30px] border border-[#d7eef1] bg-[linear-gradient(180deg,#eefafc_0%,#f7fbfc_100%)] px-6 py-5 shadow-sm">
                 <p className="text-xs uppercase tracking-[0.3em] text-[#1297b0]">MediFlow</p>
-                <h1 className="mt-2 text-4xl font-bold tracking-tight text-slate-900">Clinical operations simplified</h1>
+                <h1 className="mt-2 text-4xl font-bold tracking-tight text-slate-900">Clinical operations, patient records, and practice oversight in one portal</h1>
                 <p className="mt-2 text-sm leading-7 text-slate-600">
-                  Built for busy clinics, this portal keeps patients, templates, and diagnostics aligned in a cleaner clinical workspace.
+                  Built for active practices, this portal keeps patient records, clinical notes, and operational context aligned in one professional workspace.
                 </p>
               </div>
               <div className="grid gap-4 md:grid-cols-2">
                 {[
                   ["Clinic-ready", "Immediate patient and visit context"],
                   ["Aligned records", "One source for doctor and patient data"],
-                  ["Prescription sync", "Doctor-ready templates and print flows"],
+                  ["Prescription workflows", "Consistent documentation and print outputs"],
                   ["Role-aware", "Team-aware navigation and settings"],
                 ].map(([title, desc]) => (
                   <div key={title} className="rounded-[24px] border border-[#e6edf1] bg-[#f8fbfc] px-5 py-4">
@@ -83,7 +83,7 @@ export default async function ClinicPortalHome() {
   const quickActions = [
     { title: "Open patients", description: "Search and open patient files.", href: "/patients", icon: UserRoundSearch, tone: "sky" },
     { title: "Register patient", description: "Create a new patient record.", href: "/patients/new", icon: Plus, tone: "amber" },
-    { title: "Open templates", description: "Use saved diagnosis and prescription templates.", href: "/templates", icon: FileText, tone: "sky" },
+    { title: "Open clinical library", description: "Access saved diagnosis and prescription content.", href: "/templates", icon: FileText, tone: "sky" },
   ];
 
   const operationalNotes = [
@@ -99,7 +99,7 @@ export default async function ClinicPortalHome() {
       selectedClientId={session.selectedClientId}
       currentMembership={membership}
       pageTitle="Clinical operations"
-      pageDescription="Patients, visits, templates, and account context in one working portal."
+      pageDescription="Patients, visits, billing context, and operational controls in one working portal."
       planName={planLabel}
       statusLabel={statusLabel}
     >
@@ -125,7 +125,7 @@ export default async function ClinicPortalHome() {
                   </Link>
                   <Link href="/templates" className="inline-flex items-center rounded-[16px] border border-[#d9e2e8] bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
                     <FileText className="mr-2 size-4" />
-                    Open Templates
+                    Open Clinical Library
                   </Link>
                 </div>
               </div>
@@ -151,9 +151,9 @@ export default async function ClinicPortalHome() {
                   <Badge className="rounded-full border-none bg-[#e8f8fb] px-4 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-[#1297b0] shadow-none">
                     Clinical operations
                   </Badge>
-                  <h3 className="mt-4 text-3xl font-bold tracking-tight text-slate-900">Keep patient movement, visits, and templates visible in one clinical surface.</h3>
+                  <h3 className="mt-4 text-3xl font-bold tracking-tight text-slate-900">Keep patient movement, visits, and documentation visible in one clinical surface.</h3>
                   <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
-                    The portal keeps the same records and actions underneath, but the interface now uses a lighter, denser workspace closer to a medical dashboard.
+                    The portal keeps the same records and actions underneath, but presents them in a lighter, more structured workspace suited to daily clinical operations.
                   </p>
                 </div>
 
@@ -304,7 +304,7 @@ export default async function ClinicPortalHome() {
                       </div>
                       <div className="flex items-center gap-3 rounded-2xl bg-[#fff7ec] px-4 py-3">
                         <ClipboardList className="size-4 shrink-0 text-[#d48318]" />
-                        <span className="text-sm text-slate-700">Verify active prescription templates</span>
+                        <span className="text-sm text-slate-700">Review current documentation and prescribing content</span>
                       </div>
                       <div className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3">
                         <Stethoscope className="size-4 shrink-0 text-[#1297b0]" />
