@@ -28,7 +28,9 @@ export default async function NewPatientPage() {
       planName={planLabel}
       statusLabel={statusLabel}
     >
-      <PatientCreateForm />
+      <div className="grid gap-4">
+        <PatientCreateForm />
+      </div>
     </PortalWorkspaceShell>
   );
 }

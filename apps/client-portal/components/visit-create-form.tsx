@@ -81,15 +81,15 @@ export function VisitCreateForm({ patientId, patientName, initialValues, mode = 
   });
 
   return (
-    <Card className="rounded-[32px] border border-slate-200 bg-white shadow-md">
+    <Card className="glass-panel rounded-[32px]">
       <CardHeader>
-        <CardTitle className="text-2xl">{mode === "edit" ? "Update diagnosis" : "Diagnosis and prescription"}</CardTitle>
-        <p className="text-sm text-muted-foreground">{mode === "edit" ? `Updating visit notes for ${patientName}.` : `Recording visit notes for ${patientName}.`}</p>
+        <CardTitle className="text-2xl text-slate-900">{mode === "edit" ? "Update diagnosis" : "Diagnosis and prescription"}</CardTitle>
+        <p className="text-sm text-slate-500">{mode === "edit" ? `Updating visit notes for ${patientName}.` : `Recording visit notes for ${patientName}.`}</p>
       </CardHeader>
       <CardContent>
         <form onSubmit={onSubmit} className="grid gap-6">
           <Controller control={form.control} name="patientId" render={({ field }) => <input type="hidden" {...field} />} />
-          <div className="grid gap-4 md:grid-cols-4">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <div className="grid gap-2">
               <Label htmlFor="visitDate">Visit date</Label>
               <Input id="visitDate" type="date" {...form.register("visitDate")} />
@@ -137,9 +137,9 @@ export function VisitCreateForm({ patientId, patientName, initialValues, mode = 
 
           {serverError ? <div className="rounded-2xl border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive">{serverError}</div> : null}
 
-          <div className="flex flex-wrap gap-3">
-            <Button type="submit" disabled={isPending}>{isPending ? "Saving..." : mode === "edit" ? "Update diagnosis" : "Save visit"}</Button>
-            <Button type="button" variant="outline" onClick={() => router.push(`/patients/${patientId}`)}>Cancel</Button>
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <Button type="submit" disabled={isPending} className="w-full sm:w-auto">{isPending ? "Saving..." : mode === "edit" ? "Update diagnosis" : "Save visit"}</Button>
+            <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={() => router.push(`/patients/${patientId}`)}>Cancel</Button>
           </div>
         </form>
       </CardContent>

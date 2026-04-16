@@ -260,7 +260,7 @@ export function PortalWorkspaceShell({ user, memberships, selectedClientId, curr
           <div className="flex-1 px-4 py-8 md:px-8">
             <div className="mx-auto flex w-full max-w-[1720px] flex-col gap-8">
               <div className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(340px,0.75fr)]">
-                <div className="rounded-[30px] border border-[#d9e2e8] bg-white px-6 py-5 shadow-[0_18px_48px_rgba(16,33,50,0.08)] md:px-7">
+                <div className="glass-panel rounded-[30px] px-6 py-5 md:px-7">
                   <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
                     <div className="flex min-w-0 items-start gap-4">
                       <div className="flex size-14 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-700">
@@ -273,15 +273,15 @@ export function PortalWorkspaceShell({ user, memberships, selectedClientId, curr
                       </div>
                     </div>
                     <div className="grid gap-3 sm:grid-cols-3 xl:min-w-[420px]">
-                      <div className="rounded-[20px] border border-[#e6edf1] bg-[#f8fbfc] px-4 py-3">
+                      <div className="glass-soft rounded-[20px] px-4 py-3">
                         <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Clinic</p>
                         <p className="mt-1 truncate text-sm font-semibold text-slate-900">{currentMembership.clinicName}</p>
                       </div>
-                      <div className="rounded-[20px] border border-[#e6edf1] bg-[#f8fbfc] px-4 py-3">
+                      <div className="glass-soft rounded-[20px] px-4 py-3">
                         <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Plan</p>
                         <p className="mt-1 truncate text-sm font-semibold text-slate-900">{planName ?? "Clinic plan"}</p>
                       </div>
-                      <div className="rounded-[20px] border border-[#e6edf1] bg-[#eef9fb] px-4 py-3">
+                      <div className="glass-soft rounded-[20px] px-4 py-3">
                         <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Status</p>
                         <p className="mt-1 truncate text-sm font-semibold capitalize text-slate-900">{statusLabel?.replaceAll("_", " ") ?? `${activeCount} modules`}</p>
                       </div>
@@ -304,7 +304,7 @@ export function PortalWorkspaceShell({ user, memberships, selectedClientId, curr
                   </div>
                 </div>
 
-                <div className="rounded-[30px] border border-[#d9e2e8] bg-white p-5 shadow-[0_18px_48px_rgba(16,33,50,0.08)]">
+                <div className="glass-panel rounded-[30px] p-5">
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#1bb8cf]">Session</p>
@@ -316,11 +316,11 @@ export function PortalWorkspaceShell({ user, memberships, selectedClientId, curr
                     </Avatar>
                   </div>
                   <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                    <div className="rounded-[20px] border border-[#e6edf1] bg-[#f8fbfc] px-4 py-3">
+                    <div className="glass-soft rounded-[20px] px-4 py-3">
                       <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Membership</p>
                       <p className="mt-1 text-sm font-semibold text-slate-900">{currentMembership.clinicName}</p>
                     </div>
-                    <div className="rounded-[20px] border border-[#e6edf1] bg-[#f8fbfc] px-4 py-3">
+                    <div className="glass-soft rounded-[20px] px-4 py-3">
                       <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Account</p>
                       <p className="mt-1 text-sm font-semibold capitalize text-slate-900">{user.accountStatus ?? "active"}</p>
                     </div>

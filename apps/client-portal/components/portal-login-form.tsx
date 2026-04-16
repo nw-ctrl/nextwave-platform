@@ -111,9 +111,12 @@ export function PortalLoginForm() {
         .portal-login-panel {
           padding: clamp(28px, 4vw, 42px);
           border-radius: 34px;
-          background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(246,250,252,0.98) 100%);
-          border: 1px solid rgba(201, 212, 225, 0.9);
+          background:
+            linear-gradient(180deg, rgba(255,255,255,0.82) 0%, rgba(246,250,252,0.78) 100%),
+            radial-gradient(circle at top left, rgba(41,184,199,0.12), transparent 40%);
+          border: 1px solid rgba(255, 255, 255, 0.76);
           box-shadow: 0 26px 70px rgba(16, 33, 50, 0.12);
+          backdrop-filter: blur(26px);
           display: grid;
           gap: 20px;
         }
@@ -152,11 +155,12 @@ export function PortalLoginForm() {
         .portal-login-summary-item {
           padding: 14px 16px;
           border-radius: 18px;
-          border: 1px solid rgba(201, 212, 225, 0.8);
-          background: #ffffff;
+          border: 1px solid rgba(255, 255, 255, 0.74);
+          background: rgba(255, 255, 255, 0.74);
           display: grid;
           gap: 4px;
           box-shadow: 0 10px 24px rgba(16, 33, 50, 0.06);
+          backdrop-filter: blur(18px);
         }
 
         .portal-login-highlight {

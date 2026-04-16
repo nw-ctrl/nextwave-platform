@@ -47,7 +47,7 @@ export default async function NewVisitPage({ params, searchParams }: { params: P
       planName={planLabel}
       statusLabel={statusLabel}
     >
-      <div className="flex justify-start"><Button asChild variant="ghost" className="gap-2"><Link href={`/patients/${patient.id}`}><ArrowLeft className="size-4" />Back to patient</Link></Button></div>
+      <div className="flex justify-start"><Button asChild variant="ghost" className="gap-2 rounded-[16px] text-slate-700 hover:bg-white/60"><Link href={`/patients/${patient.id}`}><ArrowLeft className="size-4" />Back to patient</Link></Button></div>
       <VisitCreateForm patientId={patient.id} patientName={patient.full_name} initialValues={template ? { assessment: template.diagnosis, plan: `Prescription\n${template.prescription}\n\nNotes\n${template.notes}` } : undefined} />
     </PortalWorkspaceShell>
   );

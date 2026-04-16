@@ -79,9 +79,9 @@ export function PatientCreateForm({ mode = "create", patientId, initialValues }:
   });
 
   return (
-    <Card className="rounded-[32px] border border-slate-200 bg-white shadow-md">
+    <Card className="glass-panel rounded-[32px]">
       <CardHeader>
-        <CardTitle className="text-2xl">{mode === "edit" ? "Update patient" : "Patient registration"}</CardTitle>
+        <CardTitle className="text-2xl text-slate-900">{mode === "edit" ? "Update patient" : "Patient registration"}</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={onSubmit} className="grid gap-6">
@@ -136,7 +136,7 @@ export function PatientCreateForm({ mode = "create", patientId, initialValues }:
             </div>
           </div>
 
-          <div className="flex items-center gap-3 rounded-2xl border border-border/70 px-4 py-3">
+          <div className="glass-soft flex items-center gap-3 rounded-2xl px-4 py-3">
             <Controller
               control={form.control}
               name="digitalConsentGranted"
@@ -147,9 +147,9 @@ export function PatientCreateForm({ mode = "create", patientId, initialValues }:
 
           {serverError ? <div className="rounded-2xl border border-destructive/20 bg-destructive/5 px-4 py-3 text-sm text-destructive">{serverError}</div> : null}
 
-          <div className="flex flex-wrap gap-3">
-            <Button type="submit" disabled={isPending}>{isPending ? "Saving..." : mode === "edit" ? "Update patient" : "Create patient"}</Button>
-            <Button type="button" variant="outline" onClick={() => router.push(mode === "edit" && patientId ? `/patients/${patientId}` : "/patients")}>Cancel</Button>
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <Button type="submit" disabled={isPending} className="w-full sm:w-auto">{isPending ? "Saving..." : mode === "edit" ? "Update patient" : "Create patient"}</Button>
+            <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={() => router.push(mode === "edit" && patientId ? `/patients/${patientId}` : "/patients")}>Cancel</Button>
           </div>
         </form>
       </CardContent>
