@@ -1,7 +1,7 @@
-import { LockKeyhole, Settings2, ShieldCheck, CreditCard, Users, Search } from "lucide-react";
+import { LockKeyhole, Settings2, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { PortalLoginForm } from "@/components/portal-login-form";
 import { PortalWorkspaceShell } from "@/components/portal-workspace-shell";
 import { getPortalSession } from "@/lib/auth";
@@ -44,79 +44,75 @@ export default async function SettingsPage() {
       selectedClientId={session.selectedClientId}
       currentMembership={membership}
       pageTitle="Clinic Settings"
-      pageDescription="Manage your clinic profile, view security metrics, and review access privileges."
+      pageDescription="Manage your clinic profile, security posture, and access privileges in the same clinical card system."
       planName={planLabel}
       statusLabel={statusLabel}
     >
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        
-        {/* Clinic Info */}
-        <Card className="rounded-[32px] border-border/70 shadow-sm lg:col-span-2">
+        <Card className="rounded-[32px] border border-[#d9e2e8] bg-white shadow-[0_18px_48px_rgba(16,33,50,0.08)] lg:col-span-2">
           <CardHeader>
-            <Settings2 className="size-6 text-primary mb-2" />
-            <CardTitle className="text-2xl">Clinic Profile</CardTitle>
-            <CardDescription className="text-sm leading-7">
-              General clinic properties and identifiers.
+            <Settings2 className="mb-2 size-6 text-[#1297b0]" />
+            <CardTitle className="text-2xl text-slate-900">Clinic Profile</CardTitle>
+            <CardDescription className="text-sm leading-7 text-slate-500">
+              General clinic properties, identifiers, and billing context.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-3 items-center border-b pb-4">
-              <span className="text-sm font-medium text-muted-foreground">Clinic Name</span>
-              <span className="col-span-2 text-base">{membership.clinicName}</span>
+            <div className="grid grid-cols-3 items-center border-b border-[#e6edf1] pb-4">
+              <span className="text-sm font-medium text-slate-500">Clinic Name</span>
+              <span className="col-span-2 text-base text-slate-900">{membership.clinicName}</span>
             </div>
-            <div className="grid grid-cols-3 items-center border-b pb-4">
-              <span className="text-sm font-medium text-muted-foreground">Workspace ID</span>
-              <span className="col-span-2 text-sm font-mono truncate">{membership.clientId}</span>
+            <div className="grid grid-cols-3 items-center border-b border-[#e6edf1] pb-4">
+              <span className="text-sm font-medium text-slate-500">Workspace ID</span>
+              <span className="col-span-2 truncate text-sm font-mono text-slate-900">{membership.clientId}</span>
             </div>
             <div className="grid grid-cols-3 items-center">
-              <span className="text-sm font-medium text-muted-foreground">Billing Plan</span>
+              <span className="text-sm font-medium text-slate-500">Billing Plan</span>
               <span className="col-span-2">
-                <Badge variant="outline" className="mr-2 capitalize">{planLabel}</Badge>
-                <span className="text-sm text-muted-foreground capitalize">({statusLabel})</span>
+                <Badge className="mr-2 rounded-full border-none bg-[#e8f8fb] capitalize text-[#1297b0]">{planLabel}</Badge>
+                <span className="text-sm capitalize text-slate-500">({statusLabel})</span>
               </span>
             </div>
           </CardContent>
           <CardFooter>
-            <Button variant="outline" className="w-full rounded-full" asChild>
+            <Button variant="outline" className="w-full rounded-[16px] border-[#d9e2e8] bg-white text-slate-700 hover:bg-slate-50" asChild>
               <a href="/billing">Manage Billing & Subscription</a>
             </Button>
           </CardFooter>
         </Card>
 
-        {/* Access Summary */}
-        <Card className="rounded-[32px] border-border/70 shadow-sm">
+        <Card className="rounded-[32px] border border-[#d9e2e8] bg-white shadow-[0_18px_48px_rgba(16,33,50,0.08)]">
           <CardHeader>
-            <ShieldCheck className="size-6 text-primary mb-2" />
-            <CardTitle className="text-2xl">Access & Security</CardTitle>
-            <CardDescription>Your current privileges.</CardDescription>
+            <ShieldCheck className="mb-2 size-6 text-[#1297b0]" />
+            <CardTitle className="text-2xl text-slate-900">Access & Security</CardTitle>
+            <CardDescription className="text-slate-500">Your current privileges.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-5">
             <div>
-              <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Assigned Role</p>
-              <div className="text-lg font-semibold capitalize">{membership.role}</div>
+              <p className="mb-1 text-xs uppercase tracking-widest text-slate-400">Assigned Role</p>
+              <div className="text-lg font-semibold capitalize text-slate-900">{membership.role}</div>
             </div>
             <div>
-              <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Module Scopes</p>
+              <p className="mb-1 text-xs uppercase tracking-widest text-slate-400">Module Scopes</p>
               {membership.modules.length > 0 ? (
-                <div className="flex flex-wrap gap-2 mt-2">
+                <div className="mt-2 flex flex-wrap gap-2">
                   {membership.modules.map((m) => (
-                    <Badge key={m} variant="secondary">{m}</Badge>
+                    <Badge key={m} className="rounded-full border-none bg-[#f8fbfc] capitalize text-slate-700">{m}</Badge>
                   ))}
                 </div>
               ) : (
-                <Badge variant="secondary">All Access</Badge>
+                <Badge className="rounded-full border-none bg-[#e8f8fb] text-[#1297b0]">All Access</Badge>
               )}
             </div>
             <div>
-              <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1 mt-4">Account Status</p>
-              <div className="flex items-center gap-2 mt-1 text-sm">
-                <LockKeyhole className="size-4 text-green-500" />
+              <p className="mb-1 mt-4 text-xs uppercase tracking-widest text-slate-400">Account Status</p>
+              <div className="mt-1 flex items-center gap-2 text-sm text-slate-700">
+                <LockKeyhole className="size-4 text-emerald-500" />
                 <span className="capitalize">{session.user.accountStatus}</span>
               </div>
             </div>
           </CardContent>
         </Card>
-
       </div>
     </PortalWorkspaceShell>
   );

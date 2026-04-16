@@ -13,21 +13,21 @@ const bodyFont = "Avenir Next, Segoe UI, Helvetica Neue, Arial, sans-serif";
 
 const fieldStyle: CSSProperties = {
   width: "100%",
-  padding: "14px 16px",
-  borderRadius: 16,
-  border: "1px solid rgba(255,255,255,0.1)",
-  background: "rgba(255,255,255,0.05)",
-  color: "#f8fafc",
+  padding: "15px 18px",
+  borderRadius: 18,
+  border: "1px solid rgba(149, 162, 179, 0.35)",
+  background: "#f9fbfc",
+  color: "#102132",
   fontSize: 15,
   outline: "none",
   boxSizing: "border-box",
   fontFamily: bodyFont,
   transition: "border 0.2s ease, box-shadow 0.2s ease, background 0.2s ease",
-  backdropFilter: "blur(18px)",
+  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.55)",
 };
 
 const mutedText: CSSProperties = {
-  color: "#94a3b8",
+  color: "#6b7280",
 };
 
 export function PortalLoginForm() {
@@ -64,23 +64,23 @@ export function PortalLoginForm() {
   return (
     <section className="portal-login-shell">
       <div className="portal-login-panel">
-      <div className="portal-login-top">
+        <div className="portal-login-top">
           <div className="portal-login-stage">Secure Clinical Access</div>
           <h1>MediFlow Portal</h1>
-          <p>Sign in to access patient records, prescription workflows, clinic settings, and role-governed operational tools.</p>
+          <p>Sign in to open patient records, templates, billing, and role-scoped clinical tools from one workspace.</p>
         </div>
 
         <div className="portal-login-summary">
           <div className="portal-login-summary-item">
-            <span>Clinical workspace</span>
-            <strong>Role-aware access</strong>
+            <span>Workspace</span>
+            <strong>Clinical dashboard</strong>
           </div>
           <div className="portal-login-summary-item">
-            <span>Portal posture</span>
-            <strong>Secure operations</strong>
+            <span>Access model</span>
+            <strong>Role-aware controls</strong>
           </div>
           <div className="portal-login-summary-item portal-login-highlight">
-            <span>Prescription setup</span>
+            <span>Readiness</span>
             <strong>Doctor-ready templates</strong>
           </div>
         </div>
@@ -102,30 +102,20 @@ export function PortalLoginForm() {
 
       <style jsx>{`
         .portal-login-shell {
-          width: min(540px, 100%);
+          width: min(560px, 100%);
           margin: 0 auto;
           padding: 20px;
           font-family: ${headingFont};
         }
 
         .portal-login-panel {
-          position: relative;
-          padding: clamp(26px, 4vw, 40px);
-          border-radius: 32px;
-          background: #f3f2fa;
-          border: 1px solid rgba(124, 58, 237, 0.25);
-          box-shadow: 0 32px 70px rgba(15, 23, 42, 0.2);
+          padding: clamp(28px, 4vw, 42px);
+          border-radius: 34px;
+          background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(246,250,252,0.98) 100%);
+          border: 1px solid rgba(201, 212, 225, 0.9);
+          box-shadow: 0 26px 70px rgba(16, 33, 50, 0.12);
           display: grid;
-          gap: 18px;
-        }
-
-        .portal-login-panel::after {
-          content: "";
-          position: absolute;
-          inset: 0;
-          border-radius: inherit;
-          border: 1px solid rgba(124, 58, 237, 0.25);
-          pointer-events: none;
+          gap: 20px;
         }
 
         .portal-login-top h1 {
@@ -134,20 +124,21 @@ export function PortalLoginForm() {
           letter-spacing: -0.02em;
           font-family: ${headingFont};
           font-weight: 700;
-          color: #1f1b4d;
+          color: #102132;
         }
 
         .portal-login-stage {
           font-size: 11px;
           letter-spacing: 0.18em;
           text-transform: uppercase;
-          color: #7c3aed;
+          color: #0f9db4;
+          font-weight: 700;
         }
 
         .portal-login-top p {
           margin: 0;
           font-size: 15px;
-          color: #4b5563;
+          color: #536273;
           max-width: 44ch;
           line-height: 1.6;
         }
@@ -161,46 +152,47 @@ export function PortalLoginForm() {
         .portal-login-summary-item {
           padding: 14px 16px;
           border-radius: 18px;
-          border: 1px solid rgba(15, 23, 42, 0.08);
-          background: rgba(255, 255, 255, 0.8);
+          border: 1px solid rgba(201, 212, 225, 0.8);
+          background: #ffffff;
           display: grid;
           gap: 4px;
+          box-shadow: 0 10px 24px rgba(16, 33, 50, 0.06);
         }
 
         .portal-login-highlight {
-          background: rgba(124, 58, 237, 0.08);
-          border-color: rgba(124, 58, 237, 0.3);
+          background: linear-gradient(180deg, #eefbfc 0%, #f7fbfc 100%);
+          border-color: rgba(15, 157, 180, 0.22);
         }
 
         .portal-login-summary-item span {
           font-size: 11px;
           text-transform: uppercase;
           letter-spacing: 0.14em;
-          color: #6b7280;
+          color: #7d8b99;
         }
 
         .portal-login-summary-item strong {
           font-size: 14px;
-          color: #1f1b4d;
+          color: #102132;
         }
 
         .portal-login-form {
           display: grid;
-          gap: 12px;
+          gap: 14px;
         }
 
         .portal-login-submit {
           margin-top: 4px;
-          padding: 14px 16px;
+          padding: 15px 16px;
           border: none;
-          border-radius: 14px;
-          background: linear-gradient(180deg, #7c3aed 0%, #4c1d95 100%);
+          border-radius: 18px;
+          background: linear-gradient(180deg, #1bb8cf 0%, #1297b0 100%);
           color: #fff;
           font-weight: 700;
           font-size: 16px;
           font-family: ${headingFont};
           cursor: pointer;
-          box-shadow: 0 14px 30px rgba(76, 29, 149, 0.25);
+          box-shadow: 0 14px 30px rgba(18, 151, 176, 0.22);
           transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
 
@@ -211,15 +203,15 @@ export function PortalLoginForm() {
 
         .portal-login-submit:not(:disabled):hover {
           transform: translateY(-1px);
-          box-shadow: 0 16px 36px rgba(76, 29, 149, 0.35);
+          box-shadow: 0 16px 36px rgba(18, 151, 176, 0.32);
         }
 
         .portal-login-status {
           margin-top: 10px;
           padding: 12px 14px;
           border-radius: 14px;
-          background: rgba(248, 113, 113, 0.15);
-          border: 1px solid rgba(248, 113, 113, 0.4);
+          background: rgba(248, 113, 113, 0.12);
+          border: 1px solid rgba(248, 113, 113, 0.28);
           color: #be123c;
           font-size: 14px;
           font-weight: 600;
@@ -234,6 +226,7 @@ export function PortalLoginForm() {
           .portal-login-panel {
             padding: 28px 24px;
           }
+
           .portal-login-summary {
             grid-template-columns: repeat(2, minmax(0, 1fr));
           }
@@ -244,20 +237,25 @@ export function PortalLoginForm() {
             width: 100%;
             padding: 12px;
           }
+
           .portal-login-top h1 {
             font-size: 30px;
           }
+
           .portal-login-summary-item strong {
             font-size: 14px;
           }
+
           .portal-login-submit {
             width: 100%;
             min-height: 48px;
           }
+
           .portal-login-panel {
             padding: 24px 18px;
             border-radius: 22px;
           }
+
           .portal-login-summary {
             grid-template-columns: 1fr;
           }

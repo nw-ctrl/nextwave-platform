@@ -75,27 +75,51 @@ export default async function Page() {
       statusLabel={statusLabel}
     >
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.55fr)]">
-        <div>
+        <div className="grid gap-6">
+          <Card className="rounded-[32px] border border-[#d9e2e8] bg-white shadow-[0_18px_48px_rgba(16,33,50,0.08)]">
+            <CardContent className="grid gap-4 p-6 md:grid-cols-3">
+              <div className="rounded-[24px] border border-[#e6edf1] bg-[#f8fbfc] p-5">
+                <UserCog className="mb-3 size-8 text-[#1297b0]" />
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Profile</p>
+                <p className="mt-2 text-base font-semibold text-slate-900">Doctor identity and print settings</p>
+              </div>
+              <div className="rounded-[24px] border border-[#e6edf1] bg-[#f8fbfc] p-5">
+                <UsersRound className="mb-3 size-8 text-[#1297b0]" />
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Clinic sync</p>
+                <p className="mt-2 text-base font-semibold text-slate-900">Shared across connected clinic surfaces</p>
+              </div>
+              <div className="rounded-[24px] border border-[#e6edf1] bg-[#eef9fb] p-5">
+                <ShieldCheck className="mb-3 size-8 text-[#1297b0]" />
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Parity</p>
+                <p className="mt-2 text-base font-semibold text-slate-900">Aligned with Android prescription output</p>
+              </div>
+            </CardContent>
+          </Card>
+
           {doctorProfile ? (
             <DoctorProfileForm initialProfile={doctorProfile} clientId={membership.clientId} />
           ) : (
-             <Card className="rounded-[32px] border-border/70 shadow-sm">
-               <CardHeader>
-                 <CardTitle>Doctor Profile</CardTitle>
-                 <CardDescription>No doctor profile could be resolved for this clinic.</CardDescription>
-               </CardHeader>
-             </Card>
+            <Card className="rounded-[32px] border border-[#d9e2e8] bg-white shadow-[0_18px_48px_rgba(16,33,50,0.08)]">
+              <CardHeader>
+                <CardTitle className="text-slate-900">Doctor Profile</CardTitle>
+                <CardDescription className="text-slate-500">No doctor profile could be resolved for this clinic.</CardDescription>
+              </CardHeader>
+            </Card>
           )}
         </div>
 
-        <Card className="rounded-[32px] border-border/70 shadow-sm h-fit">
+        <Card className="h-fit rounded-[32px] border border-[#d9e2e8] bg-white shadow-[0_18px_48px_rgba(16,33,50,0.08)]">
           <CardHeader>
-            <CardDescription>Parity Information</CardDescription>
-            <CardTitle className="text-2xl">Android Sync</CardTitle>
+            <CardDescription className="text-slate-500">Parity Information</CardDescription>
+            <CardTitle className="text-2xl text-slate-900">Android Sync</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4 text-sm leading-7 text-muted-foreground">
+          <CardContent className="space-y-4 text-sm leading-7 text-slate-500">
             <p>Changes made to this profile impact both the web and Android app.</p>
             <p>Printing properties like font size, date offset, divider alignment, signature position, and letterhead are read from the same doctor profile used by Android prescription generation.</p>
+            <div className="flex flex-wrap gap-2">
+              <Badge className="rounded-full border-none bg-[#e8f8fb] text-[#1297b0]">Shared data model</Badge>
+              <Badge className="rounded-full border-none bg-[#f8fbfc] text-slate-700">Prescription parity</Badge>
+            </div>
           </CardContent>
         </Card>
       </div>

@@ -15,9 +15,9 @@ export type PortalNavItem = {
 const portalNavItems: PortalNavItem[] = [
   {
     key: "home",
-    label: "Home",
+    label: "Dashboard",
     href: "/",
-    description: "Operational overview and quick actions.",
+    description: "Clinical overview and quick actions.",
     icon: Home,
   },
   {
@@ -38,12 +38,12 @@ const portalNavItems: PortalNavItem[] = [
     key: "templates",
     label: "Templates",
     href: "/templates",
-    description: "Open diagnosis and prescription templates.",
+    description: "Diagnosis and prescription templates.",
     icon: FileText,
   },
   {
     key: "billing",
-    label: "Subscription",
+    label: "Billing",
     href: "/billing",
     description: "Plan status, invoices, and billing settings.",
     icon: CreditCard,
@@ -52,7 +52,7 @@ const portalNavItems: PortalNavItem[] = [
   },
   {
     key: "doctors",
-    label: "Manage Doctors",
+    label: "Doctors",
     href: "/doctors",
     description: "Administrative doctor access controls.",
     icon: UsersRound,
